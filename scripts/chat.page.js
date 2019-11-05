@@ -2,6 +2,7 @@ function ChatsPage() {
 
     var destroyed = false;
     var chatLayout = createElement(container, 'div', 'UiChat__layout');
+    var selectedChatId = null;
 
     chatLists = [];
 
