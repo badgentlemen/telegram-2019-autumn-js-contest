@@ -1,9 +1,12 @@
 :root {
+    --primary-color: #4ea4f6;
+    --third-color: #e6ebee;
+    --second-text-color: #d5d7d8;
     --component-border-color: #dadce0;
     --component-min-height: 52px;
+    --component-normal-state-border-weight: 1px;
+    --component-active-state-border-weight: 2px;
 }
-
-
 
 .html,
 body {
@@ -12,6 +15,7 @@ body {
     width: 100vw;
     padding: 0;
     margin: 0;
+    overflow-x: hidden;
 }
 
 input, select {
@@ -50,11 +54,41 @@ input, select {
     flex-direction: column;
 }
 
-.ui-input {
-    border: 1px solid var(--component-border-color);
-    padding: 10px;
+.ui-form__incolumn .ui-input,
+.ui-form__incolumn .ui-select {
+    width: 100%;
 }
 
+.ui-form__row {
+    position: relative;
+    display: flex;
+    margin-bottom: 23px;
+    width: 100%;
+}
+
+
+.ui-input,
+.ui-select {
+    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.ui-input:focus {
+    border-width: var(--component-active-state-border-weight);
+    border-color: var(--primary-color);
+}
+
+.ui-select {
+    cursor: pointer;
+    padding: 0;
+}
+
+.ui-dropdown__root {
+    padding: 15px;
+    min-height: var(--component-min-height);
+}
 
 .ui-container {
     padding-right: 15px;
@@ -88,7 +122,7 @@ input, select {
 
 .UiLogin_layout__container {
     margin: 0 auto;
-    max-width: 460px;
+    max-width: 360px;
     padding: 30px;
     margin-top: 60px;
 }
@@ -114,4 +148,69 @@ input, select {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 110%;
+}
+
+
+.ui-sign-in__title {
+    color: black;
+    line-height: 25px;
+    margin-top: 50px;
+    margin-bottom: 19px;
+}
+
+.ui-sign-in__text {
+    color: var(--second-text-color);
+    margin-bottom: 48px;
+    margin-top: 0;
+}
+
+
+
+.UiChat_layout__node {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+}
+
+.ui-chat__sidebar {
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 420px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--component-border-color);
+}
+
+.ui-sidebar__header {
+
+}
+
+.ui-sidebar__body {
+
+}
+
+.ui-sidebar__chat-list {
+
+}
+
+.ui-sidebar__footer {
+
+}
+
+.ui-chat__content {
+    position: relative;
+    height: 100%;
+    flex-grow: 1;
+    background-color: var(--third-color);
+}
+
+.ui-chat__list {
+
+}
+
+.ui-chat__list-item {
+
 }

@@ -3,13 +3,13 @@ function getRootElement() {
 }
 
 function renderLayoutContainer() {
-    return createElement(getRootElement(), 'div', 'ui-layout');
+    return createElement('div', 'ui-layout', getRootElement());
 }
 
 function renderApp() {
     var layoutContainer = renderLayoutContainer();
     isUserAuth(function (state) {
-        var page = state ? new LoginPage(layoutContainer) : new ChatsPage(layoutContainer);
+        var page = !state ? new LoginPage(layoutContainer) : new ChatsPage(layoutContainer);
     });
 }
 
