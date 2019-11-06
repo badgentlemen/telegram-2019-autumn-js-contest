@@ -1,16 +1,21 @@
 function getRootElement() {
-    return document.getElementById('appication');
+	return document.getElementById('appication');
 }
 
 function renderLayoutContainer() {
-    return createElement('div', 'ui-layout', getRootElement());
+	return createElement('div', 'ui-layout', getRootElement());
 }
 
 function renderApp() {
-    var layoutContainer = renderLayoutContainer();
-    isUserAuth(function (state) {
-        var page = !state ? new LoginPage(layoutContainer) : new ChatsPage(layoutContainer);
-    });
+	var layoutContainer = renderLayoutContainer();
+	APIManager.getUserID(function(id) {
+        var page = null;
+        if (id) {
+            page = new ChatsPage(layoutContainer);
+        } else {
+            page = new LoginPage(layoutContainer);
+        }
+	});
 }
 
 renderApp();
