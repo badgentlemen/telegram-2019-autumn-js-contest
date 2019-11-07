@@ -162,3 +162,7 @@ var MtpTimeManager = {
         return longFromInts(messageID[0], messageID[1]);
     }
 }
+
+var mask = function(telIndex) {
+
+}

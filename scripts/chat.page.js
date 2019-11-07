@@ -2,12 +2,17 @@ function ChatsPage(container) {
     container.classList.add('UiChat_layout');
 
     var node = createElement('div', 'UiChat_layout__node', container);
-    var chatSidebar = new Sidebar();
+
+    var chatSidebar = new Sidebar({
+        onDialogClick: dialogSelected,
+    });
+
     var chatContent = new ChatContent();
 
     var sidebarNode = null;
     var chatContentNode = null;
 
+    var currentChat = null;
     var destroyed = false;
     var selectedChatId = null;
 
@@ -18,8 +23,6 @@ function ChatsPage(container) {
 
         sidebarNode = chatSidebar.getNode();
         chatContentNode = chatContent.getNode();
-
-
         node.appendChild(sidebarNode);
         node.appendChild(chatContentNode);
 
@@ -35,11 +38,20 @@ function ChatsPage(container) {
     }
 
     function fetchChatsList() {
-        Networker.wrapApiCall('contacts.search', {q: 'awesome', limit: 10})
+        var dialogs = sortableDialogs();
+        chatSidebar.setChats(dialogs);
     }
 
     function fetchMessagesForChatId(id) {
 
+    }
+
+    function sortableDialogs() {
+        return dialogs;
+    }
+
+    function dialogSelected(dialog) {
+        currentChat = dialog;
     }
 
     function reset() {
@@ -55,15 +67,26 @@ function ChatsPage(container) {
 }
 
 
-function Sidebar() {
+function Sidebar(options) {
+
+    options = options || {};
+
     var node = createElement('div', 'ui-sidebar');
     var header = null;
     var body = null;
     var loadingNode = null;
 
+    function onSearch(queryString) {
+
+    }
+
     function renderSidebarWrapper() {
-        this.header = new SidebarHeader(node);
-        this.body = new SidebarBody(node);
+        header = new SidebarHeader(node, onSearch);
+        body = new SidebarBody(node, onChatListItemClick);
+    }
+
+    function onChatListItemClick(dialog) {
+        options.onDialogClick && options.onDialogClick(dialog);
     }
 
     this.getNode = function() {
@@ -92,6 +115,7 @@ function Sidebar() {
     this.setChats = function(chats) {
         var chats = chats || [];
         this.setLoading(false);
+        body.setChats(chats);
     };
 
     function renderChatsFlow() {
@@ -101,19 +125,70 @@ function Sidebar() {
     renderSidebarWrapper();
 }
 
-function SidebarHeader(container) {
+function SidebarHeader(container, onSearchCallback) {
     var node = createElement('div', 'ui-sidebar__header', container);
-    var menu = createElement('div', 'ui-hamburger-menu', node);
-    var search = createElement('div', 'ui-search', node);
-    var menuIcon = createElement('img', 'ui-hamburger-menu__icon', menu);
-    menuIcon.src = '/assets/menu_svg.svg';
+
+    function renderMenuWrapper() {
+        var menu = createElement('div', 'ui-hamburger-menu', node);
+        var menuIcon = createElement('img', 'ui-hamburger-menu__icon', menu);
+        menuIcon.src = '/assets/menu_svg.svg';
+    }
+
+    function renderSearchWrapper() {
+        var search = createElement('div', 'ui-search', node);
+        var loupeIcon = createElement('img', 'ui-search__loupeicon', search);
+        loupeIcon.src = '/assets/ui-search_loupe-icon.svg';
+        var input = createElement('input', 'ui-search__input', search);
+
+        input.addEventListener('input', function() {
+            onSearchCallback(this.value);
+        })
+
+        input.placeholder = 'Search';
+        search.addEventListener('click', function() {
+            input.focus();
+        });
+    }
+
+    function renderWrapper() {
+        renderMenuWrapper();
+        renderSearchWrapper();
+    }
+    renderWrapper();
 }
 
 
-function SidebarBody(container) {
+function SidebarBody(container, onItemClick) {
     var node = createElement('div', 'ui-sidebar__body', container);
-    var chatList = new ChatList(node);
+    var chatList = createElement('div', 'ui-dialog__list', node);
+    var floatinButton = createElement('dib', 'ui-dialog__floating-button', node);
+    var chatListItemNodes = [];
+    var chatListItems = [];
+
+    this.setChats = function(chats) {
+        removeAllChild(chatList);
+        chats = chats || [];
+        for (let index = 0; index < chats.length; index++) {
+            const chat = chats[index];
+            const chatListItem = new ChatListItem(chat);
+            const chatListItemNode = chatListItem.getNode();
+
+            chatListItemNode.addEventListener('click', function() {
+                onItemClick(chat);
+            }, false);
+
+            chatListItems.push(chatListItem);
+            chatListItemNodes.push(chatListItemNode);
+            chatList.appendChild(chatListItemNode);
+        }
+    };
+
+    this.getChatList = function() {
+        return chatList;
+    }
 }
+
+
 
 function ChatContent() {
     var node = createElement('div', 'ui-chat__content');
@@ -125,7 +200,9 @@ function ChatContent() {
     }
 
     this.destroy = function() {
-
+        removeAllChild(node);
+        header = null;
+        body = null;
     }
 
     this.setLoading = function(loading) {
@@ -139,22 +216,109 @@ function ChatContent() {
             }
         }
     };
-}
 
+    renderChatClosedNode = function() {
+        var actions = [{
+            id: -10001,
+            title: 'Private',
+            iconScr: ''
+        }, {
+            id: -10002,
+            title: 'Group',
+            iconSrc: ''
+        }, {
+            id: -10003,
+            title: 'Channel',
+            iconSrc: ''
+        }];
 
-function ChatList(container) {
-    var chatList = createElement('div', 'ui-chat__list', container);
+        if (body) {
+            var chatClosedWrapper = createElement('div', 'ui-chat__closed-wrapper', body)
+            var chatClosedNode = createElement('div', 'ui-chat__closed-node', chatClosedWrapper);
 
-    this.setChats = function(chats) {
-        removeAllChild(chatList);
-        chats = chats || [];
-        for (let index = 0; index < chats.length; index++) {
-            const chat = chats[index];
+            var chatClosedImg = createElement('img', 'ui-chat__closes-image', chatClosedNode);
+            chatClosedImg.src = '/assets/chat_closed_icon.svg';
+
+            var chatClosedTitle = createElement('h2', 'ui-chat__closed-title', chatClosedNode);
+            chatClosedTitle.innerHTML = 'Open Chat <br/> or create a new one';
+
+            var chatClosedActionsNode = createElement('div', 'ui-chat__closed-actions-node', chatClosedNode);
+
+            actions.forEach(function(action) {
+                var actionItemNode = createElement('div', 'ui-actions_group-item', chatClosedActionsNode);
+            });
 
         }
-    };
+    }
 }
 
-function ChatListItem(container) {
-    var listItem = createElement('div', 'ui-chat__list-item', container);
+function ChatListItem(chat) {
+
+    chat = chat || {};
+    var chatListItem = createElement('div', 'ui-dialog');
+
+    if (chat.pinned) {
+        chatListItem.classList.add('ui-dialog__pinned');
+    }
+
+    chatListItem.setAttribute('id', chat.id);
+
+    var avatar = createElement('div', 'ui-dialog__avatar', chatListItem);
+    var avatarImage = createElement('img', 'ui-dialog__avatar-img', avatar);
+    avatarImage.src = chat.pic;
+    var messageWrapper = createElement('div', 'ui-dialog__wrapper', chatListItem);
+    var titleNode = createElement('div', 'ui-dialog__title', messageWrapper);
+    var titleTextNode = createElement('span', 'ui-dialog__title-text', titleNode);
+
+    var peerData = chat.peerData || {};
+
+    titleTextNode.innerText = candidateTitleInner();
+
+    var timeNode = createElement('span', 'ui-dialog__timestamp', titleNode);
+    timeNode.innerText = chat.dateText || '';
+
+    var messageNodeWrapper = createElement('div', 'ui-dialog__message-wrapper', messageWrapper);
+    var messageNode = candidateMessageNodeInner();
+    messageNodeWrapper.appendChild(messageNode);
+
+    function candidateMessageNodeInner() {
+        var node = createElement('span', 'ui-dialog__message-node');
+        node.innerHTML = chat.message;
+        return node;
+    }
+
+    function candidateTitleInner() {
+        var chatType = peerData._;
+        switch (chatType) {
+            case 'user':
+                return peerData.sortName;
+            default:
+                return peerData.title;
+        }
+    }
+
+
+    avatar.classList.add('ui-dialog__online');
+
+    if (chat.unreadCount > 0 || chat.pinned) {
+        var badge = createElement('div', 'ui-badge ui-dialog__list-tem__badge');
+
+        messageNode.appendChild(badge);
+
+        if (chat.pinned) {
+            badge.classList.add('ui-badge__pinned')
+        }
+
+        if (chat.unreadCount > 0) {
+            badge.innerText = chat.unreadCount;
+        }
+    }
+
+    this.getNode = function() {
+        return chatListItem;
+    }
+}
+
+function peerPhotoLink() {
+
 }
