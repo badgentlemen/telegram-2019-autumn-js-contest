@@ -1,55 +1,46 @@
-// var fetchImpl = function() {
-//     var request = new XMLHttpRequest();
-//     request.open('POST')
-// }
+telegramApi.setConfig({
+    app: Config.App,
+    server: {
+        test: [{
+            id: 2,
+            host: '149.154.167.40',
+            port: 443
+        }],
+        production: [{
+            id: 2,
+            host: '149.154.167.50',
+            port: 443
+        }]
+    }
+});
+
 
 var APIManager = {
+    getContacts: function() {
+        return telegramApi.invokeApi('contacts.getContacts', {
+            hash: 0
+        });
+    },
+    sendCode: function(phoneNumber) {
+        return telegramApi.sendCode(phoneNumber);
+    },
+    signIn: function(phone_number ,phone_code_hash, code) {
+        return telegramApi.signIn(phone_number ,phone_code_hash, code);
+    },
     getUserID: function(callbackFunction) {
         var user_auth = localStorage.getItem('user_auth');
         callbackFunction(user_auth);
-    }
-}
-
-
-var invokeApi = function(method, params, options) {
-
-
-
-};
-
-
-var Networker = {
-    sentMessages: {},
-    wrapApiCall: function(method, params, options, callback) {
-        var options = options || {};
-
-        var serializer = new TLSerialization(options);
-        serializer.storeInt(0xda9b0d0d, 'invokeWithLayer');
-        serializer.storeInt(74, 'layer');
-        serializer.storeInt(0xc7481da6, 'initConnection');
-        serializer.storeInt(Config.App.id, 'api_id');
-
-        options.resultType = serializer.storeMethod(method, params);
-
-        var messageID = MtpTimeManager.generateMessageID();
-
-        var message = {
-            msg_id: messageID,
-            body: serializer.getBytes(true),
-            isAPI: true
-        };
-
-        return this.sendEncryptedRequest(message, options, callback);
     },
+    getDialogs: function() {
+        return telegramApi.getDialogs(0, 200).then(function(response) {
+            if (response.result.dialogs.length) {
+                var dialogs = dialogsResult.dialogs;
+                dialogs.forEach(function(dialog) {
 
-    pushMessage: function(message, options, callback) {
-        this.sentMessages[message.msg_id] = Object.assign({message: message, options: message}, { callback: callback});
-    },
+                });
 
-    sendEncryptedRequest: function(message, options, callback) {
-        var self = this;
-        var options = options || {};
-        var data = new TLSerialization({startMaxLength: message.body.length + 2048});
-        data.storeIntBytes()
+                return dialogs;
+            }
+        })
     }
 }

@@ -3,7 +3,7 @@
     --third-color: #e6ebee;
     --second-text-color: #d5d7d8;
     --component-border-color: #dadce0;
-    --component-min-height: 52px;
+    --component-min-height: 54px;
     --component-normal-state-border-weight: 1px;
     --component-active-state-border-weight: 2px;
 }
@@ -20,7 +20,8 @@ body {
 }
 
 body {
-    font-size: 13px Tahoma, sans-serif, Arial, Helvetica;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
 }
 
 input, select {
@@ -72,17 +73,46 @@ input, select {
 }
 
 
-.ui-input,
+.ui-input__input {
+    height: var(--component-min-height);
+    box-sizing: border-box;
+}
+
+.ui-input__input,
 .ui-select {
     border: var(--component-normal-state-border-weight) solid var(--component-border-color);
     padding: 15px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 16px;
+    width: 100%;
 }
 
-.ui-input:focus {
+.ui-input__label {
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    top: -10px;
+    left: 12px;
+    display: block;
+    opacity: 0;
+    font-weight: 500;
+    font-size: 12px;
+    color: #939393;
+    letter-spacing: 0.2px;
+}
+
+.ui-input__focus .ui-input__input {
     border-width: var(--component-active-state-border-weight);
     border-color: var(--primary-color);
+}
+
+.ui-input__focus .ui-input__label {
+    color: var(--primary-color);
+}
+
+.ui-input__not-empty .ui-input__label {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .ui-select {
@@ -93,6 +123,7 @@ input, select {
 .ui-dropdown__root {
     padding: 15px;
     min-height: var(--component-min-height);
+    box-sizing: border-box;
 }
 
 .ui-container {
@@ -129,7 +160,7 @@ input, select {
     margin: 0 auto;
     max-width: 360px;
     padding: 30px;
-    margin-top: 60px;
+    margin-top: 78px;
 }
 
 .UiLogin_layout__wrapper {
@@ -164,9 +195,11 @@ input, select {
 }
 
 .ui-sign-in__text {
-    color: var(--second-text-color);
+    color: #939393;
     margin-bottom: 48px;
     margin-top: 0;
+    font-size: 14.5px;
+    font-weight: 400;
 }
 
 
@@ -359,10 +392,15 @@ input, select {
     position: absolute;
     height: 54px;
     width: 54px;
-    background-color: var(--primary-color);
+    background: var(--primary-color);
     border-radius: 50%;
     bottom: 20px;
     right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px #d9dcde;
 }
 
 .ui-dialog {

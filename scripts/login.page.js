@@ -3,24 +3,26 @@ function LoginPage(layout) {
 	var destroyed = false;
 
 	var loginLayoutWrapper = createElement(
-		layout,
 		'div',
-		'UiLogin_layout__wrapper'
-	);
+        'UiLogin_layout__wrapper',
+        layout
+    );
+
 	var containerWrapper = createElement(
-		loginLayoutWrapper,
 		'div',
-		'ui-container'
-	);
+        'ui-container',
+        loginLayoutWrapper
+    );
+
 	var loginInner = createElement(
-		containerWrapper,
 		'div',
-		'UiLogin_layout__container'
+        'UiLogin_layout__container',
+        containerWrapper
 	);
 
 	var signInNode = null;
 	var codeConfirmNode = null;
-	var setPasswordNode = null;
+    var setPasswordNode = null;
 
 	this.destroy = function() {
 		destroyed = true;
@@ -28,7 +30,8 @@ function LoginPage(layout) {
 	};
 
 	function renderSignInNode() {
-		signInNode = new SignInNode(loginInner);
+        var signInNode = new SignInNode();
+        loginInner.appendChild(signInNode.getNode());
 	}
 
 	function removeAllNodes() {
@@ -38,53 +41,78 @@ function LoginPage(layout) {
 	renderSignInNode();
 }
 
-function SignInNode(parentContainer) {
-	var targetTitle = 'Sign in to Telegram';
+function SignInNode(options) {
+    options = options || {};
+
+    var phone_code_hash = null;
+
+    APIManager.sendCode('+79604245511').then(function(data) {
+        phone_code_hash = data.phone_code_hash;
+    })
+
+    var targetTitle = 'Sign in to Telegram';
 	var targetText =
 		'Please confirm your country and <br> enter your phone number';
 
-	var node = createElement(parentContainer, 'div', 'ui-sign-in__node');
+	var node = createElement('div', 'ui-sign-in__node');
 
 	function renderForm() {
 
         removeAllChild(node);
 
-		createElement(node, 'div', 'ui-sign-in__logo');
+		createElement('div', 'ui-sign-in__logo', node);
 		var title = createElement(
-			node,
 			'h1',
-			'ui-sign-in__title ui-text__center'
+            'ui-sign-in__title ui-text__center',
+            node
 		);
 		title.innerText = targetTitle;
 
 		var text = createElement(
-			node,
 			'p',
-			'ui-sign-in__text ui-text__center'
+            'ui-sign-in__text ui-text__center',
+            node
 		);
 		text.innerHTML = targetText;
 
 		var form = createElement(
-			node,
 			'form',
-			'ui-form ui-form__incolumn ui-form__confirm-country-phone'
+            'ui-form ui-form__incolumn ui-form__confirm-country-phone',
+            node
         );
 
 		var countrySelector = new uiSelect(
-			uiFormRow(form),
 			{
 				placeholder: 'Phone Number',
 			},
-			'ui-sign-in__country-select'
+            'ui-sign-in__country-select',
+            new uiFormRow(form)
         );
 
 		var phoneNumberInput = new uiInput(
-			uiFormRow(form),
 			{
-				placeholder: 'Phone Number',
+                placeholder: 'Phone Number',
+                onChange: function(value) {
+                    console.log(value);
+                }
 			},
-			'ui-sign-in__phone-number-input'
+            'ui-sign-in__phone-number-input',
+            new uiFormRow(form),
         );
+
+        var checkbox = new uiCheckbox({
+
+        }, 'ui-sign-in__keep-state', new uiFormRow(form));
+
+        var button = createElement('button', 'ui-button', new uiFormRow(form));
+        button.innerText = 'NEXT';
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            var code = phoneNumberInput.getValue();
+            APIManager.signIn('+79604245511', phone_code_hash, code).then(function(data) {
+                console.log(data);
+            })
+        });
 
         phoneNumberInput.setError(null);
 	    phoneNumberInput.type = 'text';
@@ -93,6 +121,10 @@ function SignInNode(parentContainer) {
 	this.destroy = function() {
 		removeAllChild(parentContainer);
     };
+
+    this.getNode = function() {
+        return node;
+    }
 
     renderForm();
 }

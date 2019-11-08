@@ -15,20 +15,60 @@ function createElement(tag, className, parent) {
 	return element;
 }
 
-function uiInput(parent, options, className) {
-	var errorClassName = 'ui-input__error';
+function uiCheckbox(options, className, parent) {
+    var label = createElement('label', 'ui-checkbox', parent);
+    var checkbox = createElement('input', '', label);
+    checkbox.type = 'checkbox';
+}
 
+function uiInput(options, className, parent) {
+    var value = '';
+	var errorClassName = 'ui-input__error';
+    var focusClass = 'ui-input__focus';
+    var notEmptyClass = 'ui-input__not-empty';
 	var options = options || {};
 	var className = className || '';
 	var classes = 'ui-input ' + className;
-	var input = createElement('input', classes, parent);
+    var wrapper = createElement('div', classes, parent)
+    var input = createElement('input', 'ui-input__input', wrapper);
+    var label = createElement('label', 'ui-input__label', wrapper);
+
+    var placeholder = options.placeholder || '';
+
+    input.addEventListener('focus', function() {
+        wrapper.classList.add(focusClass);
+    });
+
+    input.addEventListener('blur', function() {
+        wrapper.classList.remove(focusClass);
+    });
+
+    input.addEventListener('input', function(event) {
+        value = this.value;
+        if (this.value.length) {
+            wrapper.classList.add(notEmptyClass);
+        } else {
+            wrapper.classList.remove(notEmptyClass);
+        }
+
+        if (options.onChange && typeof options.onChange === 'function') {
+            options.onChange(value);
+        }
+    })
 
 	input.type = options.type || 'text';
-	input.placeholder = options.placeholder || '';
+    input.placeholder = placeholder;
+
+    label.innerText = placeholder;
+
+    this.getValue = function() {
+        return value;
+    };
 
 	this.setError = function(error) {
 		error ? addError() : removeError();
-	};
+    };
+
 
 	function removeError() {
 		input.classList.remove(errorClassName);
@@ -46,7 +86,7 @@ function uiSpinner(className, parent) {
 	return createElement('div', classes, parent);
 }
 
-function uiSelect(parent, options, className) {
+function uiSelect(options, className, parent) {
 	var className = className || '';
 	var classes = 'ui-select ' + className;
 	var select = createElement('div', classes, parent);
@@ -101,66 +141,6 @@ function removeAllChild(parentContainer) {
 function tsNow(seconds) {
 	var t = +new Date() + (window.tsOffset || 0);
 	return seconds ? Math.floor(t / 1000) : t;
-}
-
-function nextRandomInt(maxValue) {
-	return Math.floor(Math.random() * maxValue);
-}
-
-function intToUint(val) {
-	val = parseInt(val);
-	if (val < 0) {
-		val = val + 4294967296;
-	}
-	return val;
-}
-
-function uintToInt(val) {
-	if (val > 2147483647) {
-		val = val - 4294967296;
-	}
-	return val;
-}
-
-function bigint(num) {
-	return new BigInteger(num.toString(16), 16);
-}
-
-function bigStringInt(strNum) {
-	return new BigInteger(strNum, 10);
-}
-
-function longFromInts(high, low) {
-	return bigint(high)
-		.shiftLeft(32)
-		.add(bigint(low))
-		.toString(10);
-}
-
-
-var MtpTimeManager = {
-    lastMessageID: [0, 0],
-    timeOffset: 0,
-
-    generateMessageID: function() {
-
-        lastMessageID = [0,0]
-
-        var timeTicks = tsNow(),
-            timeSec = Math.floor(timeTicks / 1000) + this.timeOffset,
-            timeMSec = timeTicks % 1000,
-            random = nextRandomInt(0xffff);
-
-        var messageID = [timeSec, (timeMSec << 21) | (random << 3) | 4];
-        if (
-            lastMessageID[0] > messageID[0] ||
-            (lastMessageID[0] == messageID[0] && lastMessageID[1] >= messageID[1])
-        ) {
-            messageID = [lastMessageID[0], lastMessageID[1] + 4];
-        }
-        lastMessageID = messageID;
-        return longFromInts(messageID[0], messageID[1]);
-    }
 }
 
 var mask = function(telIndex) {

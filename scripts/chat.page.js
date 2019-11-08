@@ -10,6 +10,7 @@ function ChatsPage(container) {
     var chatContent = new ChatContent();
 
     var sidebarNode = null;
+    var dialogs = [];
     var chatContentNode = null;
 
     var currentChat = null;
@@ -38,20 +39,22 @@ function ChatsPage(container) {
     }
 
     function fetchChatsList() {
-        var dialogs = sortableDialogs();
-        chatSidebar.setChats(dialogs);
+        chatSidebar.setLoading(true);
+
+        APIManager.getDialogs().then(function(response) {
+            console.log(response.result);
+            dialogs = response.result.dialogs || [];
+            chatSidebar.setChats(dialogs);
+        });
     }
 
     function fetchMessagesForChatId(id) {
 
     }
 
-    function sortableDialogs() {
-        return dialogs;
-    }
-
     function dialogSelected(dialog) {
         currentChat = dialog;
+        console.log(dialog);
     }
 
     function reset() {
@@ -161,7 +164,9 @@ function SidebarHeader(container, onSearchCallback) {
 function SidebarBody(container, onItemClick) {
     var node = createElement('div', 'ui-sidebar__body', container);
     var chatList = createElement('div', 'ui-dialog__list', node);
-    var floatinButton = createElement('dib', 'ui-dialog__floating-button', node);
+    var floatinButton = createElement('div', 'ui-dialog__floating-button', node);
+    var pencilImage = createElement('img', 'ui-image__pencilImage', floatinButton);
+    pencilImage.src = '/assets/newchat_filled_white.svg';
     var chatListItemNodes = [];
     var chatListItems = [];
 
@@ -296,7 +301,6 @@ function ChatListItem(chat) {
                 return peerData.title;
         }
     }
-
 
     avatar.classList.add('ui-dialog__online');
 
