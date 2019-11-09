@@ -16,59 +16,58 @@ function createElement(tag, className, parent) {
 }
 
 function uiCheckbox(options, className, parent) {
-    var label = createElement('label', 'ui-checkbox', parent);
-    var checkbox = createElement('input', '', label);
-    checkbox.type = 'checkbox';
+	var label = createElement('label', 'ui-checkbox', parent);
+	var checkbox = createElement('input', '', label);
+	checkbox.type = 'checkbox';
 }
 
 function uiInput(options, className, parent) {
-    var value = '';
+	var value = '';
 	var errorClassName = 'ui-input__error';
-    var focusClass = 'ui-input__focus';
-    var notEmptyClass = 'ui-input__not-empty';
+	var focusClass = 'ui-input__focus';
+	var notEmptyClass = 'ui-input__not-empty';
 	var options = options || {};
 	var className = className || '';
 	var classes = 'ui-input ' + className;
-    var wrapper = createElement('div', classes, parent)
-    var input = createElement('input', 'ui-input__input', wrapper);
-    var label = createElement('label', 'ui-input__label', wrapper);
+	var wrapper = createElement('div', classes, parent);
+	var input = createElement('input', 'ui-input__input', wrapper);
+	var label = createElement('label', 'ui-input__label', wrapper);
 
-    var placeholder = options.placeholder || '';
+	var placeholder = options.placeholder || '';
 
-    input.addEventListener('focus', function() {
-        wrapper.classList.add(focusClass);
-    });
+	input.addEventListener('focus', function() {
+		wrapper.classList.add(focusClass);
+	});
 
-    input.addEventListener('blur', function() {
-        wrapper.classList.remove(focusClass);
-    });
+	input.addEventListener('blur', function() {
+		wrapper.classList.remove(focusClass);
+	});
 
-    input.addEventListener('input', function(event) {
-        value = this.value;
-        if (this.value.length) {
-            wrapper.classList.add(notEmptyClass);
-        } else {
-            wrapper.classList.remove(notEmptyClass);
-        }
+	input.addEventListener('input', function(event) {
+		value = this.value;
+		if (this.value.length) {
+			wrapper.classList.add(notEmptyClass);
+		} else {
+			wrapper.classList.remove(notEmptyClass);
+		}
 
-        if (options.onChange && typeof options.onChange === 'function') {
-            options.onChange(value);
-        }
-    })
+		if (options.onChange && typeof options.onChange === 'function') {
+			options.onChange(value);
+		}
+	});
 
 	input.type = options.type || 'text';
-    input.placeholder = placeholder;
+	input.placeholder = placeholder;
 
-    label.innerText = placeholder;
+	label.innerText = placeholder;
 
-    this.getValue = function() {
-        return value;
-    };
+	this.getValue = function() {
+		return value;
+	};
 
 	this.setError = function(error) {
 		error ? addError() : removeError();
-    };
-
+	};
 
 	function removeError() {
 		input.classList.remove(errorClassName);
@@ -143,6 +142,6 @@ function tsNow(seconds) {
 	return seconds ? Math.floor(t / 1000) : t;
 }
 
-var mask = function(telIndex) {
 
-}
+
+var mask = function(telIndex) {};

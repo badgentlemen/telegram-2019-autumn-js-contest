@@ -14,6 +14,23 @@ telegramApi.setConfig({
     }
 });
 
+var batiscaff = [{
+    key: 'peerUser',
+    value: 'user_id',
+    target: 'users',
+    type: 'user'
+}, {
+    key: 'peerChannel',
+    value: 'channel_id',
+    target: 'chats',
+    type: 'channel'
+}, {
+    key: 'peerChat',
+    value: 'chat_id',
+    target: 'chats',
+    type: 'chat'
+}];
+
 
 var APIManager = {
     getContacts: function() {
@@ -33,14 +50,20 @@ var APIManager = {
     },
     getDialogs: function() {
         return telegramApi.getDialogs(0, 200).then(function(response) {
-            if (response.result.dialogs.length) {
-                var dialogs = dialogsResult.dialogs;
-                dialogs.forEach(function(dialog) {
+            var result = response.result;
+            var dialogs = [];
+            appStore.saveChats(result.chats || []);
+            appStore.saveMessages(result.messages || []);
+            appStore.saveUsers(result.users || []);
 
+            if (result.dialogs.length) {
+                result.dialogs.forEach(function(dlg) {
+                    var dialog = wrapForDialog(dlg);
+                    dialogs.push(dialog)
                 });
-
-                return dialogs;
             }
+
+            return dialogs;
         })
     }
 }

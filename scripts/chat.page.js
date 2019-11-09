@@ -41,9 +41,8 @@ function ChatsPage(container) {
     function fetchChatsList() {
         chatSidebar.setLoading(true);
 
-        APIManager.getDialogs().then(function(response) {
-            console.log(response.result);
-            dialogs = response.result.dialogs || [];
+        APIManager.getDialogs().then(function(dialogs) {
+            console.log(dialogs);
             chatSidebar.setChats(dialogs);
         });
     }
@@ -178,6 +177,16 @@ function SidebarBody(container, onItemClick) {
             const chatListItem = new ChatListItem(chat);
             const chatListItemNode = chatListItem.getNode();
 
+            if (index > 0) {
+                var prevChat = chats[index - 1];
+                var prevChatisPinned = prevChat.pFlags.pinned;
+                var currentChatisPinned = chat.pFlags.pinned || false;
+
+                if (prevChatisPinned && !currentChatisPinned) {
+                    var separator = createElement('div', 'ui-dialog__separator', chatList);
+                }
+            }
+
             chatListItemNode.addEventListener('click', function() {
                 onItemClick(chat);
             }, false);
@@ -257,30 +266,30 @@ function ChatContent() {
     }
 }
 
-function ChatListItem(chat) {
+function ChatListItem(dialog) {
 
-    chat = chat || {};
+    dialog = dialog || {};
     var chatListItem = createElement('div', 'ui-dialog');
 
-    if (chat.pinned) {
+    if (dialog.pFlags.pinned) {
         chatListItem.classList.add('ui-dialog__pinned');
     }
 
-    chatListItem.setAttribute('id', chat.id);
+    chatListItem.setAttribute('id', dialog.id);
 
     var avatar = createElement('div', 'ui-dialog__avatar', chatListItem);
     var avatarImage = createElement('img', 'ui-dialog__avatar-img', avatar);
-    avatarImage.src = chat.pic;
+    avatarImage.src = dialog.pic;
     var messageWrapper = createElement('div', 'ui-dialog__wrapper', chatListItem);
     var titleNode = createElement('div', 'ui-dialog__title', messageWrapper);
     var titleTextNode = createElement('span', 'ui-dialog__title-text', titleNode);
 
-    var peerData = chat.peerData || {};
+    var peerData = dialog.peerData || {};
 
-    titleTextNode.innerText = candidateTitleInner();
+    titleTextNode.innerText = dialog.title;
 
     var timeNode = createElement('span', 'ui-dialog__timestamp', titleNode);
-    timeNode.innerText = chat.dateText || '';
+    timeNode.innerText = dialog.dateText || '';
 
     var messageNodeWrapper = createElement('div', 'ui-dialog__message-wrapper', messageWrapper);
     var messageNode = candidateMessageNodeInner();
@@ -288,33 +297,25 @@ function ChatListItem(chat) {
 
     function candidateMessageNodeInner() {
         var node = createElement('span', 'ui-dialog__message-node');
-        node.innerHTML = chat.message;
+        node.innerHTML = dialog.message;
         return node;
     }
 
-    function candidateTitleInner() {
-        var chatType = peerData._;
-        switch (chatType) {
-            case 'user':
-                return peerData.sortName;
-            default:
-                return peerData.title;
-        }
+    if (dialog.isOnline) {
+        avatar.classList.add('ui-dialog__online');
     }
 
-    avatar.classList.add('ui-dialog__online');
-
-    if (chat.unreadCount > 0 || chat.pinned) {
-        var badge = createElement('div', 'ui-badge ui-dialog__list-tem__badge');
+    if (dialog.unreadCount > 0 || dialog.pinned) {
+        var badge = createElement('div', 'ui-badge ui-dialog__list-item__badge');
 
         messageNode.appendChild(badge);
 
-        if (chat.pinned) {
+        if (dialog.pinned) {
             badge.classList.add('ui-badge__pinned')
         }
 
-        if (chat.unreadCount > 0) {
-            badge.innerText = chat.unreadCount;
+        if (dialog.unreadCount > 0) {
+            badge.innerText = dialog.unreadCount;
         }
     }
 
