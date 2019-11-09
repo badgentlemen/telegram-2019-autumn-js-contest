@@ -4,7 +4,7 @@ function ChatsPage(container) {
     var node = createElement('div', 'UiChat_layout__node', container);
 
     var chatSidebar = new Sidebar({
-        onDialogClick: dialogSelected,
+        onDialogClick: fetchHistoryFor,
     });
 
     var chatContent = new ChatContent();
@@ -40,7 +40,6 @@ function ChatsPage(container) {
 
     function fetchChatsList() {
         chatSidebar.setLoading(true);
-
         APIManager.getDialogs().then(function(dialogs) {
             console.log(dialogs);
             chatSidebar.setChats(dialogs);
@@ -51,9 +50,14 @@ function ChatsPage(container) {
 
     }
 
-    function dialogSelected(dialog) {
-        currentChat = dialog;
-        console.log(dialog);
+    function fetchHistoryFor(dialog) {
+        if (currentChat !== dialog) {
+            currentChat = dialog;
+            var peerID = getPeerID(dialog.peer);
+            // APIManager.getHistory(peerID).then(function(history) {
+            //     console.log(history);
+            // });
+        }
     }
 
     function reset() {
@@ -270,16 +274,17 @@ function ChatListItem(dialog) {
 
     dialog = dialog || {};
     var chatListItem = createElement('div', 'ui-dialog');
+    chatListItem.classList.add('ui-dialog__' + dialog.type);
 
     if (dialog.pFlags.pinned) {
         chatListItem.classList.add('ui-dialog__pinned');
     }
 
-    chatListItem.setAttribute('id', dialog.id);
+    chatListItem.setAttribute('id', Math.abs(dialog.peerID));
 
     var avatar = createElement('div', 'ui-dialog__avatar', chatListItem);
     var avatarImage = createElement('img', 'ui-dialog__avatar-img', avatar);
-    avatarImage.src = dialog.pic;
+
     var messageWrapper = createElement('div', 'ui-dialog__wrapper', chatListItem);
     var titleNode = createElement('div', 'ui-dialog__title', messageWrapper);
     var titleTextNode = createElement('span', 'ui-dialog__title-text', titleNode);
@@ -301,7 +306,7 @@ function ChatListItem(dialog) {
         return node;
     }
 
-    if (dialog.isOnline) {
+    if (dialog.isOnline && !dialog.peerData.pFlags.self) {
         avatar.classList.add('ui-dialog__online');
     }
 
@@ -317,6 +322,16 @@ function ChatListItem(dialog) {
         if (dialog.unreadCount > 0) {
             badge.innerText = dialog.unreadCount;
         }
+    }
+
+    if (dialog.peerData.photo) {
+        var photo = {};
+
+        telegramApi.downloadPhoto(dialog.peerData.photo.photo_small).then(function(data) {
+            var blob = new Blob(data.bytes, {type: data.type});
+            var url = URL.createObjectURL(blob);
+            avatarImage.src = url;
+        });
     }
 
     this.getNode = function() {

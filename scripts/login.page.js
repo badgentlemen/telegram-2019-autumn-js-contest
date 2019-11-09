@@ -93,7 +93,7 @@ function SignInNode(options) {
 			{
                 placeholder: 'Phone Number',
                 onChange: function(value) {
-                    console.log(value);
+
                 }
 			},
             'ui-sign-in__phone-number-input',
@@ -110,7 +110,7 @@ function SignInNode(options) {
             event.preventDefault();
             var code = phoneNumberInput.getValue();
             APIManager.signIn('+79604245511', phone_code_hash, code).then(function(data) {
-                console.log(data);
+
             })
         });
 

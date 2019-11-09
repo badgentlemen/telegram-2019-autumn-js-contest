@@ -48,8 +48,10 @@ var APIManager = {
         var user_auth = localStorage.getItem('user_auth');
         callbackFunction(user_auth);
     },
-    getDialogs: function() {
-        return telegramApi.getDialogs(0, 200).then(function(response) {
+    getDialogs: function(limit, offset) {
+        offset = offset || 0;
+        limit = limit || 200;
+        return telegramApi.getDialogs(offset, limit).then(function(response) {
             var result = response.result;
             var dialogs = [];
             appStore.saveChats(result.chats || []);
@@ -63,7 +65,23 @@ var APIManager = {
                 });
             }
 
+            appStore.dialogs = dialogs;
             return dialogs;
+        })
+    },
+    getHistory: function(peerID, limit, offset) {
+        limit = limit || 15;
+        offset = offset || 0;
+        var channel = isChannel(peerID);
+        var dialog = getDialog(peerID);
+        return telegramApi.getHistory({
+            id: peerID,
+            take: limit
+        }).then(function(result) {
+            var messages = result.messages || [];
+            return messages.sort(function(prev, next) {
+                return prev.id - next.id
+            });
         })
     }
 }

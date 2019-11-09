@@ -5116,30 +5116,25 @@ function TelegramApiModule(MtpApiManager, AppPeersManager, MtpApiFileManager, Ap
     }
 
     function downloadPhoto(photo, progress, autosave) {
-        var photoSize = photo.sizes[photo.sizes.length - 1];
         var location = {
             _: 'inputFileLocation',
-            local_id: photoSize.location.local_id,
-            secret: photoSize.location.secret,
-            volume_id: photoSize.location.volume_id
+            local_id: photo.local_id,
+            secret: photo.secret,
+            volume_id: photo.volume_id
         };
 
         if (!isFunction(progress)) {
             progress = noop;
         }
 
-        var fileName = photo.id + '.jpg';
+        var fileName = getFileName(location);
         var size = 15728640;
         var limit = 524288;
         var offset = 0;
         var done = $q.defer();
         var bytes = [];
 
-        if (photoSize.size > size) {
-            throw new Error('Big file not supported');
-        }
-
-        size = photoSize.size;
+        size = 1024 * 1024;
 
         function download() {
             if (offset < size) {
