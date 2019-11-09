@@ -415,9 +415,11 @@ input, select {
     background-color: white;
 }
 
-.ui-dialog:hover {
+.ui-dialog:hover,
+.ui-dialog__active {
     background-color: #f4f4f5;
     border-radius: 7px;
+    transition: background 0.2s ease-in-out;
 }
 
 .ui-dialog__separator {
@@ -442,7 +444,7 @@ input, select {
     z-index: 10;
 }
 
-.ui-dialog__avatar {
+.ui-dialog__photo-node {
     position: relative;
     width: 54px;
     height: 54px;
@@ -451,7 +453,7 @@ input, select {
     border-radius: 50%;
 }
 
-.ui-dialog__avatar-img {
+.ui-dialog__photo {
     width: 54px;
     height: 54px;
     overflow: hidden;
@@ -508,11 +510,18 @@ input, select {
     flex: 0 1 auto;
 }
 
-.ui-dialog__message-wrapper {
-    display: inline-flex;
+.ui-dialog__message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ui-dialog__text {
+    max-width: 100%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-right: 10px;
 }
 
 .ui-spinner {

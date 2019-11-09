@@ -63,6 +63,12 @@ var APIManager = {
                     var dialog = wrapForDialog(dlg);
                     dialogs.push(dialog)
                 });
+
+                dialogs.forEach(function(dialog) {
+                    var peerID = getPeerID(dialog.peer);
+                    var message = dialog.message;
+                    MessageServices.saveMessages([message], peerID);
+                });
             }
 
             appStore.dialogs = dialogs;

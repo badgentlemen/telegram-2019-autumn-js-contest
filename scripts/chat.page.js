@@ -13,7 +13,7 @@ function ChatsPage(container) {
     var dialogs = [];
     var chatContentNode = null;
 
-    var currentChat = null;
+    var currentDialog = null;
     var destroyed = false;
     var selectedChatId = null;
 
@@ -51,12 +51,15 @@ function ChatsPage(container) {
     }
 
     function fetchHistoryFor(dialog) {
-        if (currentChat !== dialog) {
-            currentChat = dialog;
+        if (currentDialog !== dialog) {
+            currentDialog = dialog;
+            chatSidebar.setCurrentDialog(currentDialog);
+            chatContent.setCurrentDialog(currentDialog);
+
             var peerID = getPeerID(dialog.peer);
-            // APIManager.getHistory(peerID).then(function(history) {
-            //     console.log(history);
-            // });
+            APIManager.getHistory(peerID).then(function(history) {
+                MessageServices.saveMessages(history, peerID);
+            });
         }
     }
 
@@ -118,6 +121,10 @@ function Sidebar(options) {
         }
     };
 
+    this.setCurrentDialog = function(dialog) {
+        body.setCurrentDialog(dialog);
+    }
+
     this.setChats = function(chats) {
         var chats = chats || [];
         this.setLoading(false);
@@ -173,6 +180,24 @@ function SidebarBody(container, onItemClick) {
     var chatListItemNodes = [];
     var chatListItems = [];
 
+    function unActiveAllItems() {
+        chatListItems.forEach(function(item) {
+            item.chatListItem.classList.remove('ui-dialog__active');
+        })
+    }
+
+    this.setCurrentDialog = function(dialog) {
+        unActiveAllItems();
+
+        var item = chatListItems.find(function(item) {
+            return item.dialog === dialog;
+        })
+
+        if (item) {
+            item.chatListItem.classList.add('ui-dialog__active');
+        }
+    }
+
     this.setChats = function(chats) {
         removeAllChild(chatList);
         chats = chats || [];
@@ -191,14 +216,21 @@ function SidebarBody(container, onItemClick) {
                 }
             }
 
+            chatListItems.push({
+                dialog: chat,
+                chatListItem: chatListItemNode
+            });
+
             chatListItemNode.addEventListener('click', function() {
                 onItemClick(chat);
             }, false);
 
-            chatListItems.push(chatListItem);
+
             chatListItemNodes.push(chatListItemNode);
             chatList.appendChild(chatListItemNode);
         }
+
+
     };
 
     this.getChatList = function() {
@@ -221,6 +253,10 @@ function ChatContent() {
         removeAllChild(node);
         header = null;
         body = null;
+    }
+
+    this.setCurrentDialog = function(dialog) {
+
     }
 
     this.setLoading = function(loading) {
@@ -282,8 +318,7 @@ function ChatListItem(dialog) {
 
     chatListItem.setAttribute('id', Math.abs(dialog.peerID));
 
-    var avatar = createElement('div', 'ui-dialog__avatar', chatListItem);
-    var avatarImage = createElement('img', 'ui-dialog__avatar-img', avatar);
+    var photoNode = createElement('div', 'ui-dialog__photo-node', chatListItem);
 
     var messageWrapper = createElement('div', 'ui-dialog__wrapper', chatListItem);
     var titleNode = createElement('div', 'ui-dialog__title', messageWrapper);
@@ -296,18 +331,12 @@ function ChatListItem(dialog) {
     var timeNode = createElement('span', 'ui-dialog__timestamp', titleNode);
     timeNode.innerText = dialog.dateText || '';
 
-    var messageNodeWrapper = createElement('div', 'ui-dialog__message-wrapper', messageWrapper);
-    var messageNode = candidateMessageNodeInner();
-    messageNodeWrapper.appendChild(messageNode);
-
-    function candidateMessageNodeInner() {
-        var node = createElement('span', 'ui-dialog__message-node');
-        node.innerHTML = dialog.message;
-        return node;
-    }
+    var messageNode = createElement('div', 'ui-dialog__message', messageWrapper);
+    var textNode = createElement('div', 'ui-dialog__text', messageNode);
+    textNode.innerHTML = (dialog.message.message || '').substring(0, 128);
 
     if (dialog.isOnline && !dialog.peerData.pFlags.self) {
-        avatar.classList.add('ui-dialog__online');
+        photoNode.classList.add('ui-dialog__online');
     }
 
     if (dialog.unreadCount > 0 || dialog.pinned) {
@@ -325,12 +354,11 @@ function ChatListItem(dialog) {
     }
 
     if (dialog.peerData.photo) {
-        var photo = {};
-
         telegramApi.downloadPhoto(dialog.peerData.photo.photo_small).then(function(data) {
+            var photoNodeImage = createElement('img', 'ui-dialog__photo', photoNode);
             var blob = new Blob(data.bytes, {type: data.type});
             var url = URL.createObjectURL(blob);
-            avatarImage.src = url;
+            photoNodeImage.src = url;
         });
     }
 

@@ -1,3 +1,17 @@
+var MessageServices = {
+    history: {},
+    saveMessages(messages, peerID) {
+        if (this.history[peerID]) {
+            this.history[peerID].concat(messages);
+        } else {
+            this.history[peerID] = messages;
+        }
+    }
+}
+
+
+
+
 function isPeerMuted(peerID) {}
 
 function getFileName(location) {
@@ -191,7 +205,8 @@ function wrapForDialog(dialog) {
 
 	dialog.onlineStatus = onlineStatus(dialog.peerData);
 	dialog.isOnline = dialog.onlineStatus.statusType === 'userStatusOnline';
-	dialog.title = getTitleForPeerData(dialog.peerData);
+    dialog.title = getTitleForPeerData(dialog.peerData);
+    dialog.hasAvatar = dialog.peerData.photo !== undefined
 
 	if (message['from_id'] > 0) {
 		dialog.peerID = message['from_id'];
