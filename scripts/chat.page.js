@@ -241,9 +241,14 @@ function SidebarBody(container, onItemClick) {
 
 
 function ChatContent() {
+    var currentDialog = null;
+    var messages = [];
+    var historyClasses = ['ui-history__user', 'ui-history__chat', 'ui-history__channel'];
     var node = createElement('div', 'ui-chat__content');
     var header = createElement('div', 'ui-chat__content_header', node);
     var body = createElement('div', 'ui-chat__content_body', node);
+    var history = createElement('div', 'ui-history', body);
+    var historyContainer = createElement('div', 'ui-history__container', history);
 
     this.getNode = function() {
         return node;
@@ -256,54 +261,108 @@ function ChatContent() {
     }
 
     this.setCurrentDialog = function(dialog) {
-
-    }
-
-    this.setLoading = function(loading) {
-        if (loading) {
-            loadingNode = createElement('div', 'ui-chat-content__loading-flow', node);
-            createElement('div', 'ui-spinner', loadingNode);
-        } else {
-            if (loadingNode) {
-                elementRemoveFromSuperView(loadingNode);
-                loadingNode = null;
-            }
-        }
+        currentDialog = dialog;
+        historyClasses.forEach(function(className) {
+            history.classList.remove(className)
+        });
+        history.classList.add('ui-history__' + dialog.peerData._);
+        fetchHistory();
     };
 
-    renderChatClosedNode = function() {
-        var actions = [{
-            id: -10001,
-            title: 'Private',
-            iconScr: ''
-        }, {
-            id: -10002,
-            title: 'Group',
-            iconSrc: ''
-        }, {
-            id: -10003,
-            title: 'Channel',
-            iconSrc: ''
-        }];
+    function fetchHistory() {
+        APIManager.getHistory(currentDialog.peerID).then(function(response) {
+            messages = response;
+            renderHistoryWrap();
+        });
+    }
 
-        if (body) {
-            var chatClosedWrapper = createElement('div', 'ui-chat__closed-wrapper', body)
-            var chatClosedNode = createElement('div', 'ui-chat__closed-node', chatClosedWrapper);
+    function renderHistoryWrap() {
+        removeAllChild(historyContainer);
 
-            var chatClosedImg = createElement('img', 'ui-chat__closes-image', chatClosedNode);
-            chatClosedImg.src = '/assets/chat_closed_icon.svg';
+        var lastMessageRow;
 
-            var chatClosedTitle = createElement('h2', 'ui-chat__closed-title', chatClosedNode);
-            chatClosedTitle.innerHTML = 'Open Chat <br/> or create a new one';
+        for (var index = 0; index < messages.length; index++) {
+            var message = messages[index];
+            var currentFromId = message.from_id;
+            var isBallonEffect = true;
+            var isSameFromId = true;
+            var isOut = message.pFlags.out;
 
-            var chatClosedActionsNode = createElement('div', 'ui-chat__closed-actions-node', chatClosedNode);
+            // if (index < messages.length - 1) {
+            //     var nextMessage = messages[index + 1];
+            //     var nextFromId = nextMessage.from_id;
+            //     isSameFromId = currentFromId !== nextFromId;
+            // }
 
-            actions.forEach(function(action) {
-                var actionItemNode = createElement('div', 'ui-actions_group-item', chatClosedActionsNode);
-            });
 
+            // console.log(isSameFromId);
+
+            // var messageView = createElement('div', 'ui-message', messageRow);
+
+
+            // messageView.innerHTML = message.message;
+
+            if (isOut) {
+                // messageRow.classList.add('ui-history__row_out');
+                // messageView.classList.add('ui-message__out');
+            }
+
+            if (!isSameFromId) {
+
+            } else {
+
+            }
         }
     }
+
+    // function setLoading(loading) {
+    //     if (loading) {
+    //         if (!loadingNode) {
+    //             loadingNode = createElement('div', 'ui-chat-content__loading-flow', node);
+    //             createElement('div', 'ui-spinner', loadingNode);
+    //         }
+
+    //     } else {
+    //         if (loadingNode) {
+    //             elementRemoveFromSuperView(loadingNode);
+    //             loadingNode = null;
+    //         }
+    //     }
+    // };
+
+    // renderChatClosedNode = function() {
+    //     var actions = [{
+    //         id: -10001,
+    //         title: 'Private',
+    //         iconScr: ''
+    //     }, {
+    //         id: -10002,
+    //         title: 'Group',
+    //         iconSrc: ''
+    //     }, {
+    //         id: -10003,
+    //         title: 'Channel',
+    //         iconSrc: ''
+    //     }];
+
+    //     if (body) {
+    //         var chatClosedWrapper = createElement('div', 'ui-chat__closed-wrapper', body)
+    //         var chatClosedNode = createElement('div', 'ui-chat__closed-node', chatClosedWrapper);
+
+    //         var chatClosedImg = createElement('img', 'ui-chat__closes-image', chatClosedNode);
+    //         chatClosedImg.src = '/assets/chat_closed_icon.svg';
+
+    //         var chatClosedTitle = createElement('h2', 'ui-chat__closed-title', chatClosedNode);
+    //         chatClosedTitle.innerHTML = 'Open Chat <br/> or create a new one';
+
+    //         var chatClosedActionsNode = createElement('div', 'ui-chat__closed-actions-node', chatClosedNode);
+
+    //         actions.forEach(function(action) {
+    //             var actionItemNode = createElement('div', 'ui-actions_group-item', chatClosedActionsNode);
+    //         });
+
+    //     }
+    // }
 }
 
 function ChatListItem(dialog) {
@@ -357,9 +416,14 @@ function ChatListItem(dialog) {
 
     }
 
-    if (dialog.peerData.photo) {
+    var photoNodeImage = createElement('img', 'ui-dialog__photo', photoNode);
+
+    if (dialog.peerData.pFlags.self) {
+
+        photoNodeImage.src = '/assets/fave.png';
+
+    } else if (dialog.peerData.photo) {
         telegramApi.downloadPhoto(dialog.peerData.photo.photo_small).then(function(data) {
-            var photoNodeImage = createElement('img', 'ui-dialog__photo', photoNode);
             var blob = new Blob(data.bytes, {type: data.type});
             var url = URL.createObjectURL(blob);
             photoNodeImage.src = url;

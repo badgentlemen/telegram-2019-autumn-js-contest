@@ -26,11 +26,12 @@ function getPeerSettings(peerID) {
 
 function isPeerMuted(peerID) {
     var peerNotifySettings = getPeerSettings(peerID);
+
     if (!peerNotifySettings) {
         return false;
     }
 
-    return peerNotifySettings._ == "peerNotifySettings" && peerNotifySettings.mute_until !== 0 && peerNotifySettings.mute_until * 1000 > tsNow()
+    return peerNotifySettings._ == "peerNotifySettings" && peerNotifySettings.mute_until > 0 && peerNotifySettings.mute_until * 1000 > tsNow()
 }
 
 function getFileName(location) {
@@ -188,6 +189,10 @@ function getInputPeerByID(peerID) {
 			access_hash: getUserById(peerID).access_hash || 0
 		};
 	}
+}
+
+function wrapForMessage(message) {
+
 }
 
 function wrapForDialog(dialog) {
