@@ -422,6 +422,10 @@ input, select {
     transition: background 0.2s ease-in-out;
 }
 
+.ui-dialog__unread .ui-badge__pinned {
+    display: none;
+}
+
 .ui-dialog__separator {
     position: relative;
     height: 1px;
@@ -487,7 +491,7 @@ input, select {
     position: relative;
     color: black;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -500,6 +504,7 @@ input, select {
     white-space: nowrap;
     text-overflow: ellipsis;
     flex: 1;
+    font-size: 16px;
 }
 
 .ui-dialog__timestamp {
@@ -522,6 +527,8 @@ input, select {
     white-space: nowrap;
     text-overflow: ellipsis;
     margin-right: 10px;
+    color: #707579;
+    font-size: 16px;
 }
 
 .ui-spinner {
@@ -569,13 +576,65 @@ input, select {
 }
 
 .ui-badge__pinned {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+}
 
+.ui-badge__pinned::after {
+    content: '';
+    width: 24px;
+    height: 24px;
+
+    background-image: url('/assets/pinnedchat_svg.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
 }
 
 .ui-badge__unread {
     background-color: #4dcd5e;
 }
 
+.ui-badge__unread::after {
+    content: attr(unread-count);
+    position: relative;
+}
+
 .ui-badge__unread__muted {
+    background-color: #c4c9cc;
+}
+
+
+/* HISTORY */
+
+.ui-history {
+
+}
+
+.ui-history__container {
+    max-width: 696px;
+}
+
+.ui-history__row {
+
+}
+
+.ui-history__row_out {
+
+}
+
+/* MESSAGE */
+
+
+.ui-message {
+
+}
+
+.ui-message__out {
+
+}
+
+.ui-message__balloon {
 
 }

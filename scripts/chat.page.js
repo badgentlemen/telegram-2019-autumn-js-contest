@@ -339,18 +339,22 @@ function ChatListItem(dialog) {
         photoNode.classList.add('ui-dialog__online');
     }
 
-    if (dialog.unreadCount > 0 || dialog.pinned) {
-        var badge = createElement('div', 'ui-badge ui-dialog__list-item__badge');
+    var pinnedBadge = null;
 
-        messageNode.appendChild(badge);
+    if (dialog.pFlags.pinned) {
+        pinnedBadge = createElement('div', 'ui-badge ui-badge__pinned', messageNode);
+    }
 
-        if (dialog.pinned) {
-            badge.classList.add('ui-badge__pinned')
+    if (dialog.unreadCount > 0 && !dialog.pFlags.out || dialog.pinned) {
+        var badge = createElement('div', 'ui-badge ui-badge__unread', messageNode);
+        badge.setAttribute('unread-count', dialog.unreadCount);
+        chatListItem.classList.add('ui-dialog__unread');
+
+        if (isPeerMuted(dialog.peerID)) {
+            badge.classList.add('ui-badge__unread__muted');
+            chatListItem.classList.add('ui-dialog__muted');
         }
 
-        if (dialog.unreadCount > 0) {
-            badge.innerText = dialog.unreadCount;
-        }
     }
 
     if (dialog.peerData.photo) {

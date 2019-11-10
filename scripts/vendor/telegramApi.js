@@ -307,7 +307,7 @@ function AppProfileManagerModule(AppChatsManager, AppUsersManager, MtpApiManager
         if (chatFullPromises[id] !== undefined) {
             return chatFullPromises[id];
         }
-        console.trace(dT(), 'Get chat full', id, AppChatsManager.getChat(id));
+
         return chatFullPromises[id] = MtpApiManager.invokeApi('messages.getFullChat', {
             chat_id: AppChatsManager.getChatInput(id)
         }).then(function (result) {
@@ -734,7 +734,7 @@ function IdleManagerModule($rootScope, $timeout, $) {
     }
 
     function onEvent(e) {
-        // console.log('event', e.type);
+        //
         if (e.type == 'mousemove') {
             var e = e.originalEvent || e;
             if (e && e.movementX === 0 && e.movementY === 0) {
@@ -750,7 +750,7 @@ function IdleManagerModule($rootScope, $timeout, $) {
 
         $timeout.cancel(toPromise);
         if (!isIDLE) {
-            // console.log('update timeout');
+            //
             toPromise = $timeout(function () {
                 onEvent({type: 'timeout'});
             }, 30000);
@@ -1079,9 +1079,9 @@ function sha1BytesSync (bytes) {
 }
 
 function sha256HashSync (bytes) {
-  // console.log(dT(), 'SHA-2 hash start', bytes.byteLength || bytes.length);
+  //
   var hashWords = CryptoJS.SHA256(bytesToWords(bytes));
-  // console.log(dT(), 'SHA-2 hash finish');
+  //
 
   return bytesFromWords(hashWords);
 }
@@ -1089,13 +1089,13 @@ function sha256HashSync (bytes) {
 function rsaEncrypt (publicKey, bytes) {
   bytes = addPadding(bytes, 255);
 
-  // console.log('RSA encrypt start');
+  //
   var N = new BigInteger(publicKey.modulus, 16),
       E = new BigInteger(publicKey.exponent, 16),
       X = new BigInteger(bytes),
       encryptedBigInt = X.modPowInt(E, N),
       encryptedBytes  = bytesFromBigInt(encryptedBigInt, 256);
-  // console.log('RSA encrypt finish');
+  //
 
   return encryptedBytes;
 }
@@ -1127,7 +1127,7 @@ function addPadding(bytes, blockSize, zeroes) {
 function aesEncryptSync (bytes, keyBytes, ivBytes) {
   var len = bytes.byteLength || bytes.length;
 
-  // console.log(dT(), 'AES encrypt start', len/*, bytesToHex(keyBytes), bytesToHex(ivBytes)*/);
+  //
   bytes = addPadding(bytes);
 
   var encryptedWords = CryptoJS.AES.encrypt(bytesToWords(bytes), bytesToWords(keyBytes), {
@@ -1137,14 +1137,14 @@ function aesEncryptSync (bytes, keyBytes, ivBytes) {
   }).ciphertext;
 
   var encryptedBytes = bytesFromWords(encryptedWords);
-  // console.log(dT(), 'AES encrypt finish');
+  //
 
   return encryptedBytes;
 }
 
 function aesDecryptSync (encryptedBytes, keyBytes, ivBytes) {
 
-  // console.log(dT(), 'AES decrypt start', encryptedBytes.length);
+  //
   var decryptedWords = CryptoJS.AES.decrypt({ciphertext: bytesToWords(encryptedBytes)}, bytesToWords(keyBytes), {
     iv: bytesToWords(ivBytes),
     padding: CryptoJS.pad.NoPadding,
@@ -1152,7 +1152,7 @@ function aesDecryptSync (encryptedBytes, keyBytes, ivBytes) {
   });
 
   var bytes = bytesFromWords(decryptedWords);
-  // console.log(dT(), 'AES decrypt finish');
+  //
 
   return bytes;
 }
@@ -1169,32 +1169,32 @@ function pqPrimeFactorization (pqBytes) {
   var what = new BigInteger(pqBytes),
       result = false;
 
-  // console.log(dT(), 'PQ start', pqBytes, what.toString(16), what.bitLength());
+  //
 
   try {
     result = pqPrimeLeemon(str2bigInt(what.toString(16), 16, Math.ceil(64 / bpe) + 1))
   } catch (e) {
-    console.error('Pq leemon Exception', e);
+
   }
 
   if (result === false && what.bitLength() <= 64) {
-    // console.time('PQ long');
+    //
     try {
       result = pqPrimeLong(goog.math.Long.fromString(what.toString(16), 16));
     } catch (e) {
-      console.error('Pq long Exception', e);
+
     }
-    // console.timeEnd('PQ long');
+    //
   }
-  // console.log(result);
+  //
 
   if (result === false) {
-    // console.time('pq BigInt');
+    //
     result = pqPrimeBigInteger(what);
-    // console.timeEnd('pq BigInt');
+    //
   }
 
-  // console.log(dT(), 'PQ finish');
+  //
 
   return result;
 }
@@ -1400,7 +1400,7 @@ function pqPrimeLeemon (what) {
     Q = x;
   }
 
-  // console.log(dT(), 'done', bigInt2str(what, 10), bigInt2str(P, 10), bigInt2str(Q, 10));
+  //
 
   return [bytesFromLeemonBigInt(P), bytesFromLeemonBigInt(Q), it];
 }
@@ -1415,7 +1415,7 @@ function bytesModPow (x, y, m) {
 
     return bytesFromHex(bigInt2str(resBigInt, 16));
   } catch (e) {
-    console.error('mod pow error', e);
+
   }
 
   return bytesFromBigInt(new BigInteger(x).modPow(new BigInteger(y), new BigInteger(m)), 256);
@@ -1615,7 +1615,7 @@ Config.Schema.API.layer = 45;
 
 // Console-polyfill. MIT license.
 // https://github.com/paulmillr/console-polyfill
-// Make it safe to do console.log() always.
+// Make it safe to do  always.
 ;(function(global) {
   'use strict';
   global.console = global.console || {};
@@ -1763,7 +1763,6 @@ if (!Function.prototype.bind) {
 
   this.createBuffer();
 
-  // this.debug = options.debug !== undefined ? options.debug : Config.Modes.debug;
   this.mtproto = options.mtproto || false;
   return this;
 }
@@ -1809,7 +1808,7 @@ TLSerialization.prototype.checkLength = function (needBytes) {
     return;
   }
 
-  console.trace('Increase buffer', this.offset, needBytes, this.maxLength);
+
   this.maxLength = Math.ceil(Math.max(this.maxLength * 2, this.offset + needBytes + 16) / 4) * 4;
   var previousBuffer = this.buffer,
       previousArray = new Int32Array(previousBuffer);
@@ -1820,7 +1819,6 @@ TLSerialization.prototype.checkLength = function (needBytes) {
 };
 
 TLSerialization.prototype.writeInt = function (i, field) {
-  this.debug && console.log('>>>', i.toString(16), i, field);
 
   this.checkLength(4);
   this.intView[this.offset / 4] = i;
@@ -1874,7 +1872,7 @@ TLSerialization.prototype.storeDouble = function (f) {
 };
 
 TLSerialization.prototype.storeString = function (s, field) {
-  this.debug && console.log('>>>', s, (field || '') + ':string');
+
 
   if (s === undefined) {
     s = '';
@@ -1911,7 +1909,6 @@ TLSerialization.prototype.storeBytes = function (bytes, field) {
   else if (bytes === undefined) {
     bytes = [];
   }
-  this.debug && console.log('>>>', bytesToHex(bytes), (field || '') + ':bytes');
 
   var len = bytes.byteLength || bytes.length;
   this.checkLength(len + 8);
@@ -1942,7 +1939,6 @@ TLSerialization.prototype.storeIntBytes = function (bytes, bits, field) {
     throw new Error('Invalid bits: ' + bits + ', ' + bytes.length);
   }
 
-  this.debug && console.log('>>>', bytesToHex(bytes), (field || '') + ':int' + bits);
   this.checkLength(len);
 
   this.byteView.set(bytes, this.offset);
@@ -1955,7 +1951,7 @@ TLSerialization.prototype.storeRawBytes = function (bytes, field) {
   }
   var len = bytes.length;
 
-  this.debug && console.log('>>>', bytesToHex(bytes), (field || ''));
+
   this.checkLength(len);
 
   this.byteView.set(bytes, this.offset);
@@ -2097,7 +2093,6 @@ function TLDeserialization (buffer, options) {
   this.intView  = new Uint32Array(this.buffer);
   this.byteView = new Uint8Array(this.buffer);
 
-  // this.debug = options.debug !== undefined ? options.debug : Config.Modes.debug;
   this.mtproto = options.mtproto || false;
   return this;
 }
@@ -2109,7 +2104,6 @@ TLDeserialization.prototype.readInt = function (field) {
 
   var i = this.intView[this.offset / 4];
 
-  this.debug && console.log('<<<', i.toString(16), i, field);
 
   this.offset += 4;
 
@@ -2177,8 +2171,6 @@ TLDeserialization.prototype.fetchString = function (field) {
     var s = sUTF8;
   }
 
-  this.debug && console.log('<<<', s, (field || '') + ':string');
-
   return s;
 }
 
@@ -2200,8 +2192,6 @@ TLDeserialization.prototype.fetchBytes = function (field) {
     this.offset++;
   }
 
-  this.debug && console.log('<<<', bytesToHex(bytes), (field || '') + ':bytes');
-
   return bytes;
 }
 
@@ -2222,7 +2212,6 @@ TLDeserialization.prototype.fetchIntBytes = function (bits, typed, field) {
     bytes.push(this.byteView[this.offset++]);
   }
 
-  this.debug && console.log('<<<', bytesToHex(bytes), (field || '') + ':int' + bits);
 
   return bytes;
 };
@@ -2244,8 +2233,6 @@ TLDeserialization.prototype.fetchRawBytes = function (len, typed, field) {
   for (var i = 0; i < len; i++) {
     bytes.push(this.byteView[this.offset++]);
   }
-
-  this.debug && console.log('<<<', bytesToHex(bytes), (field || ''));
 
   return bytes;
 };
@@ -2538,7 +2525,7 @@ function MtpApiFileManagerModule(MtpApiManager, $q) {
         var fileID = [nextRandomInt(0xFFFFFFFF), nextRandomInt(0xFFFFFFFF)],
             deferred = $q.defer(),
             errorHandler = function (error) {
-                // console.error('Up Error', error);
+                //
                 deferred.reject(error);
                 canceled = true;
                 errorHandler = noop;
@@ -2586,7 +2573,7 @@ function MtpApiFileManagerModule(MtpApiManager, $q) {
                                 deferred.resolve(resultInputFile);
                                 resolved = true;
                             } else {
-                                console.log(dT(), 'Progress', doneParts * partSize / fileSize);
+
                                 deferred.notify({done: doneParts * partSize, total: fileSize});
                             }
                         }, errorHandler);
@@ -2600,7 +2587,7 @@ function MtpApiFileManagerModule(MtpApiManager, $q) {
         }
 
         deferred.promise.cancel = function () {
-            console.log('cancel upload', canceled, resolved);
+
             if (!canceled && !resolved) {
                 canceled = true;
                 errorHandler({type: 'UPLOAD_CANCELED'});
@@ -2705,7 +2692,7 @@ function MtpApiManagerModule(MtpSingleInstanceService, MtpNetworkerFactory, MtpA
 
             var authKeyHex = result[0],
                 serverSaltHex = result[1];
-            // console.log('ass', dcID, authKeyHex, serverSaltHex);
+            //
             if (authKeyHex && authKeyHex.length == 512) {
                 var authKey = bytesFromHex(authKeyHex);
                 var serverSalt = bytesFromHex(serverSaltHex);
@@ -2725,7 +2712,7 @@ function MtpApiManagerModule(MtpSingleInstanceService, MtpNetworkerFactory, MtpA
 
                 return cache[dcID] = MtpNetworkerFactory.getNetworker(dcID, auth.authKey, auth.serverSalt, options);
             }, function (error) {
-                console.log('Get networker error', error, error.stack);
+
                 return $q.reject(error);
             });
         });
@@ -2774,7 +2761,7 @@ function MtpApiManagerModule(MtpSingleInstanceService, MtpNetworkerFactory, MtpA
                     deferred.resolve(result);
                 },
                 function (error) {
-                    console.error(dT(), 'Error', error.code, error.type, baseDcID, dcID);
+
                     if (error.code == 401 && baseDcID == dcID) {
                         Storage.remove('dc', 'user_auth');
                         telegramMeNotify(false);
@@ -2963,7 +2950,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
 
         request.storeMethod('req_pq', {nonce: auth.nonce});
 
-        console.log(dT(), 'Send req_pq', bytesToHex(auth.nonce));
+
         mtpSendPlainRequest(auth.dcID, request.getBuffer()).then(function (deserializer) {
             var response = deserializer.fetchObject('ResPQ');
 
@@ -2979,7 +2966,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
             auth.pq = response.pq;
             auth.fingerprints = response.server_public_key_fingerprints;
 
-            console.log(dT(), 'Got ResPQ', bytesToHex(auth.serverNonce), bytesToHex(auth.pq), auth.fingerprints);
+
 
             auth.publicKey = MtpRsaKeysManager.select(auth.fingerprints);
 
@@ -2987,18 +2974,18 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
                 throw new Error('No public key found');
             }
 
-            console.log(dT(), 'PQ factorization start', auth.pq);
+
             CryptoWorker.factorize(auth.pq).then(function (pAndQ) {
                 auth.p = pAndQ[0];
                 auth.q = pAndQ[1];
-                console.log(dT(), 'PQ factorization done', pAndQ[2]);
+
                 mtpSendReqDhParams(auth);
             }, function (error) {
-                console.log('Worker error', error, error.stack);
+
                 deferred.reject(error);
             });
         }, function (error) {
-            console.error(dT(), 'req_pq error', error.message);
+
             deferred.reject(error);
         });
 
@@ -3036,7 +3023,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
             encrypted_data: rsaEncrypt(auth.publicKey, dataWithHash)
         });
 
-        console.log(dT(), 'Send req_DH_params');
+
         mtpSendPlainRequest(auth.dcID, request.getBuffer()).then(function (deserializer) {
             var response = deserializer.fetchObject('Server_DH_Params', 'RESPONSE');
 
@@ -3105,7 +3092,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
             throw new Error('server_DH_inner_data serverNonce mismatch');
         }
 
-        console.log(dT(), 'Done decrypting answer');
+
         auth.g = response.g;
         auth.dhPrime = response.dh_prime;
         auth.gA = response.g_a;
@@ -3149,7 +3136,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
                 encrypted_data: encryptedData
             });
 
-            console.log(dT(), 'Send set_client_DH_params');
+
             mtpSendPlainRequest(auth.dcID, request.getBuffer()).then(function (deserializer) {
                 var response = deserializer.fetchObject('Set_client_DH_params_answer');
 
@@ -3173,7 +3160,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
                         authKeyAux = authKeyHash.slice(0, 8),
                         authKeyID = authKeyHash.slice(-8);
 
-                    console.log(dT(), 'Got Set_client_DH_params_answer', response._);
+
                     switch (response._) {
                         case 'dh_gen_ok':
                             var newNonceHash1 = sha1BytesSync(auth.newNonce.concat([1], authKeyAux)).slice(-16);
@@ -3184,7 +3171,7 @@ function MtpAuthorizerModule(MtpTimeManager, MtpDcConfigurator, MtpRsaKeysManage
                             }
 
                             var serverSalt = bytesXor(auth.newNonce.slice(0, 8), auth.serverNonce.slice(0, 8));
-                            // console.log('Auth successfull!', authKeyID, authKey, serverSalt);
+                            //
 
                             auth.authKeyID = authKeyID;
                             auth.authKey = authKey;
@@ -3420,7 +3407,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             };
 
         if (Config.Modes.debug) {
-            console.log(dT(), 'MT call', method, params, messageID, seqNo);
+
         }
 
         return this.pushMessage(message, options);
@@ -3441,7 +3428,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             };
 
         if (Config.Modes.debug) {
-            console.log(dT(), 'MT message', object, messageID, seqNo);
+
         }
 
         return this.pushMessage(message, options);
@@ -3478,9 +3465,9 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             };
 
         if (Config.Modes.debug) {
-            console.log(dT(), 'Api call', method, params, messageID, seqNo, options);
+
         } else {
-            console.log(dT(), 'Api call', method);
+
         }
 
         return this.pushMessage(message, options);
@@ -3488,7 +3475,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
 
     MtpNetworker.prototype.checkLongPoll = function (force) {
         var isClean = this.cleanupSent();
-        // console.log('Check lp', this.longPollPending, tsNow(), this.dcID, isClean);
+        //
         if (this.longPollPending && tsNow() < this.longPollPending ||
             this.offline ||
             akStopped) {
@@ -3501,7 +3488,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                     self.upload ||
                     self.sleepAfter && tsNow() > self.sleepAfter
                 )) {
-                // console.warn(dT(), 'Send long-poll for DC is delayed', self.dcID, self.sleepAfter);
+                //
                 return;
             }
             self.sendLongPoll();
@@ -3513,7 +3500,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             self = this;
 
         this.longPollPending = tsNow() + maxWait;
-        // console.log('Set lp', this.longPollPending, tsNow());
+        //
 
         this.wrapMtpCall('http_wait', {
             max_delay: 500,
@@ -3526,7 +3513,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             delete self.longPollPending;
             setZeroTimeout(self.checkLongPoll.bind(self));
         }, function () {
-            console.log('Long-poll failed');
+
         });
 
     };
@@ -3558,7 +3545,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             this.pendingMessages[messageID] = value;
         }
 
-        // console.log('Resend due', messageID, this.pendingMessages);
+        //
 
         this.sheduleRequest(delay);
     };
@@ -3611,7 +3598,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     };
 
     MtpNetworker.prototype.checkConnection = function (event) {
-        console.log(dT(), 'Check connection', event);
+
         $timeout.cancel(this.checkConnectionPromise);
 
         var serializer = new TLSerialization({mtproto: true}),
@@ -3629,14 +3616,14 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
         this.sendEncryptedRequest(pingMessage, {timeout: 15000}).then(function (result) {
             self.toggleOffline(false);
         }, function () {
-            console.log(dT(), 'Delay ', self.checkConnectionPeriod * 1000);
+
             self.checkConnectionPromise = $timeout(self.checkConnection.bind(self), parseInt(self.checkConnectionPeriod * 1000));
             self.checkConnectionPeriod = Math.min(60, self.checkConnectionPeriod * 1.5);
         })
     };
 
     MtpNetworker.prototype.toggleOffline = function (enabled) {
-        // console.log('toggle ', enabled, this.dcID, this.iii);
+        //
         if (this.offline !== undefined && this.offline == enabled) {
             return false;
         }
@@ -3671,9 +3658,9 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     };
 
     MtpNetworker.prototype.performSheduledRequest = function () {
-        // console.log(dT(), 'sheduled', this.dcID, this.iii);
+        //
         if (this.offline || akStopped) {
-            console.log(dT(), 'Cancel sheduled');
+
             return false;
         }
         delete this.nextReq;
@@ -3682,7 +3669,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             for (var i = 0; i < this.pendingAcks.length; i++) {
                 ackMsgIDs.push(this.pendingAcks[i]);
             }
-            // console.log('acking messages', ackMsgIDs);
+            //
             this.wrapMtpMessage({_: 'msgs_ack', msg_ids: ackMsgIDs}, {notContentRelated: true, noShedule: true});
         }
 
@@ -3692,7 +3679,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             for (var i = 0; i < this.pendingResends.length; i++) {
                 resendMsgIDs.push(this.pendingResends[i]);
             }
-            // console.log('resendReq messages', resendMsgIDs);
+            //
             this.wrapMtpMessage({_: 'msg_resend_req', msg_ids: resendMsgIDs}, resendOpts);
             this.lastResendReq = {req_msg_id: resendOpts.messageID, resend_msg_ids: resendMsgIDs};
         }
@@ -3736,7 +3723,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                         hasHttpWait = true;
                     }
                 } else {
-                    // console.log(message, messageID);
+                    //
                 }
                 delete self.pendingMessages[messageID];
             }
@@ -3757,7 +3744,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
         }
 
         if (!messages.length) {
-            // console.log('no sheduled messages');
+            //
             return;
         }
 
@@ -3792,7 +3779,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             this.sentMessages[message.msg_id] = containerSentMessage;
 
             if (Config.Modes.debug) {
-                console.log(dT(), 'Container', innerMessages, message.msg_id, message.seq_no);
+
             }
         } else {
             if (message.noResponse) {
@@ -3806,10 +3793,10 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
         var self = this;
         this.sendEncryptedRequest(message).then(function (result) {
             self.toggleOffline(false);
-            // console.log('parse for', message);
+            //
             self.parseResponse(result.data).then(function (response) {
                 if (Config.Modes.debug) {
-                    console.log(dT(), 'Server response', self.dcID, response);
+
                 }
 
                 self.processMessage(response.response, response.messageID, response.sessionID);
@@ -3832,7 +3819,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
 
             });
         }, function (error) {
-            console.log('Encrypted request failed', error);
+
 
             if (message.container) {
                 forEach(message.inner, function (msgID) {
@@ -3863,14 +3850,14 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     MtpNetworker.prototype.getEncryptedMessage = function (bytes) {
         var self = this;
 
-        // console.log(dT(), 'Start encrypt', bytes.byteLength);
+        //
         return CryptoWorker.sha1Hash(bytes).then(function (bytesHash) {
-            // console.log(dT(), 'after hash');
+            //
             var msgKey = new Uint8Array(bytesHash).subarray(4, 20);
             return self.getMsgKeyIv(msgKey, true).then(function (keyIv) {
-                // console.log(dT(), 'after msg key iv');
+                //
                 return CryptoWorker.aesEncrypt(bytes, keyIv[0], keyIv[1]).then(function (encryptedBytes) {
-                    // console.log(dT(), 'Finish encrypt');
+                    //
                     return {
                         bytes: encryptedBytes,
                         msgKey: msgKey
@@ -3881,9 +3868,9 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     };
 
     MtpNetworker.prototype.getDecryptedMessage = function (msgKey, encryptedData) {
-        // console.log(dT(), 'get decrypted start');
+        //
         return this.getMsgKeyIv(msgKey, false).then(function (keyIv) {
-            // console.log(dT(), 'after msg key iv');
+            //
             return CryptoWorker.aesDecrypt(encryptedData, keyIv[0], keyIv[1]);
         });
     };
@@ -3891,8 +3878,8 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     MtpNetworker.prototype.sendEncryptedRequest = function (message, options) {
         var self = this;
         options = options || {};
-        // console.log(dT(), 'Send encrypted'/*, message*/);
-        // console.trace();
+        //
+        //
         var data = new TLSerialization({startMaxLength: message.body.length + 64});
 
         data.storeIntBytes(this.serverSalt, 64, 'salt');
@@ -3905,7 +3892,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
         data.storeRawBytes(message.body, 'message_data');
 
         return this.getEncryptedMessage(data.getBuffer()).then(function (encryptedResult) {
-            // console.log(dT(), 'Got encrypted out message'/*, encryptedResult*/);
+            //
             var request = new TLSerialization({startMaxLength: encryptedResult.bytes.byteLength + 256});
             request.storeIntBytes(self.authKeyID, 64, 'auth_key_id');
             request.storeIntBytes(encryptedResult.msgKey, 128, 'msg_key');
@@ -3953,7 +3940,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     };
 
     MtpNetworker.prototype.parseResponse = function (responseBuffer) {
-        // console.log(dT(), 'Start parsing response');
+        //
         var self = this;
 
         var deserializer = new TLDeserialization(responseBuffer);
@@ -3966,7 +3953,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             encryptedData = deserializer.fetchRawBytes(responseBuffer.byteLength - deserializer.getOffset(), true, 'encrypted_data');
 
         return this.getDecryptedMessage(msgKey, encryptedData).then(function (dataWithPadding) {
-            // console.log(dT(), 'after decrypt');
+            //
             var deserializer = new TLDeserialization(dataWithPadding, {mtproto: true});
 
             var salt = deserializer.fetchIntBytes(64, false, 'salt');
@@ -3977,12 +3964,12 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
 
             var messageBody = deserializer.fetchRawBytes(false, true, 'message_data');
 
-            // console.log(dT(), 'before hash');
+            //
             var hashData = convertToUint8Array(dataWithPadding).subarray(0, deserializer.getOffset());
 
             return CryptoWorker.sha1Hash(hashData).then(function (dataHash) {
                 if (!bytesCmp(msgKey, bytesFromArrayBuffer(dataHash).slice(-16))) {
-                    console.warn(msgKey, bytesFromArrayBuffer(dataHash));
+
                     throw new Error('server msgKey mismatch');
                 }
 
@@ -4000,15 +3987,15 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                             try {
                                 result.body = this.fetchObject('Object', field + '[body]');
                             } catch (e) {
-                                console.error(dT(), 'parse error', e.message, e.stack);
+
                                 result.body = {_: 'parse_error', error: e};
                             }
                             if (this.offset != offset + result.bytes) {
-                                // console.warn(dT(), 'set offset', this.offset, offset, result.bytes);
-                                // console.log(dT(), result);
+                                //
+                                //
                                 this.offset = offset + result.bytes;
                             }
-                            // console.log(dT(), 'override message', result);
+                            //
                         },
                         mt_rpc_result: function (result, field) {
                             result.req_msg_id = this.fetchLong(field + '[req_msg_id]');
@@ -4017,11 +4004,11 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                                 type = sentMessage && sentMessage.resultType || 'Object';
 
                             if (result.req_msg_id && !sentMessage) {
-                                // console.warn(dT(), 'Result for unknown message', result);
+                                //
                                 return;
                             }
                             result.result = this.fetchObject(type, field + '[result]');
-                            // console.log(dT(), 'override rpc_result', sentMessage, type, result);
+                            //
                         }
                     }
                 };
@@ -4059,8 +4046,8 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             return false;
         }
 
-        // console.log(dT(), 'shedule req', delay);
-        // console.trace();
+        //
+        //
 
         $timeout.cancel(this.nextReqPromise);
         if (delay > 0) {
@@ -4073,13 +4060,13 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     };
 
     MtpNetworker.prototype.ackMessage = function (msgID) {
-        // console.log('ack message', msgID);
+        //
         this.pendingAcks.push(msgID);
         this.sheduleRequest(30000);
     };
 
     MtpNetworker.prototype.reqResendMessage = function (msgID) {
-        console.log(dT(), 'Req resend', msgID);
+
         this.pendingResends.push(msgID);
         this.sheduleRequest(100);
     };
@@ -4087,22 +4074,22 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
     MtpNetworker.prototype.cleanupSent = function () {
         var self = this;
         var notEmpty = false;
-        // console.log('clean start', this.dcID/*, this.sentMessages*/);
+        //
         forEach(this.sentMessages, function (message, msgID) {
-            // console.log('clean iter', msgID, message);
+            //
             if (message.notContentRelated && self.pendingMessages[msgID] === undefined) {
-                // console.log('clean notContentRelated', msgID);
+                //
                 delete self.sentMessages[msgID];
             }
             else if (message.container) {
                 for (var i = 0; i < message.inner.length; i++) {
                     if (self.sentMessages[message.inner[i]] !== undefined) {
-                        // console.log('clean failed, found', msgID, message.inner[i], self.sentMessages[message.inner[i]].seq_no);
+                        //
                         notEmpty = true;
                         return;
                     }
                 }
-                // console.log('clean container', msgID);
+                //
                 delete self.sentMessages[msgID];
             } else {
                 notEmpty = true;
@@ -4139,7 +4126,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
 
 
     MtpNetworker.prototype.processMessage = function (message, messageID, sessionID) {
-        // console.log('process message', message, messageID, sessionID);
+        //
         switch (message._) {
             case 'msg_container':
                 var len = message.messages.length;
@@ -4149,10 +4136,10 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                 break;
 
             case 'bad_server_salt':
-                console.log(dT(), 'Bad server salt', message);
+
                 var sentMessage = this.sentMessages[message.bad_msg_id];
                 if (!sentMessage || sentMessage.seq_no != message.bad_msg_seqno) {
-                    console.log(message.bad_msg_id, message.bad_msg_seqno);
+
                     throw new Error('Bad server salt for invalid message');
                 }
 
@@ -4162,10 +4149,10 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                 break;
 
             case 'bad_msg_notification':
-                console.log(dT(), 'Bad msg notification', message);
+
                 var sentMessage = this.sentMessages[message.bad_msg_id];
                 if (!sentMessage || sentMessage.seq_no != message.bad_msg_seqno) {
-                    console.log(message.bad_msg_id, message.bad_msg_seqno);
+
                     throw new Error('Bad msg notification for invalid message');
                 }
 
@@ -4173,7 +4160,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                     if (MtpTimeManager.applyServerTime(
                             bigStringInt(messageID).shiftRight(32).toString(10)
                         )) {
-                        console.log(dT(), 'Update session');
+
                         this.updateSession();
                     }
                     var badMessage = this.updateSentMessage(message.bad_msg_id);
@@ -4242,14 +4229,14 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                     var deferred = sentMessage.deferred;
                     if (message.result._ == 'rpc_error') {
                         var error = this.processError(message.result);
-                        console.log(dT(), 'Rpc error', error)
+
                         if (deferred) {
                             deferred.reject(error)
                         }
                     } else {
                         if (deferred) {
                             if (Config.Modes.debug) {
-                                console.log(dT(), 'Rpc response', message.result);
+
                             } else {
                                 var dRes = message.result._;
                                 if (!dRes) {
@@ -4259,7 +4246,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
                                         dRes = message.result;
                                     }
                                 }
-                                console.log(dT(), 'Rpc response', dRes);
+
                             }
                             sentMessage.deferred.resolve(message.result);
                         }
@@ -4275,7 +4262,7 @@ function MtpNetworkerFactoryModule(MtpSecureRandom, MtpTimeManager, Storage, Cry
             default:
                 this.ackMessage(messageID);
 
-                // console.log('Update', message);
+                //
                 if (updatesProcessor) {
                     updatesProcessor(message);
                 }
@@ -4432,7 +4419,7 @@ function MtpSingleInstanceServiceModule(IdleManager, Storage, MtpNetworkerFactor
         if (masterInstance || deactivated) {
             return false;
         }
-        console.log(dT(), 'deactivate');
+
         deactivatePromise = false;
         deactivated = true;
         clearInstance();
@@ -4452,7 +4439,7 @@ function MtpSingleInstanceServiceModule(IdleManager, Storage, MtpNetworkerFactor
             var curInstance = result[0],
                 idleInstance = result[1];
 
-            // console.log(dT(), 'check instance', newInstance, curInstance, idleInstance);
+            //
             if (!idle || !curInstance ||
                 curInstance.id == instanceID ||
                 curInstance.time < time - 60000) {
@@ -4464,7 +4451,7 @@ function MtpSingleInstanceServiceModule(IdleManager, Storage, MtpNetworkerFactor
                 Storage.set({xt_instance: newInstance});
                 if (!masterInstance) {
                     MtpNetworkerFactory.startAll();
-                    console.warn(dT(), 'now master instance', newInstance);
+
                 }
                 masterInstance = true;
                 if (deactivatePromise) {
@@ -4475,7 +4462,7 @@ function MtpSingleInstanceServiceModule(IdleManager, Storage, MtpNetworkerFactor
                 Storage.set({xt_idle_instance: newInstance});
                 if (masterInstance) {
                     MtpNetworkerFactory.stopAll();
-                    console.warn(dT(), 'now idle instance', newInstance);
+
                     if (!deactivatePromise) {
                         deactivatePromise = $timeout(deactivateInstance, 30000);
                     }
@@ -4535,7 +4522,7 @@ function MtpTimeManagerModule(Storage) {
 
         lastMessageID = [0, 0];
         timeOffset = newTimeOffset;
-        console.log(dT(), 'Apply server time', serverTime, localTime, newTimeOffset, changed);
+
 
         return changed;
     }

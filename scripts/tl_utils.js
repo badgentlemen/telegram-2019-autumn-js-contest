@@ -10,9 +10,28 @@ var MessageServices = {
 }
 
 
+function getPeerSettings(peerID) {
+    var found = appStore.dialogs.find(function(dialog) {
+        return dialog.peerID === peerID
+    });
 
+    console.log(found)
 
-function isPeerMuted(peerID) {}
+    if (!found) {
+        return null
+    }
+
+    return found['notify_settings'];
+}
+
+function isPeerMuted(peerID) {
+    var peerNotifySettings = getPeerSettings(peerID);
+    if (!peerNotifySettings) {
+        return false;
+    }
+
+    return peerNotifySettings._ == "peerNotifySettings" && peerNotifySettings.mute_until !== 0 && peerNotifySettings.mute_until * 1000 > tsNow()
+}
 
 function getFileName(location) {
 	switch (location._) {
@@ -216,7 +235,7 @@ function wrapForDialog(dialog) {
     dialog.peerID = getPeerID(dialog.peer);
 
 	dialog.unreadCount = dialog.unread_count;
-	delete dialog.unread_count;
+    delete dialog.unread_count;
 
 	return dialog;
 }
