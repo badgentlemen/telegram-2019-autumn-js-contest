@@ -1,0 +1,26 @@
+{
+    "name": "telegram-2019-autumn-js-contest",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "webpack-dev-server --history-api-fallback --inline --progress"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/badgentlemen/telegram-2019-autumn-js-contest.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/badgentlemen/telegram-2019-autumn-js-contest/issues"
+    },
+    "homepage": "https://github.com/badgentlemen/telegram-2019-autumn-js-contest#readme",
+    "dependencies": {},
+    "devDependencies": {
+        "html-webpack-plugin": "^3.2.0",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10",
+        "webpack-dev-server": "^3.9.0"
+    }
+}
