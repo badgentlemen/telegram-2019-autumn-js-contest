@@ -210,4 +210,5 @@
 
 .ui-scrollable-view .simplebar-scrollbar {
     width: 2px;
+    cursor: pointer;
 }

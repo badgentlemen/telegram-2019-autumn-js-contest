@@ -35,13 +35,13 @@ export default class ChatsPage extends BaseComponent {
 	renderChatMessages() {}
 
 	fetchChatsList() {
-        // this.chatSidebar.setLoading(true);
-		// getDialogs().then(dialogs => {
-        //     this.chatSidebar.setDialogs(dialogs);
-        // }).catch(error => {
-        //     console.log(error);
-        //     this.chatSidebar.setDialogs([]);
-        // });
+        this.chatSidebar.setLoading(true);
+		getDialogs().then(dialogs => {
+            this.chatSidebar.setDialogs(dialogs);
+        }).catch(error => {
+            console.log(error);
+            this.chatSidebar.setDialogs([]);
+        });
 	}
 
 	fetchMessagesForChatId(id) {}

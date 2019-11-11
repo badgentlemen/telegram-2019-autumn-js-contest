@@ -61,7 +61,7 @@ export default class Dialog {
     }
 
     hasUnread() {
-        return this.unreadCount > 0 && !this.pFlags.out || this.isPinned
+        return this.unreadCount > 0 && !this.pFlags.out && !this.isPinned
     }
 
     setMessage(message) {

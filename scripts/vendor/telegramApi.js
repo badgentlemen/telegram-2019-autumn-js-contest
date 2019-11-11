@@ -5090,6 +5090,37 @@ function TelegramApiModule(MtpApiManager, AppPeersManager, MtpApiFileManager, Ap
         });
     }
 
+    function getFileName(location) {
+        switch (location._) {
+            case 'inputDocumentFileLocation':
+                var fileName = (location.file_name || '').split('.', 2);
+                var ext = fileName[1] || '';
+                if (location.sticker) {
+                    ext += '.png';
+                }
+                var versionPart = location.version ? 'v' + location.version : '';
+                return fileName[0] + '_' + location.id + versionPart + '.' + ext;
+    
+            default:
+                if (!location.volume_id) {
+                    return;
+                }
+                var ext = 'jpg';
+                if (location.sticker) {
+                    ext = 'webp';
+                }
+                return (
+                    location.volume_id +
+                    '_' +
+                    location.local_id +
+                    '_' +
+                    location.secret +
+                    '.' +
+                    ext
+                );
+        }
+    }
+
     function editChannelAdmin(channel_id, user_id) {
         return MtpApiManager.invokeApi('channels.editAdmin', {
             channel: AppChatsManager.getChannelInput(channel_id),

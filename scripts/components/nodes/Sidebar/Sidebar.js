@@ -38,13 +38,12 @@ export default class Sidebar extends BaseComponent {
     }
 
     renderDialogList() {
-        removeAllChild(this.dialogList);
-        for (let index = 0; index < 30; index++) {
+        for (let index = 0; index < this.dialogs.length; index++) {
             const dialog = this.dialogs[index];
             const dialogListItem = new UIDialogItem(dialog);
             const dialogListItemNode = dialogListItem.getNode();
 
-            this.dialogList.appendChild(dialogListItemNode)
+            this.dialogScrollableView.appendChild(dialogListItemNode);
 
             // if (index > 0) {
             //     var prevChat = chats[index - 1];
