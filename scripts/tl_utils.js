@@ -14,9 +14,6 @@ function getPeerSettings(peerID) {
     var found = appStore.dialogs.find(function(dialog) {
         return dialog.peerID === peerID
     });
-
-    console.log(found)
-
     if (!found) {
         return null
     }

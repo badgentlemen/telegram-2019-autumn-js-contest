@@ -119,11 +119,7 @@ function uiButton(parent, option, className) {
 	};
 }
 
-function uiFormRow(parent, className) {
-	var className = className || '';
-	var classes = 'ui-form__row ' + className;
-	return createElement('div', classes, parent);
-}
+
 
 function elementRemoveFromSuperView(element) {
 	if (element.parentNode) {
@@ -131,9 +127,9 @@ function elementRemoveFromSuperView(element) {
 	}
 }
 
-function removeAllChild(parentContainer) {
-	while (parentContainer.firstChild) {
-		parentContainer.removeChild(parentContainer.firstChild);
+export const removeAllChild = (from) => {
+	while (from.firstChild) {
+		from.removeChild(from.firstChild);
 	}
 }
 

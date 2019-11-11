@@ -1,138 +1,95 @@
-function LoginPage(layout) {
-	layout.classList.add('UiLogin_layout');
-	var destroyed = false;
+import {createElement} from "../lib";
+import {BaseComponent} from "../components";
+import {sendCode} from "../lib/api.manager";
+import SignInNode from "../components/nodes/SignInNode/SignInNode";
+import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
+import {removeAllChild} from "../utils";
 
-	var loginLayoutWrapper = createElement(
-		'div',
-        'UiLogin_layout__wrapper',
-        layout
-    );
+export default class LoginPage extends BaseComponent {
 
-	var containerWrapper = createElement(
-		'div',
-        'ui-container',
-        loginLayoutWrapper
-    );
+    constructor() {
+        super();
 
-	var loginInner = createElement(
-		'div',
-        'UiLogin_layout__container',
-        containerWrapper
-	);
+        this.destroyed = false;
+        this.phoneNumber = null;
+        this.phoneCodeHash = null;
+        this.confirmCode = null;
 
-	var signInNode = null;
-	var codeConfirmNode = null;
-    var setPasswordNode = null;
+        this.signInNode = null;
+        this.confirmCodeNode = null;
+        this.setPasswordNode = null;
 
-	this.destroy = function() {
-		destroyed = true;
+        this.node = createElement(
+            'div',
+            {'class': 'UiLogin_layout__wrapper'},
+        );
+
+        this.containerWrapper = createElement(
+            'div',
+            {'class': 'ui-container'},
+            this.node
+        );
+
+        this.loginInner = createElement(
+            'div',
+            {'class': 'UiLogin_layout__container'},
+            this.containerWrapper
+        );
+
+        this.renderSignInNode();
+    }
+
+    destroy() {
+		this.destroyed = true;
 		removeAllNodes();
 	};
 
-	function renderSignInNode() {
-        var signInNode = new SignInNode();
-        loginInner.appendChild(signInNode.getNode());
-	}
-
-	function removeAllNodes() {
-		removeAllChild(layout);
-	}
-
-	renderSignInNode();
-}
-
-function SignInNode(options) {
-    options = options || {};
-
-    var phone_code_hash = null;
-
-    APIManager.sendCode('+79604245511').then(function(data) {
-        phone_code_hash = data.phone_code_hash;
-    })
-
-    var targetTitle = 'Sign in to Telegram';
-	var targetText =
-		'Please confirm your country and <br> enter your phone number';
-
-	var node = createElement('div', 'ui-sign-in__node');
-
-	function renderForm() {
-
-        removeAllChild(node);
-
-		createElement('div', 'ui-sign-in__logo', node);
-		var title = createElement(
-			'h1',
-            'ui-sign-in__title ui-text__center',
-            node
-		);
-		title.innerText = targetTitle;
-
-		var text = createElement(
-			'p',
-            'ui-sign-in__text ui-text__center',
-            node
-		);
-		text.innerHTML = targetText;
-
-		var form = createElement(
-			'form',
-            'ui-form ui-form__incolumn ui-form__confirm-country-phone',
-            node
-        );
-
-		var countrySelector = new uiSelect(
-			{
-				placeholder: 'Phone Number',
-			},
-            'ui-sign-in__country-select',
-            new uiFormRow(form)
-        );
-
-		var phoneNumberInput = new uiInput(
-			{
-                placeholder: 'Phone Number',
-                onChange: function(value) {
-
-                }
-			},
-            'ui-sign-in__phone-number-input',
-            new uiFormRow(form),
-        );
-
-        var checkbox = new uiCheckbox({
-
-        }, 'ui-sign-in__keep-state', new uiFormRow(form));
-
-        var button = createElement('button', 'ui-button', new uiFormRow(form));
-        button.innerText = 'NEXT';
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            var code = phoneNumberInput.getValue();
-            APIManager.signIn('+79604245511', phone_code_hash, code).then(function(data) {
-
-            })
+	renderSignInNode() {
+        this.removeAllNodes();
+        const self = this;
+        this.signInNode = new SignInNode({
+            onNextClicked: (phoneNumber, selectedCountry) => {
+                self.phoneNumber = phoneNumber;
+                self.sendCode();
+            }
         });
-
-        phoneNumberInput.setError(null);
-	    phoneNumberInput.type = 'text';
-	}
-
-	this.destroy = function() {
-		removeAllChild(parentContainer);
-    };
-
-    this.getNode = function() {
-        return node;
+        this.loginInner.appendChild(this.signInNode.getNode());
     }
 
-    renderForm();
+    renderCodeConfirmNode() {
+        this.removeAllNodes();
+        this.confirmCodeNode = new CodeConfirmNode({
+            onMaxLength: code => {
+                this.confirmCode = code;
+                this.sendNext();
+            }
+        });
+
+        this.loginInner.appendChild(this.confirmCodeNode.getNode());
+    }
+
+	removeAllNodes() {
+        removeAllChild(this.loginInner);
+        this.signInNode = null;
+        this.confirmCodeNode = null;
+    }
+
+    sendCode() {
+        if (this.phoneNumber) {
+            sendCode(this.phoneNumber).then(response => {
+                if (response.pFlags.phone_registered && response.phone_code_hash) {
+                    this.phoneCodeHash = response.phone_code_hash;
+                    this.renderCodeConfirmNode();
+                }
+            });
+        }
+    }
+
+    sendNext() {
+
+    }
+
+    logIn() {
+
+    }
 }
-
-function CodeConfirmNode(parentContainer) {
-	var node = createElement(parentContainer, 'div', 'ui-login__');
-}
-
-function SetPasswordNode(parentContainer) {}
-
-function UserInfoNode(parentContainer) {}

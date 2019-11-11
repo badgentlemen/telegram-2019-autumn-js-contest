@@ -11,8 +11,6 @@
 .html,
 body {
     position: relative;
-    height: 100vh;
-    width: 100vw;
     padding: 0;
     margin: 0;
     overflow-x: hidden;
@@ -21,12 +19,15 @@ body {
 
 body {
     font-size: 14px;
+    min-height: 100vh;
+    width: 100vw;
     font-family: 'Roboto', sans-serif;
 }
 
-input, select {
+input, select, button {
     outline: none;
     border: none;
+    background: transparent;
 }
 
 #appication {
@@ -47,7 +48,19 @@ input, select {
 }
 
 .ui-button {
+    min-height: 54px;
+    text-transform: uppercase;
+    font-size: 16px;
+    padding: 10px 30px;
+    cursor: pointer;
+    box-sizing: border-box;
+    cursor: pointer;
+    border-radius: 8px;
+}
 
+.ui-button__primary {
+    background: var(--primary-color);
+    color: white;
 }
 
 .ui-form {
@@ -72,6 +85,10 @@ input, select {
     width: 100%;
 }
 
+.ui-input {
+    position: relative;
+}
+
 
 .ui-input__input {
     height: var(--component-min-height);
@@ -82,7 +99,7 @@ input, select {
 .ui-select {
     border: var(--component-normal-state-border-weight) solid var(--component-border-color);
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 16px;
     width: 100%;
 }
@@ -157,10 +174,9 @@ input, select {
 }
 
 .UiLogin_layout__container {
-    margin: 0 auto;
+    margin: 80px auto;
     max-width: 360px;
     padding: 30px;
-    margin-top: 78px;
 }
 
 .UiLogin_layout__wrapper {
@@ -676,4 +692,20 @@ input, select {
 
 .ui-message__balloon {
 
+}
+
+.ui-desktop__title {
+    color: black;
+    line-height: 25px;
+    margin-top: 50px;
+    margin-bottom: 19px;
+    font-size: 2em;
+}
+
+.ui-desktop__text {
+    color: #939393;
+    margin-bottom: 48px;
+    margin-top: 0;
+    font-size: 14.5px;
+    font-weight: 400;
 }

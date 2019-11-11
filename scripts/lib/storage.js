@@ -19,7 +19,7 @@ export const storageGetPrefix = () => {
 };
 
 export const setValue = obj => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         var prefix = storageGetPrefix(),
             key,
             value;
@@ -33,7 +33,7 @@ export const setValue = obj => {
                 localStorage.setItem(key, value);
             }
         }
-        return resolve();
+        resolve();
     });
 };
 
@@ -44,18 +44,16 @@ export const getValue = (key) => {
 
         var value = localStorage.getItem(key);
 
-        console.log(value);
-
         if (value === undefined || value === null) {
-            return resolve(JSON.parse(value))
+            reject()
+        } else {
+            resolve(JSON.parse(value));
         }
-
-        return reject();
     });
 }
 
 export const getValues = keys => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         var result = [],
             single = keys.length == 1,
             value,
@@ -85,7 +83,7 @@ export const getValues = keys => {
             }
         }
 
-        return resolve(single ? result[0] : result);
+        resolve(single ? result[0] : result);
     });
 };
 
