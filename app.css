@@ -21,10 +21,12 @@ body {
     font-size: 14px;
     height: 100vh;
     width: 100vw;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
-input, select, button {
+input,
+select,
+button {
     outline: none;
     border: none;
     background: transparent;
@@ -95,7 +97,6 @@ ul {
     position: relative;
 }
 
-
 .ui-input__input {
     height: var(--component-min-height);
     box-sizing: border-box;
@@ -103,7 +104,8 @@ ul {
 
 .ui-input__input,
 .ui-select {
-    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
+    border: var(--component-normal-state-border-weight) solid
+        var(--component-border-color);
     padding: 15px;
     border-radius: 8px;
     font-size: 16px;
@@ -174,7 +176,6 @@ ul {
     }
 }
 
-
 .UiLogin_layout {
     display: flex;
 }
@@ -202,12 +203,11 @@ ul {
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    background: var(--primary-color) url('./assets/logo.png');
+    background: var(--primary-color) url("./assets/logo.png");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 110%;
 }
-
 
 .ui-sign-in__title {
     color: black;
@@ -223,8 +223,6 @@ ul {
     font-size: 14.5px;
     font-weight: 400;
 }
-
-
 
 .UiChat_layout__node {
     position: relative;
@@ -263,14 +261,13 @@ ul {
     width: 100%;
     flex-grow: 1;
     display: flex;
+    padding-bottom: 80px;
 }
 
 .ui-sidebar__chat-list {
-
 }
 
 .ui-sidebar__footer {
-
 }
 
 .ui-search {
@@ -343,7 +340,6 @@ ul {
     flex-grow: 1;
 }
 
-
 .ui-chat__closed-wrapper {
     position: absolute;
     top: 0;
@@ -387,27 +383,17 @@ ul {
     margin-right: 128px;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .ui-dialog__list {
     position: absolute;
-    display: flex;
-    flex-direction: column;
+    display: block;
     height: 100%;
     width: 100%;
+    overflow: hidden;
     overflow-y: auto;
+}
+
+.ui-dialog__list .simplebar-content {
+    padding-bottom: 80px!important;
 }
 
 .ui-dialog__floating-button {
@@ -435,6 +421,7 @@ ul {
     flex-direction: row;
     align-items: center;
     background-color: white;
+    min-height: 72px;
 }
 
 .ui-dialog:hover,
@@ -490,7 +477,7 @@ ul {
 
 .ui-dialog__online::after {
     position: absolute;
-    content: '';
+    content: "";
     border: 2px solid white;
     background-color: #0ac630;
     bottom: 3px;
@@ -574,13 +561,12 @@ ul {
 
 @keyframes ui-spin__spin {
     from {
-        transform: rotate(0deg)
+        transform: rotate(0deg);
     }
     to {
-        transform: rotate(360deg)
+        transform: rotate(360deg);
     }
 }
-
 
 .ui-badge {
     position: relative;
@@ -606,11 +592,11 @@ ul {
 }
 
 .ui-badge__pinned::after {
-    content: '';
+    content: "";
     width: 24px;
     height: 24px;
 
-    background-image: url('/assets/pinnedchat_svg.svg');
+    background-image: url("/assets/pinnedchat_svg.svg");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
@@ -629,7 +615,6 @@ ul {
     background-color: #c4c9cc;
 }
 
-
 /* HISTORY */
 
 .ui-history {
@@ -645,15 +630,12 @@ ul {
 }
 
 .ui-history__user {
-
 }
 
 .ui-history__chat {
-
 }
 
 .ui-history__channel {
-
 }
 
 .ui-history__container {
@@ -699,7 +681,6 @@ ul {
 }
 
 .ui-message__balloon {
-
 }
 
 .ui-desktop__title {
@@ -716,4 +697,9 @@ ul {
     margin-top: 0;
     font-size: 14.5px;
     font-weight: 400;
+}
+
+
+.ui-scrollable-view {
+
 }

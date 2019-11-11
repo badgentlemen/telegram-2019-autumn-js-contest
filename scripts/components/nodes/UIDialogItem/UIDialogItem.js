@@ -30,7 +30,7 @@ export default class UIDialogItem extends BaseComponent {
     constructor(dialog = {}) {
         super({})
         this.dialog = dialog;
-		this.node = createElement('li', {'class': this.getClassName()});
+		this.node = createElement('div', {'class': this.getClassName()});
 		// chatListItem.classList.add('ui-dialog__' + dialog.type);
 		// if (dialog.pFlags.pinned) {
 		// 	chatListItem.classList.add('ui-dialog__pinned');

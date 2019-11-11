@@ -2,6 +2,8 @@ import BaseComponent from "../../base.component";
 import {createElement} from "../../../lib";
 import {removeAllChild} from "../../../utils";
 import UIDialogItem from "../UIDialogItem/UIDialogItem";
+import ScrollableView from "../../ScrollableView/ScrollableView";
+
 
 export default class Sidebar extends BaseComponent {
     constructor(options) {
@@ -13,7 +15,11 @@ export default class Sidebar extends BaseComponent {
         this.sidebarHeader = createElement('div', {'class': 'ui-sidebar__header'}, this.node);
 
         this.sidebarBody = createElement('div', {'class': 'ui-sidebar__body'}, this.node);
-        this.dialogList = createElement('ul', {'class': 'ui-dialog__list'}, this.sidebarBody);
+        this.dialogScrollableView = new ScrollableView({
+            className: 'ui-dialog__list'
+        });
+        this.dialogList = this.dialogScrollableView.getNode();
+        this.sidebarBody.appendChild(this.dialogList);
 
         this.floatingButton = createElement('div', {'class': 'ui-dialog__floating-button'}, this.sidebarBody);
 
@@ -24,6 +30,7 @@ export default class Sidebar extends BaseComponent {
         );
 
         createElement('div', {'class': 'ui-spinner'}, this.loadingNode);
+        this.renderDialogList();
     }
 
     unActiveAllItems() {
@@ -32,7 +39,7 @@ export default class Sidebar extends BaseComponent {
 
     renderDialogList() {
         removeAllChild(this.dialogList);
-        for (let index = 0; index < this.dialogs.length; index++) {
+        for (let index = 0; index < 30; index++) {
             const dialog = this.dialogs[index];
             const dialogListItem = new UIDialogItem(dialog);
             const dialogListItemNode = dialogListItem.getNode();

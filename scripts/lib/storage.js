@@ -45,7 +45,7 @@ export const getValue = (key) => {
         var value = localStorage.getItem(key);
 
         if (value === undefined || value === null) {
-            reject()
+            resolve(null);
         } else {
             resolve(JSON.parse(value));
         }

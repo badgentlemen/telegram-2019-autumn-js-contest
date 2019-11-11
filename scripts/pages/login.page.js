@@ -87,7 +87,10 @@ export default class LoginPage extends BaseComponent {
                     this.phoneCodeHash = response.phone_code_hash;
                     this.renderCodeConfirmNode();
                 }
-            });
+            }).catch(error => {
+                console.log(error);
+                alert(error);
+            })
         }
     }
 

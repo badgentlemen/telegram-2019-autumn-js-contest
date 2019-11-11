@@ -36,9 +36,20 @@ const renderLayoutContainer = () => {
 	return component;
 };
 
+const renderChatPage = () => {
+
+}
+
+const renderLoginPage = () => {
+
+}
+
 const renderApp = () => {
 	var layoutContainer = renderLayoutContainer();
 	getUserID().then(userId => {
+
+        userId = 1;
+
 		page = userId ? new ChatsPage() : new LoginPage();
 		const pageNode = page.getNode();
 		layoutContainer.classList.add(
