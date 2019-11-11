@@ -1,4 +1,6 @@
 import { getValue, removeValue } from './storage';
+import AppstoreInstance from '../app.store';
+import {wrapForDialog, getPeerID} from '../tl_utils';
 
 export const annihilation = () => {
 	removeValue(['user_auth']);
@@ -11,28 +13,11 @@ export const getContacts = () => {
 };
 
 export const sendCode = phoneNumber => {
-	return Promise.resolve({
-		_: 'auth.sentCode',
-		pFlags: {
-			phone_registered: true
-		},
-		flags: 3,
-		type: {
-			_: 'auth.sentCodeTypeApp',
-			length: 5
-		},
-		phone_code_hash: 'f6115c74c4ed106703',
-		next_type: {
-			_: 'auth.codeTypeSms'
-		}
-	});
-
-	// return telegramApi.sendCode(phoneNumber);
+	return telegramApi.sendCode(phoneNumber);
 };
 
 export const logIn = (phoneNumber, phoneCodeHash, smsCode) => {
-    return Promise.resolve(true);
-	// return telegramApi.signIn(phoneNumber, phoneNumber, smsCode);
+	return telegramApi.signIn(phoneNumber, phoneCodeHash, smsCode);
 };
 
 export const getUserID = () => {
@@ -45,30 +30,31 @@ export const getUserID = () => {
 };
 
 export const getDialogs = (limit = 200, offset = 0) => {
-	return telegramApi.getDialogs(offset, limit).then(function(response) {
-		var result = response.result;
-		var dialogs = [];
-		appStore.saveChats(result.chats || []);
-		appStore.saveMessages(result.messages || []);
-		appStore.saveUsers(result.users || []);
+	return telegramApi.getDialogs(offset, limit).then(response => {
+		const result = response.result;
+		let dialogs = [];
+		AppstoreInstance.saveChats(result.chats || []);
+		AppstoreInstance.saveMessages(result.messages || []);
+		AppstoreInstance.saveUsers(result.users || []);
 
 		if (result.dialogs.length) {
-			result.dialogs.forEach(function(dlg) {
-				var dialog = wrapForDialog(dlg);
+			result.dialogs.forEach(function(object) {
+				const dialog = wrapForDialog(object);
 				dialogs.push(dialog);
 			});
 
 			dialogs.forEach(function(dialog) {
-				var peerID = getPeerID(dialog.peer);
-				var message = dialog.message;
-				MessageServices.saveMessages([message], peerID);
+				const peerID = getPeerID(dialog.peer);
+				const message = dialog.message;
+				// MessageServices.saveMessages([message], peerID);
 			});
-		}
+        }
 
-		appStore.dialogs = dialogs;
+		AppstoreInstance.dialogs = dialogs;
 		return dialogs;
 	});
 };
+
 export const getHistory = (peerID, limit, offset) => {
 	limit = limit || 15;
 	offset = offset || 0;

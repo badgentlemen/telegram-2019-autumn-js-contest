@@ -24,4 +24,8 @@ export default class BaseComponent {
     addEventListeners() {
 
     }
+
+    removeFromSuperview() {
+
+    }
 }

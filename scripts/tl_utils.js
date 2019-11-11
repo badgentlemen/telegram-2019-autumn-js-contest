@@ -1,34 +1,64 @@
-var MessageServices = {
-    history: {},
-    saveMessages(messages, peerID) {
-        if (this.history[peerID]) {
-            this.history[peerID].concat(messages);
-        } else {
-            this.history[peerID] = messages;
-        }
-    }
-}
+import AppstoreInstance from "./app.store";
+import Dialog from "./model/dialog";
+import {tsNow} from "./utils";
 
+var MessageServices = {
+	history: {},
+	saveMessages(messages, peerID) {
+		if (this.history[peerID]) {
+			this.history[peerID].concat(messages);
+		} else {
+			this.history[peerID] = messages;
+		}
+	}
+};
+
+export const PeerTypeCollection = [
+	{
+		key: 'peerUser',
+		value: 'user_id',
+		target: 'users',
+		type: 'user'
+	},
+	{
+		key: 'peerChannel',
+		value: 'channel_id',
+		target: 'chats',
+		type: 'channel'
+	},
+	{
+		key: 'peerChat',
+		value: 'chat_id',
+		target: 'chats',
+		type: 'chat'
+	}
+];
 
 function getPeerSettings(peerID) {
-    var found = appStore.dialogs.find(function(dialog) {
-        return dialog.peerID === peerID
-    });
-    if (!found) {
-        return null
-    }
+	var found = AppstoreInstance.dialogs.find(function(dialog) {
+		return dialog.peerID === peerID;
+	});
+	if (!found) {
+		return null;
+	}
 
-    return found['notify_settings'];
+	return found['notify_settings'];
 }
 
-function isPeerMuted(peerID) {
-    var peerNotifySettings = getPeerSettings(peerID);
+export const isPeerMuted = (peerID) => {
+	var peerNotifySettings = getPeerSettings(peerID);
 
-    if (!peerNotifySettings) {
-        return false;
-    }
+	if (!peerNotifySettings) {
+		return false;
+	}
 
-    return peerNotifySettings._ == "peerNotifySettings" && peerNotifySettings.mute_until > 0 && peerNotifySettings.mute_until * 1000 > tsNow()
+	return isPeerNotificationMuted(peerNotifySettings);
+}
+
+export const isPeerNotificationMuted = (peerNotifySettings) => {
+    return peerNotifySettings._ == 'peerNotifySettings' &&
+    peerNotifySettings.mute_until > 0 &&
+    peerNotifySettings.mute_until * 1000 > tsNow()
 }
 
 function getFileName(location) {
@@ -71,13 +101,12 @@ function getTitleForPeerData(peerData) {
 				title = 'Saved Messages';
 			} else {
 				if (peerData.first_name && peerData.last_name) {
-					userName = peerData.first_name + ' ' + peerData.last_name;
+					title = peerData.first_name + ' ' + peerData.last_name;
 				} else if (peerData.first_name) {
-					userName = peerData.first_name;
+					title = peerData.first_name;
 				} else {
-					userName = peerData.username || '';
+					title = peerData.username || '';
 				}
-				title = userName;
 			}
 			break;
 		default:
@@ -88,7 +117,7 @@ function getTitleForPeerData(peerData) {
 	return title;
 }
 
-function onlineStatus(user) {
+export const onlineStatus = (user) => {
 	var statusType = user.status && user.status._;
 
 	if (!statusType) {
@@ -124,14 +153,14 @@ function onlineStatus(user) {
 	};
 }
 
-function getPeerID(peerObject) {
+export const getPeerID = (peerObject) => {
 	return peerObject.user_id
 		? peerObject.user_id
 		: -(peerObject.channel_id || peerObject.chat_id || -0);
 }
 
 function isChannel(peerID) {
-	var target = appStore.chats.find(function(chat) {
+	var target = AppstoreInstance.chats.find(function(chat) {
 		return chat.id === Math.abs(peerID);
 	});
 	if (!target) {
@@ -141,19 +170,19 @@ function isChannel(peerID) {
 }
 
 function getDialog(peerID) {
-	return appStore.dialogs.find(function(dialog) {
+	return AppstoreInstance.dialogs.find(function(dialog) {
 		return dialog.peerID === peerID;
 	});
 }
 
 function chatByChatId(chatId) {
-	return appStore.chats.find(function(chat) {
+	return AppstoreInstance.chats.find(function(chat) {
 		return chat.id === chatId;
 	});
 }
 
 function getUserById(userId) {
-	return appStore.users.find(function(user) {
+	return AppstoreInstance.users.find(function(user) {
 		return user.id === userId;
 	});
 }
@@ -188,56 +217,23 @@ function getInputPeerByID(peerID) {
 	}
 }
 
-function wrapForMessage(message) {
+function wrapForMessage(message) {}
 
-}
+export const wrapForDialog = object => {
+    let dialog = new Dialog(object);
+    const collectionTarget = AppstoreInstance.messagesTarget()[dialog.target];
 
-function wrapForDialog(dialog) {
-	var peer = dialog.peer;
-	var key = peer._;
-	var id_preffix = 'user_id';
-	var id = 0;
-	var target = 'chats';
-	var type = 'user';
-	var foundBtf = batiscaff.find(function(btf) {
-		return btf.key === key;
-	});
-
-	if (foundBtf) {
-		id_preffix = foundBtf.value;
-		id = peer[id_preffix];
-		target = foundBtf.target;
-		type = foundBtf.type;
-	}
-
-	dialog.type = type;
-
-	var collectionTarget = appStore.messagesTarget()[target];
-	var message =
-		appStore.messages.find(function(message) {
-			var toId = message.to_id;
-			return toId[id_preffix] === id;
-		}) || {};
-	dialog.message = message;
-
-	dialog.peerData = collectionTarget.find(function(target) {
-		return target.id === id;
+    const peerData = collectionTarget.find(target => {
+        return target.id === dialog.id;
     });
 
-	dialog.onlineStatus = onlineStatus(dialog.peerData);
-	dialog.isOnline = dialog.onlineStatus.statusType === 'userStatusOnline';
-    dialog.title = getTitleForPeerData(dialog.peerData);
-    dialog.hasAvatar = dialog.peerData.photo !== undefined
+    const message = AppstoreInstance.messages.find(message => {
+        const toId = message.to_id;
+        return toId[dialog.idPreffix] === dialog.id;
+    });
 
-	if (message['from_id'] > 0) {
-		dialog.peerID = message['from_id'];
-		dialog.foundHistory = true;
-	}
-
-    dialog.peerID = getPeerID(dialog.peer);
-
-	dialog.unreadCount = dialog.unread_count;
-    delete dialog.unread_count;
-
-	return dialog;
-}
+    dialog.setPeerData(peerData);
+    dialog.setTitle(getTitleForPeerData(peerData));
+    dialog.setMessage(message);
+    return dialog;
+};

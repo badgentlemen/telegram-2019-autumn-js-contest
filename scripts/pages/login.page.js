@@ -1,6 +1,6 @@
 import {createElement} from "../lib";
 import {BaseComponent} from "../components";
-import {sendCode} from "../lib/api.manager";
+import { sendCode, logIn } from "../lib/api.manager";
 import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
 import {removeAllChild} from "../utils";
@@ -11,7 +11,8 @@ export default class LoginPage extends BaseComponent {
         super();
 
         this.destroyed = false;
-        this.phoneNumber = null;
+        this.phoneCountry = null;
+        this.phoneNumber = '+79604245511';
         this.phoneCodeHash = null;
         this.confirmCode = null;
 
@@ -51,7 +52,8 @@ export default class LoginPage extends BaseComponent {
             onNextClicked: (phoneNumber, selectedCountry) => {
                 self.phoneNumber = phoneNumber;
                 self.sendCode();
-            }
+            },
+            phoneNumber: this.phoneNumber
         });
         this.loginInner.appendChild(this.signInNode.getNode());
     }
@@ -74,6 +76,10 @@ export default class LoginPage extends BaseComponent {
         this.confirmCodeNode = null;
     }
 
+    checkPhone() {
+        let isBadPhone = (this.phoneCountry || '') + (this.phoneNumber || '')
+    }
+
     sendCode() {
         if (this.phoneNumber) {
             sendCode(this.phoneNumber).then(response => {
@@ -86,7 +92,11 @@ export default class LoginPage extends BaseComponent {
     }
 
     sendNext() {
-
+        if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
+            logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
+                return response;
+            });
+        }
     }
 
     logIn() {

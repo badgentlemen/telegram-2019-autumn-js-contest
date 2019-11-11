@@ -34,4 +34,5 @@ class AppStore {
     }
 }
 
-var appStore = new AppStore();
+const AppstoreInstance = new AppStore();
+export default AppstoreInstance;

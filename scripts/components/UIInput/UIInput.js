@@ -30,7 +30,7 @@ export default class UIInput extends BaseComponent {
         this.input.setAttribute('type', this.type);
 
         if (this.options.maxLength) {
-            this.input.setAttribute('maxlength', this.options.maxLength)
+            this.setMaxLength(this.options.maxLength);
         }
 
 		this.label = createElement(
@@ -80,6 +80,11 @@ export default class UIInput extends BaseComponent {
         } else {
             this.removeErrorFlag();
         }
+    }
+
+    setMaxLength(maxLength) {
+        this.maxLength = maxLength;
+        this.input.setAttribute('maxlength', maxLength);
     }
 
     removeErrorFlag() {

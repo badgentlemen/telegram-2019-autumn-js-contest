@@ -1,13 +1,12 @@
 import BaseComponent from "../../base.component";
 import {createElement} from "../../../lib";
 import UIInput from "../../UIInput/UIInput";
-import UIButton from "../../UIButton/UIButton";
 
 export default class CodeConfirmNode extends BaseComponent {
 
     constructor(options = {}) {
         super(options);
-        this.codeMaxLength = 5;
+        this.codeMaxLength = this.options.maxLength || 5;
         this.node = createElement('div', {'class': this.getClassName()});
         this.renderForm();
     }
