@@ -5100,7 +5100,7 @@ function TelegramApiModule(MtpApiManager, AppPeersManager, MtpApiFileManager, Ap
                 }
                 var versionPart = location.version ? 'v' + location.version : '';
                 return fileName[0] + '_' + location.id + versionPart + '.' + ext;
-    
+
             default:
                 if (!location.volume_id) {
                     return;
@@ -5134,53 +5134,59 @@ function TelegramApiModule(MtpApiManager, AppPeersManager, MtpApiFileManager, Ap
     }
 
     function downloadPhoto(photo, progress, autosave) {
-        var location = {
-            _: 'inputFileLocation',
-            local_id: photo.local_id,
-            secret: photo.secret,
-            volume_id: photo.volume_id
-        };
 
-        if (!isFunction(progress)) {
-            progress = noop;
-        }
+        if (photo.hasOwnProperty('local_id') && photo.hasOwnProperty('secret') && photo.hasOwnProperty('volume_id')) {
 
-        var fileName = getFileName(location);
-        var size = 15728640;
-        var limit = 524288;
-        var offset = 0;
-        var done = $q.defer();
-        var bytes = [];
+            var location = {
+                _: 'inputFileLocation',
+                local_id: photo.local_id,
+                secret: photo.secret,
+                volume_id: photo.volume_id
+            };
 
-        size = 1024 * 1024;
-
-        function download() {
-            if (offset < size) {
-                MtpApiManager.invokeApi('upload.getFile', {
-                    location: location,
-                    offset: offset,
-                    limit: limit
-                }).then(function(result) {
-                    bytes.push(result.bytes);
-                    offset += limit;
-                    progress(offset < size ? offset : size, size);
-                    download();
-                });
-            } else {
-                if (autosave) {
-                    FileSaver.save(bytes, fileName);
-                }
-                done.resolve({
-                    bytes: bytes,
-                    fileName: fileName,
-                    type: 'image/jpeg'
-                });
+            if (!isFunction(progress)) {
+                progress = noop;
             }
+
+            var fileName = getFileName(location);
+            var size = 15728640;
+            var limit = 524288;
+            var offset = 0;
+            var done = $q.defer();
+            var bytes = [];
+
+            size = 1024 * 1024;
+
+            function download() {
+                if (offset < size) {
+                    MtpApiManager.invokeApi('upload.getFile', {
+                        location: location,
+                        offset: offset,
+                        limit: limit
+                    }).then(function(result) {
+                        bytes.push(result.bytes);
+                        offset += limit;
+                        progress(offset < size ? offset : size, size);
+                        download();
+                    });
+                } else {
+                    if (autosave) {
+                        FileSaver.save(bytes, fileName);
+                    }
+                    done.resolve({
+                        bytes: bytes,
+                        fileName: fileName,
+                        type: 'image/jpeg'
+                    });
+                }
+            }
+
+            $timeout(download);
+
+            return done.promise;
+        } else {
+            return done.reject;
         }
-
-        $timeout(download);
-
-        return done.promise;
     }
 
     function editChannelTitle(channel_id, title) {

@@ -118,7 +118,7 @@ export default class UIDialogItem extends BaseComponent {
         if (dialog.peerData.pFlags.self) {
             this.setPhotoNodeImage(faveIcon);
             this.photoNode.appendChild(this.photoNodeImage);
-        } else if (dialog.peerData.photo) {
+        } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
             telegramApi
                 .downloadPhoto(dialog.peerData.photo.photo_small)
                 .then(data => {
@@ -160,7 +160,8 @@ export default class UIDialogItem extends BaseComponent {
                     const dialogConveration = createElement('span', {'class': 'ui-dialog__text-conversation'});
                     dialogText.appendChild(dialogConveration)
                 }
-                const dialogMedia = createElement('span', {'class': 'ui-dialog__text-media'});
+                const dialogMedia = createElement('span', {'class': 'ui-dialog__text-media', 'media-type': this.dialog.message.media ? this.dialog.message.media._ : ''});
+                dialogMedia.innerText = this.shortMessageMedia()
                 dialogText.appendChild(dialogMedia);
 
                 let text = this.shortMessageText();

@@ -108,6 +108,7 @@ export default class Sidebar extends BaseComponent {
 
     renderDialogList() {
         this.dialogs.forEach((dialog, index) => {
+            console.log(index);
             const dialogListItem = new UIDialogItem(dialog);
             const dialogListItemNode = dialogListItem.getNode();
 

@@ -7,10 +7,14 @@ import {
 } from '../../../utils';
 import chatClosedImage from '../../../assets/chat_closed_icon.svg';
 import ScrollableView from '../../ScrollableView/ScrollableView';
+import UIHistory from '../../UIHistory/UIHistory';
 
 export default class ChatContent extends BaseComponent {
     constructor(options = {}) {
         super(options);
+
+        this.historyNode = null;
+
         this.currentDialog = options.currentDialog || null;
         this.state = options.state || 'history';
         var messages = [];
@@ -113,23 +117,11 @@ export default class ChatContent extends BaseComponent {
     }
 
     renderPeerHistoryNode() {
-        this.historyNode = createElement('div', {'class': 'ui-history__node'}, this.node);
-        this.historyHeaderNode = createElement('div', {'class': 'ui-history__header'}, this.historyNode);
-        this.historyBodyNode = createElement('div', {'class': 'ui-history__body'}, this.historyNode);
-
-        this.historyBodyScrollable = new ScrollableView({
-            className: 'ui-history__body-wrapper'
+        this.historyNode = new UIHistory({
+            dialog: this.currentDialog
         });
 
-        this.historyBodyNode.appendChild(this.historyBodyScrollable.getNode());
-
-        this.historyNode.appendChild(this.historyBodyNode);
-
-        this.messageListNode = createElement('div', {
-            'style': 'height: 2000px'
-        });
-
-        this.historyBodyScrollable.appendChild(this.messageListNode);
+        this.node.appendChild(this.historyNode.getNode())
     }
 
     setCurrentDialog(dialog) {
