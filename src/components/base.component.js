@@ -1,3 +1,5 @@
+import {removeAllChild} from "../utils";
+
 export default class BaseComponent {
 
     constructor(options = {}) {
@@ -27,5 +29,9 @@ export default class BaseComponent {
 
     removeFromSuperview() {
 
+    }
+
+    removeSubviews() {
+        removeAllChild(this.node);
     }
 }

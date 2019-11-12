@@ -44,10 +44,10 @@ module.exports = {
 		}),
 		new AddAssetHtmlPlugin([
 			{
-				filepath: require.resolve('./scripts/vendor/jquery.min.js')
+				filepath: require.resolve('./src/vendor/jquery.min.js')
 			},
 			{
-				filepath: require.resolve('./scripts/vendor/telegramApi.js')
+				filepath: require.resolve('./src/vendor/telegramApi.js')
 			}
 		])
 	],

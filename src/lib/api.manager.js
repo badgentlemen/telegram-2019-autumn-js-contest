@@ -35,19 +35,21 @@ export const getDialogs = (limit = 200, offset = 0) => {
 		let dialogs = [];
 		AppstoreInstance.saveChats(result.chats || []);
 		AppstoreInstance.saveMessages(result.messages || []);
-		AppstoreInstance.saveUsers(result.users || []);
+        AppstoreInstance.saveUsers(result.users || []);
+
+        console.log(AppstoreInstance);
 
 		if (result.dialogs.length) {
 			result.dialogs.forEach(function(object) {
 				const dialog = wrapForDialog(object);
 				dialogs.push(dialog);
-			});
+            });
 
-			dialogs.forEach(function(dialog) {
-				const peerID = getPeerID(dialog.peer);
-				const message = dialog.message;
-				// MessageServices.saveMessages([message], peerID);
-			});
+			// dialogs.forEach(function(dialog) {
+			// 	const peerID = getPeerID(dialog.peer);
+			// 	const message = dialog.message;
+			// 	// MessageServices.saveMessages([message], peerID);
+			// });
         }
 
 		AppstoreInstance.dialogs = dialogs;

@@ -1,4 +1,5 @@
-import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus} from "../tl_utils";
+import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter} from "../tl_utils";
+import {tsNow} from "../utils";
 
 
 export default class Dialog {
@@ -65,7 +66,8 @@ export default class Dialog {
     }
 
     setMessage(message) {
-        this.message = message;
+        this.message = message || {};
+        this.message.dateText = dateOrTimeFilter(this.message.date);
     }
 
     setPeerData(peerData) {

@@ -1,8 +1,8 @@
-import { createElement } from './scripts/lib';
-import { getUserID } from './scripts/lib/api.manager';
-import { ChatsPage, LoginPage } from './scripts/pages';
-import './scripts/config';
-import './app.css';
+import { createElement } from './src/lib';
+import { getUserID } from './src/lib/api.manager';
+import { LoginPage } from './src/pages';
+import './src/config';
+import './src/app.css';
 
 telegramApi.setConfig({
 	app: Config.App,
@@ -30,10 +30,12 @@ export const getRootElement = () => {
 	return document.getElementById('appication');
 };
 
-const renderLayoutContainer = () => {
-	const root = getRootElement();
-	var component = createElement('div', { class: 'ui-layout' }, root);
-	return component;
+const renderLayoutContainer = (page, pageClass = 'UiLogin_layout') => {
+    const root = getRootElement();
+    const pageNode = page.getNode();
+    const component = createElement('div', { class: 'ui-layout' }, root);
+    component.classList.add(pageClass);
+    component.appendChild(pageNode);
 };
 
 const renderChatPage = () => {
@@ -45,14 +47,17 @@ const renderLoginPage = () => {
 }
 
 const renderApp = () => {
-	var layoutContainer = renderLayoutContainer();
 	getUserID().then(userId => {
-		page = userId ? new ChatsPage() : new LoginPage();
-		const pageNode = page.getNode();
-		layoutContainer.classList.add(
-			!userId ? 'UiLogin_layout' : 'UiChat_layout'
-		);
-		layoutContainer.appendChild(pageNode);
+		if (userId) {
+           import(/* webpackChunkName: `chat.page.chunk` */ `./src/pages/chat.page`).then(module => {
+               const ChatsPage = module.default;
+               page = new ChatsPage();
+               renderLayoutContainer(page);
+           })
+        } else {
+            page = new LoginPage();
+            renderLayoutContainer(page)
+        }
 	});
 };
 

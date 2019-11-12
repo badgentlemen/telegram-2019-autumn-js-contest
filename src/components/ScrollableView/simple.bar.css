@@ -209,6 +209,10 @@
 }
 
 .ui-scrollable-view .simplebar-scrollbar {
-    width: 2px;
+    width: 6px;
     cursor: pointer;
+}
+
+.ui-scrollable-view .simplebar-scrollbar::before {
+    background: #b8bcbe;
 }

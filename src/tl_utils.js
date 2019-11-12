@@ -1,6 +1,7 @@
 import AppstoreInstance from "./app.store";
 import Dialog from "./model/dialog";
 import {tsNow} from "./utils";
+import { DateTime } from 'luxon';
 
 var MessageServices = {
 	history: {},
@@ -201,10 +202,55 @@ export const wrapForDialog = object => {
     const message = AppstoreInstance.messages.find(message => {
         const toId = message.to_id;
         return toId[dialog.idPreffix] === dialog.id;
-    }) || {};
+    }) || {
+        _: 'message',
+        deleted: true,
+        date: tsNow(true),
+        pFlags: {out: true}
+    };
 
     dialog.setPeerData(peerData);
     dialog.setTitle(getTitleForPeerData(peerData));
     dialog.setMessage(message);
     return dialog;
-};
+}
+
+export const wrapRichText = (text, options = {}) => {
+    if (!text || !text.length) {
+        return '';
+    }
+
+    const entries = options.entities;
+    const contextSize = options.contextSize || 'Telegram';
+    const contextExternal = contextSize !== 'Telegram';
+
+    var emojiFound = false
+
+    // if (entities === undefined) {
+    //     entities =
+    // }
+
+    return text;
+}
+
+export const dateOrTimeFilter = (timestamp, extended = false) => {
+    if (!timestamp) {
+        return '';
+    }
+
+    const ticks = timestamp * 1000;
+    const diff = Math.abs(tsNow() - ticks);
+    let format = 'M/d/yy';
+
+    if (diff > 518400000) {
+        format = extended ? 'MMM d, y' : 'M/d/yy';
+    } else if (diff > 43200000) {
+        format = extended ? 'tt' : 't';
+    }
+    return dateFilter(ticks, format);
+}
+
+export const dateFilter = (ticks, format) => {
+    const date = DateTime.fromMillis(ticks);
+    return date.toFormat(format);
+}
