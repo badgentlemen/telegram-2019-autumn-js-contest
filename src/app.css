@@ -530,7 +530,8 @@ ul {
     justify-content: center;
     flex: 1 1 auto;
     margin-left: 10px;
-    max-width: calc(100% - 54px - 9px);
+    margin-right: 2px;
+    width: calc(100% - 54px - 9px - 2px);
 }
 
 .ui-dialog__title {
@@ -564,6 +565,7 @@ ul {
     line-height: 10px;
     text-align: right;
     font-weight: 400;
+    margin-right: 3px;
 }
 
 .ui-dialog__message-status {
