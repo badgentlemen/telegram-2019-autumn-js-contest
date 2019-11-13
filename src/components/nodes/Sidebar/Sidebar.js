@@ -5,7 +5,7 @@ import {
 import {
     removeAllChild
 } from '../../../utils';
-import UIDialogItem from '../UIDialogItem/UIDialogItem';
+import DialogListItem from '../DialogListItem';
 import ScrollableView from '../../ScrollableView/ScrollableView';
 
 import menuIcon from '../../../assets/menu_svg.svg';
@@ -108,7 +108,7 @@ export default class Sidebar extends BaseComponent {
 
     renderDialogList() {
         this.dialogs.forEach((dialog, index) => {
-            const dialogListItem = new UIDialogItem(dialog);
+            const dialogListItem = new DialogListItem(dialog);
             const dialogListItemNode = dialogListItem.getNode();
 
             if (index > 0) {

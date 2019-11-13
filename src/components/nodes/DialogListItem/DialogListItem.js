@@ -7,7 +7,7 @@ import {
 import faveIcon from "../../../assets/fave.png";
 import {wrapRichText, ConversationType} from "../../../tl_utils";
 
-export default class UIDialogItem extends BaseComponent {
+export default class DialogListItem extends BaseComponent {
     nodeClassName() {
         return "ui-dialog";
     }
@@ -165,7 +165,7 @@ export default class UIDialogItem extends BaseComponent {
     setPhotoNodeImage(imageSrc) {
         if (!this.photoNodeImage) {
             this.photoNodeImage = createElement("img", {
-                class: "ui-dialog__photo"
+                class: "ui-dialog__photo",
             });
         }
         this.photoNodeImage.src = imageSrc;
@@ -183,11 +183,14 @@ export default class UIDialogItem extends BaseComponent {
                 dialogText.innerText = message.action.message || '';
                 break;
             case 'typing':
-                return 'typing...';
+                dialogText.innerText = 'typing...';
+                break;
             case 'deleted':
-                return '&nbsp;';
+                dialogText.innerText = '&nbsp;';
+                break;
             case 'draft':
-                return 'draft';
+                dialogText.innerText = 'draft';
+                break;
             default:
                 let conversation = this.shortConversation();
                 if (conversation) {
@@ -205,12 +208,10 @@ export default class UIDialogItem extends BaseComponent {
                 let text = this.shortMessageText();
 
                 if (text) {
-
                     const messageNode = createElement('span', {'class': 'ui-dialog__text-message'})
                     messageNode.innerText = text;
 
                     dialogText.appendChild(messageNode);
-
                 }
             break;
         }
@@ -237,14 +238,14 @@ export default class UIDialogItem extends BaseComponent {
             if (conversation) {
 
                 if (this.dialog.message.pFlags.out && this.dialog.fromID > 0) {
-                    conversationNode = this.createConversation('You');
+                    conversationNode = this.createConversationNode('You');
                 }
             } else {
                 if (this.dialog.message.pFlags.out && this.dialog.message._ !== 'messageService') {
-                    conversationNode = this.createConversation('You');
+                    conversationNode = this.createConversationNode('You');
                 } else {
                     const messageFrom = this.dialog.message.messageFrom || {};
-                    conversationNode = this.createConversation(messageFrom.first_name || messageFrom.username || '');
+                    conversationNode = this.createConversationNode(messageFrom.first_name || messageFrom.username || '');
                 }
             }
 
@@ -257,13 +258,13 @@ export default class UIDialogItem extends BaseComponent {
         return;
     }
 
-    createConversation(from, requiredDot = true) {
+    createConversationNode(from, requireDot = true) {
 
         const conversationFromNode = createElement('span', {
             'class': 'ui-dialog__text_conversation_from'
         });
         conversationFromNode.innerText = from;
-        if (requiredDot) {
+        if (requireDot) {
             conversationFromNode.classList.add('ui-dots__vertical_after');
         }
 

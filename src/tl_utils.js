@@ -1,5 +1,5 @@
 import AppstoreInstance from "./app.store";
-import Dialog from "./model/dialog";
+import Dialog from "./model/Dialog";
 import {tsNow} from "./utils";
 import { DateTime } from 'luxon';
 
@@ -243,13 +243,14 @@ export const dateOrTimeFilter = (timestamp, extended = false) => {
 
     const ticks = timestamp * 1000;
     const diff = Math.abs(tsNow() - ticks);
-    let format = 'M/d/yy';
+    let format = 'T';
 
     if (diff > 518400000) {
         format = extended ? 'MMM d, y' : 'M/d/yy';
     } else if (diff > 43200000) {
         format = extended ? 'EEEE' : 'EEE';
     }
+
     return dateFilter(ticks, format);
 }
 
