@@ -31,6 +31,10 @@ export default class UIDialogItem extends BaseComponent {
             if (this.dialog.hasUnread()) {
                 classList.push("ui-dialog__unread");
             }
+
+            if (this.dialog.hasUnreadMentions()) {
+                classList.push('ui-dialog__unread_mentions');
+            }
         }
 
         return classList.join(" ");
@@ -86,13 +90,23 @@ export default class UIDialogItem extends BaseComponent {
 
         this.messageNode.appendChild(this.textNodeText());
 
+        const textAdditionalsNode = createElement('span', {
+            'class': 'ui-dialog__text_additionals'
+        }, this.messageNode);
+
         if (dialog.isPinned) {
             createElement(
                 "div", {
                     class: "ui-badge ui-badge__pinned"
                 },
-                this.messageNode
+                textAdditionalsNode
             );
+        }
+
+        if (dialog.hasUnreadMentions()) {
+            const menthionsBadge = createElement('div', {
+                'class': 'ui-badge ui-badge__unread__mentions'
+            }, textAdditionalsNode);
         }
 
         if (dialog.hasUnread()) {
@@ -100,7 +114,7 @@ export default class UIDialogItem extends BaseComponent {
                 "div", {
                     class: "ui-badge ui-badge__unread"
                 },
-                this.messageNode
+                textAdditionalsNode
             );
 
             badge.setAttribute("unread-count", dialog.unreadCount);
@@ -157,8 +171,7 @@ export default class UIDialogItem extends BaseComponent {
 
                 let conversation = this.shortConversation();
                 if (conversation) {
-                    const dialogConveration = createElement('span', {'class': 'ui-dialog__text-conversation'});
-                    dialogText.appendChild(dialogConveration)
+                    dialogText.appendChild(conversation)
                 }
                 const dialogMedia = createElement('span', {'class': 'ui-dialog__text-media', 'media-type': this.dialog.message.media ? this.dialog.message.media._ : ''});
                 dialogMedia.innerText = this.shortMessageMedia()
@@ -191,7 +204,46 @@ export default class UIDialogItem extends BaseComponent {
     }
 
     shortConversation() {
-        // const converstionState =
+        const dialogConveration = createElement('span', {'class': 'ui-dialog__text_conversation'});
+        const conversation = this.dialog.peerID() > 0 || this.dialog.fromID < 0;
+
+        if (this.dialog.fromID > 0) {
+
+            let conversationNode = null
+
+            if (conversation) {
+                if (this.dialog.message.pFlags.out && this.dialog.fromID > 0) {
+                    conversationNode = this.createConversation('You');
+                }
+            } else {
+                if (this.dialog.pFlags.out && this.dialog.message._ !== 'messageService') {
+                    conversationNode = this.createConversation('You');
+                } else {
+                    const messageFrom = this.dialog.message.messageFrom || {};
+                    conversationNode = this.createConversation(messageFrom.first_name || messageFrom.username || '');
+                }
+            }
+
+            if (conversationNode) {
+                dialogConveration.appendChild(conversationNode);
+                return dialogConveration;
+            }
+        }
+
+        return;
+    }
+
+    createConversation(from, requiredDot = true) {
+
+        const conversationFromNode = createElement('span', {
+            'class': 'ui-dialog__text_conversation_from'
+        });
+        conversationFromNode.innerText = from;
+        if (requiredDot) {
+            conversationFromNode.classList.add('ui-dots__vertical_after');
+        }
+
+        return conversationFromNode
     }
 
     shortMessageMedia() {

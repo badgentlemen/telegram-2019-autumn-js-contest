@@ -1,6 +1,6 @@
-import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter} from "../tl_utils";
+import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter, getUser, wrapForDocument} from "../tl_utils";
 import {tsNow} from "../utils";
-
+import {DateTime} from 'luxon';
 
 export default class Dialog {
     constructor(object) {
@@ -36,8 +36,7 @@ export default class Dialog {
 
         this.isMuted = isPeerNotificationMuted(this.notifySettings);
 
-
-
+        this.fromID = 0;
         //
         // var message =
         //     AppstoreInstance.messages.find(function(message) {
@@ -62,12 +61,33 @@ export default class Dialog {
     }
 
     hasUnread() {
-        return this.unreadCount > 0 && !this.pFlags.out && !this.isPinned
+        return this.unreadCount > 0 && !this.pFlags.out
+    }
+
+    hasUnreadMentions() {
+        return this.unreadMentionsCount > 0;
     }
 
     setMessage(message) {
         this.message = message || {};
-        this.message.dateText = dateOrTimeFilter(this.message.date);
+
+        if (this.message.media && this.message.media.document) {
+            this.updateMediaDocument();
+        }
+
+        if (this.message.date) {
+            this.message.dateMoment = DateTime.fromSeconds(this.message.date);
+            this.message.dateText = dateOrTimeFilter(this.message.date);
+        }
+
+        if (this.message.from_id) {
+            this.fromID = this.message.from_id;
+            this.message.messageFrom = getUser(this.message.from_id);
+        }
+    }
+
+    updateMediaDocument() {
+        this.message.media.document = wrapForDocument(this.message.media.document);
     }
 
     setPeerData(peerData) {

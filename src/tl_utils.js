@@ -125,6 +125,10 @@ export const onlineStatus = (user) => {
 	};
 }
 
+export const getUser = (peerID) => {
+    return AppstoreInstance.users.find(user => user.id === peerID);
+}
+
 export const getPeerID = (peerObject) => {
 	return peerObject.user_id
 		? peerObject.user_id
@@ -200,14 +204,13 @@ export const wrapForDialog = object => {
     });
 
     const message = AppstoreInstance.messages.find(message => {
-        const toId = message.to_id;
-        return toId[dialog.idPreffix] === dialog.id;
-    }) || {
-        _: 'message',
-        deleted: true,
-        date: tsNow(true),
-        pFlags: {out: true}
-    };
+        let preffix = dialog.idPreffix;
+        let foundMsg = message['to_id'][preffix] === dialog.id;
+        if (!foundMsg) {
+            foundMsg = message['from_id'] === dialog.id;
+        }
+        return foundMsg
+    }) || { };
 
     dialog.setPeerData(peerData);
     dialog.setTitle(getTitleForPeerData(peerData));
@@ -245,7 +248,7 @@ export const dateOrTimeFilter = (timestamp, extended = false) => {
     if (diff > 518400000) {
         format = extended ? 'MMM d, y' : 'M/d/yy';
     } else if (diff > 43200000) {
-        format = extended ? 'tt' : 't';
+        format = extended ? 'EEEE' : 'EEE';
     }
     return dateFilter(ticks, format);
 }
@@ -253,4 +256,82 @@ export const dateOrTimeFilter = (timestamp, extended = false) => {
 export const dateFilter = (ticks, format) => {
     const date = DateTime.fromMillis(ticks);
     return date.toFormat(format);
+}
+
+export const wrapForDocument = (document = {}) => {
+
+    if (document.thumb && document.thumb._ == 'photoSizeEmpty') {
+        delete document.thumb;
+    }
+
+    (document.attributes || []).forEach(attribute => {
+        switch (attribute._) {
+            case 'documentAttributeFilename':
+                document.fileName = attribute.file_name || ''
+                break;
+            case 'documentAttributeAudio':
+                document.duration = attribute.duration
+                document.audioTitle = attribute.title
+                document.audioPerformer = attribute.performer
+                document.type = attribute.pFlags.voice ? 'voice' : 'audio';
+                break;
+            case 'documentAttributeVideo':
+                document.duration = attribute.duration
+                document.w = attribute.w
+                document.h = attribute.h
+                if (document.thumb &&
+                    attribute.pFlags.round_message) {
+                    document.type = 'round'
+                }
+                else if (document.thumb) {
+                    document.type = 'video'
+                }
+                break;
+            case 'documentAttributeImageSize':
+                document.w = attribute.w
+                document.h = attribute.h
+                break
+                case 'documentAttributeAnimated':
+                if ((document.mime_type == 'image/gif' || document.mime_type == 'video/mp4') &&
+                    document.thumb) {
+                    document.type = 'gif'
+                }
+                document.animated = true
+                break
+        }
+    })
+
+    if (!document.mime_type) {
+        switch (document.type) {
+          case 'gif':
+            document.mime_type = 'video/mp4'
+            break
+          case 'video':
+          case 'round':
+            document.mime_type = 'video/mp4'
+            break
+          case 'sticker':
+            document.mime_type = 'image/webp'
+            break
+          case 'audio':
+            document.mime_type = 'audio/mpeg'
+            break
+          case 'voice':
+            document.mime_type = 'audio/ogg'
+            break
+          default:
+            document.mime_type = 'application/octet-stream'
+            break
+        }
+      }
+
+      if (!document.file_name) {
+        document.fileName = ''
+      }
+
+      if (document._ == 'documentEmpty') {
+        document.size = 0
+      }
+
+    return document;
 }

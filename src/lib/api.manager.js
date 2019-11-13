@@ -37,6 +37,8 @@ export const getDialogs = (limit = 200, offset = 0) => {
 		AppstoreInstance.saveMessages(result.messages || []);
         AppstoreInstance.saveUsers(result.users || []);
 
+        console.log(AppstoreInstance);
+
 		if (result.dialogs.length) {
 			result.dialogs.forEach(function(object) {
 				const dialog = wrapForDialog(object);
@@ -49,6 +51,10 @@ export const getDialogs = (limit = 200, offset = 0) => {
 			// 	// MessageServices.saveMessages([message], peerID);
 			// });
         }
+
+        dialogs = dialogs.filter(dialog => {
+            return ((dialog.message || {}).action || {})._ != 'messageActionChatMigrateTo'
+        });
 
 		AppstoreInstance.dialogs = dialogs;
 		return dialogs;

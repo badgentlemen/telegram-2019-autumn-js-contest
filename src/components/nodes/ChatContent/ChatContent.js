@@ -129,7 +129,7 @@ export default class ChatContent extends BaseComponent {
         this.state = 'history';
         this.renderMainView();
 
-        this.updateHeader();
+        console.log(dialog);
     }
 
     // this.setCurrentDialog = function(dialog) {

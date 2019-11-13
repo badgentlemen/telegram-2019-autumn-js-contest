@@ -526,7 +526,7 @@ ul {
     flex-direction: column;
     justify-content: center;
     flex: 1 1 auto;
-    margin-left: 9px;
+    margin-left: 10px;
     max-width: calc(100% - 54px - 9px);
 }
 
@@ -557,6 +557,7 @@ ul {
     line-height: 10px;
     text-align: right;
     flex: 0 1 auto;
+    font-weight: 400;
 }
 
 .ui-dialog__message {
@@ -573,7 +574,18 @@ ul {
     text-overflow: ellipsis;
     margin-right: 10px;
     color: #707579;
-    font-size: 14.5px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.ui-dialog__text_additionals {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ui-dialog__text_additionals > div:not(:last-child) {
+    margin-right: 4px;
 }
 
 .ui-dialog__text-message {
@@ -585,6 +597,13 @@ ul {
 
 .ui-dialog__text-message br {
     display: none;
+}
+
+.ui-dialog__text_conversation {
+    position: relative;
+    margin-right: 5px;
+    color: black;
+    font-weight: 500;
 }
 
 
@@ -631,7 +650,8 @@ ul {
     justify-content: center;
 }
 
-.ui-badge__pinned {
+.ui-badge__pinned,
+.ui-badge__unread__mentions {
     width: 24px;
     height: 24px;
     padding: 0;
@@ -641,15 +661,25 @@ ul {
     content: "";
     width: 24px;
     height: 24px;
-
     background-image: url('./assets/pinnedchat_svg.svg');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 105%;
 }
 
-.ui-badge__unread {
+.ui-badge__unread,
+.ui-badge__unread__mentions {
     background-color: #4dcd5e;
+}
+
+.ui-badge__unread__mentions::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-image: url('./assets/username_white.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
 }
 
 .ui-badge__unread::after {
@@ -812,3 +842,7 @@ ul {
     background-image: url('./assets/chat_close_actions/channel_svg_white.svg');
 }
 
+
+.ui-dots__vertical_after::after {
+    content: ':';
+}
