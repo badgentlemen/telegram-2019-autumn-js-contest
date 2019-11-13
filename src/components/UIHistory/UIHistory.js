@@ -18,14 +18,36 @@ export default class UIHistory extends BaseComponent {
         this.historyNode.appendChild(this.historyNodeHeader.getNode());
         this.historyNode.appendChild(this.historyNodeBody.getNode());
 
-        // this.messageListNode = createElement('div', {
-        //     'style': 'height: 2000px'
-        // });
 
-        // this.historyBodyScrollable.appendChild(this.messageListNode);
+        this.peerHistories = []
+        this.selectedMsgs = {}
+        this.selectedCount = 0
+        this.historyState = {};
+        this.historyState.selectActions = false
+        this.historyState.botActions = false
+        this.historyState.channelActions = false
+        this.historyState.canDelete = false
+        this.historyState.canReply = false
+        this.historyState.missedCount = 0
+        this.historyState.skipped = false
+        this.state = {}
+    }
+
+    setCurrentDialog(dialog) {
+        this.historyNodeBody.setCurrentDialog(dialog);
+        this.historyNodeHeader.setCurrentDialog(dialog);
+        console.log(dialog);
     }
 
     getNode() {
         return this.historyNode
+    }
+
+    getHeader() {
+
+    }
+
+    getBody() {
+
     }
 }

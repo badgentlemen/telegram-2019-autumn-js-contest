@@ -3,11 +3,15 @@ import {createElement} from "../lib";
 import Sidebar from "../../src/components/nodes/Sidebar/Sidebar";
 import {getDialogs} from "../lib/api.manager";
 import ChatContent from "../../src/components/nodes/ChatContent/ChatContent";
+import { searchQuery } from "../utils";
+import AppstoreInstance from "../app.store";
 
 export default class ChatsPage extends BaseComponent {
 	constructor(options) {
         super(options);
         this.node = createElement('div', {'class': 'UiChat_layout__node'});
+        this.peerQuery = searchQuery()['peer'];
+
         this.chatContent = new ChatContent();
 		this.chatSidebar = new Sidebar({
 			onDialogClicked: dialog => {
@@ -41,15 +45,21 @@ export default class ChatsPage extends BaseComponent {
 		getDialogs().then(dialogs => {
             this.chatSidebar.setDialogs(dialogs);
 
-            if (dialogs.length) {
-                this.chatContent.setCurrentDialog(dialogs[0]);
+            if (this.peerQuery && this.peerQuery.length) {
+                const currentDialog = dialogs.find(dialog => (dialog.peerData || {}).username === this.peerQuery);
+
+                if (currentDialog) {
+                    this.chatContent.setCurrentDialog(currentDialog);
+                }
             }
 
         }).catch(error => {
             console.log(error);
             this.chatSidebar.setDialogs([]);
         });
-	}
+    }
+
+
 
     fetchMessagesForChatId(id) {}
 

@@ -21,10 +21,10 @@ export default class ChatContent extends BaseComponent {
         this.node = createElement('div', {
             class: 'ui-chat__content'
         });
-        this.renderMainView();
+        this.renderLayoutSubviews();
     }
 
-    renderMainView() {
+    renderLayoutSubviews() {
         removeAllChild(this.node);
 
         switch (this.state) {
@@ -116,7 +116,8 @@ export default class ChatContent extends BaseComponent {
     setCurrentDialog(dialog) {
         this.currentDialog = dialog;
         this.state = 'history';
-        this.renderMainView();
+        this.renderLayoutSubviews();
+        this.historyNode.setCurrentDialog(dialog);
     }
 
     // this.setCurrentDialog = function(dialog) {

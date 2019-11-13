@@ -1,4 +1,4 @@
-import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter, getUser, wrapForDocument} from "../tl_utils";
+import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter, getUser, wrapForDocument, getPeerString} from "../tl_utils";
 import {tsNow} from "../utils";
 import {DateTime} from 'luxon';
 
@@ -22,21 +22,16 @@ export default class Dialog {
         }
 
         this.pFlags = object.pFlags || {};
-
         this.isPinned = this.pFlags.pinned || false;
         this.flags = object.flags || 0;
-
         this.readInboxMaxId = object['read_inbox_max_id'] || 0;
         this.readOutboxMaxId = object['read_outbox_max_id'] || 0;
-
         this.unreadCount = object['unread_count'] || 0;
         this.unreadMentionsCount = object['unread_mentions_count'] || 0;
-
         this.notifySettings = object['notify_settings'] || {};
-
         this.isMuted = isPeerNotificationMuted(this.notifySettings);
-
         this.fromID = 0;
+        this.peerString = getPeerString(this.peerID())
         //
         // var message =
         //     AppstoreInstance.messages.find(function(message) {

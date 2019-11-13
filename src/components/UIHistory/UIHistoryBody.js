@@ -21,4 +21,7 @@ export default class UIHistoryBody extends BaseComponent {
     }
 
 
+    setCurrentDialog(dialog) {
+        this.currentDialog = dialog;
+    }
 }
