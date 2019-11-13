@@ -6,7 +6,7 @@ import {
     removeAllChild
 } from '../../../utils';
 import chatClosedImage from '../../../assets/chat_closed_icon.svg';
-import ScrollableView from '../../ScrollableView/ScrollableView';
+import ScrollableView from '../../ScrollableView';
 import UIHistory from '../../UIHistory/UIHistory';
 
 export default class ChatContent extends BaseComponent {
@@ -16,24 +16,11 @@ export default class ChatContent extends BaseComponent {
         this.historyNode = null;
 
         this.currentDialog = options.currentDialog || null;
-        this.state = options.state || 'history';
+        this.state = !this.currentDialog ? 'closed' : 'history';
         var messages = [];
-        var historyClasses = [
-            'ui-history__user',
-            'ui-history__chat',
-            'ui-history__channel'
-        ];
         this.node = createElement('div', {
             class: 'ui-chat__content'
         });
-        // var header = createElement('div', 'ui-chat__content_header', node);
-        // var body = createElement('div', 'ui-chat__content_body', node);
-        // var history = createElement('div', 'ui-history', body);
-        // var historyContainer = createElement(
-        // 	'div',
-        // 	'ui-history__container',
-        // 	history
-        // );
         this.renderMainView();
     }
 
@@ -45,7 +32,9 @@ export default class ChatContent extends BaseComponent {
                 this.renderClosedNode();
                 break;
             default:
-                this.renderPeerHistoryNode();
+                this.renderPeerHistoryNode({
+                    currentDialog: this.currentDialog
+                });
                 break;
         }
     }
@@ -128,8 +117,6 @@ export default class ChatContent extends BaseComponent {
         this.currentDialog = dialog;
         this.state = 'history';
         this.renderMainView();
-
-        console.log(dialog);
     }
 
     // this.setCurrentDialog = function(dialog) {

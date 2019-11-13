@@ -51,7 +51,7 @@ export default class DialogListItem extends BaseComponent {
 
         this.photoNode = createElement(
             "div", {
-                class: `ui-dialog__photo-node ui-user__bgcolor_${peerData.num} || 1`
+                class: `ui-user__photo ui-user__bgcolor_${peerData.num || 1}`
             },
             this.node
         );
@@ -291,8 +291,8 @@ export default class DialogListItem extends BaseComponent {
                         return ConversationType.conversation_media_gif;
                     case 'round':
                         return ConversationType.conversation_media_round;
-                    case 'audio',
-                         'voice':
+                    case 'audio':
+                    case 'voice':
                         return ConversationType.conversation_media_audio;
                     case 'video':
                         return ConversationType.conversation_media_video
@@ -307,8 +307,8 @@ export default class DialogListItem extends BaseComponent {
                 return ConversationType.conversation_media_contact;
             case "messageMediaGame":
                 return ConversationType.conversation_media_game;
-            case "messageMediaUnsupported",
-                    "messageMediaUnsupportedWeb":
+            case "messageMediaUnsupported":
+            case "messageMediaUnsupportedWeb":
                 return ConversationType.conversation_media_unsupported;
             default:
                 return '';

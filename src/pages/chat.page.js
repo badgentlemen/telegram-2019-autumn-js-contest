@@ -40,6 +40,11 @@ export default class ChatsPage extends BaseComponent {
         this.chatSidebar.setLoading(true);
 		getDialogs().then(dialogs => {
             this.chatSidebar.setDialogs(dialogs);
+
+            if (dialogs.length) {
+                this.chatContent.setCurrentDialog(dialogs[0]);
+            }
+
         }).catch(error => {
             console.log(error);
             this.chatSidebar.setDialogs([]);

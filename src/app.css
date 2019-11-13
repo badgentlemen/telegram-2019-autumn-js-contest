@@ -474,7 +474,7 @@ ul {
     display: none;
 }
 
-.ui-dialog__photo-node {
+.ui-user__photo {
     position: relative;
     width: 54px;
     height: 54px;
@@ -487,7 +487,7 @@ ul {
     border-radius: 50%;
 }
 
-.ui-dialog__photo-node::before {
+.ui-user__photo::before {
     content: attr(peer-initials);
     line-height: 48px;
     font-size: 18px;
