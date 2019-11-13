@@ -70,7 +70,6 @@ export default class Dialog {
 
     setMessage(message) {
         this.message = message || {};
-
         if (this.message.media && this.message.media.document) {
             this.updateMediaDocument();
         }

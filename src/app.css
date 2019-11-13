@@ -104,8 +104,7 @@ ul {
 
 .ui-input__input,
 .ui-select {
-    border: var(--component-normal-state-border-weight) solid
-        var(--component-border-color);
+    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
     padding: 15px;
     border-radius: 8px;
     font-size: 16px;
@@ -264,11 +263,9 @@ ul {
     padding-bottom: 80px;
 }
 
-.ui-sidebar__chat-list {
-}
+.ui-sidebar__chat-list {}
 
-.ui-sidebar__footer {
-}
+.ui-sidebar__footer {}
 
 .ui-search {
     position: relative;
@@ -402,7 +399,7 @@ ul {
 }
 
 .ui-dialog__list .simplebar-content {
-    padding-bottom: 80px!important;
+    padding-bottom: 80px !important;
 }
 
 .ui-dialog__floating-button {
@@ -541,6 +538,10 @@ ul {
     align-items: center;
 }
 
+.ui-dialog__title_additionals {
+    flex: 0 1 auto;
+}
+
 .ui-dialog__title-text {
     display: inline-flex;
     overflow: hidden;
@@ -556,8 +557,22 @@ ul {
     color: #9fa1a5;
     line-height: 10px;
     text-align: right;
-    flex: 0 1 auto;
     font-weight: 400;
+}
+
+.ui-dialog__message-status {
+    position: relative;
+    width: 18px;
+    height: 11px;
+    background-image: url('./assets/message/message_read.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    margin-right: 3px;
+}
+
+.ui-dialog__message-status_unread {
+    background-image: url('./assets/message/message_unread.svg');
 }
 
 .ui-dialog__message {
@@ -578,13 +593,14 @@ ul {
     font-weight: 400;
 }
 
-.ui-dialog__text_additionals {
+.ui-dialog__text_additionals,
+.ui-dialog__title_additionals {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-.ui-dialog__text_additionals > div:not(:last-child) {
+.ui-dialog__text_additionals>div:not(:last-child) {
     margin-right: 4px;
 }
 
@@ -628,6 +644,7 @@ ul {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -664,7 +681,7 @@ ul {
     background-image: url('./assets/pinnedchat_svg.svg');
     background-repeat: no-repeat;
     background-position: center center;
-    background-size: 105%;
+    background-size: cover;
 }
 
 .ui-badge__unread,
@@ -705,14 +722,11 @@ ul {
     overflow-y: auto;
 }
 
-.ui-history__user {
-}
+.ui-history__user {}
 
-.ui-history__chat {
-}
+.ui-history__chat {}
 
-.ui-history__channel {
-}
+.ui-history__channel {}
 
 .ui-history__container {
     width: 100%;
@@ -756,8 +770,7 @@ ul {
     background-color: #eeffde;
 }
 
-.ui-message__balloon {
-}
+.ui-message__balloon {}
 
 .ui-desktop__title {
     color: black;
@@ -845,4 +858,43 @@ ul {
 
 .ui-dots__vertical_after::after {
     content: ':';
+}
+
+.ui-user__bgcolor_1,
+.ui-user__bgcolor_6,
+.ui-user__bgcolor_4,
+.ui-user__bgcolor_7 {
+    color: white;
+}
+
+.ui-user__bgcolor_1 {
+    background: #cc90e2;
+}
+
+.ui-user__bgcolor_2 {
+    background: #80d066;
+}
+
+.ui-user__bgcolor_3 {
+    background: #ecd074;
+}
+
+.ui-user__bgcolor_4 {
+    background: #6fb1e4;
+}
+
+.ui-user__bgcolor_5 {
+    background: #e57979;
+}
+
+.ui-user__bgcolor_6 {
+    background: #f98bae;
+}
+
+.ui-user__bgcolor_7 {
+    background: #73cdd0;
+}
+
+.ui-user__bgcolor_8 {
+    background: #fba76f;
 }

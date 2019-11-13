@@ -49,6 +49,8 @@ const renderLoginPage = () => {
 const renderApp = () => {
 	getUserID().then(userId => {
 		if (userId) {
+            window.currentUserId = userId;
+
            import(/* webpackChunkName: `chat.page.chunk` */ `./src/pages/chat.page`).then(module => {
                const ChatsPage = module.default;
                page = new ChatsPage();

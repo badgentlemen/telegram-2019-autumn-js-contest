@@ -5,7 +5,7 @@ import {
     createElement
 } from "../../../lib";
 import faveIcon from "../../../assets/fave.png";
-import {wrapRichText} from "../../../tl_utils";
+import {wrapRichText, ConversationType} from "../../../tl_utils";
 
 export default class UIDialogItem extends BaseComponent {
     nodeClassName() {
@@ -45,12 +45,13 @@ export default class UIDialogItem extends BaseComponent {
         this.dialog = dialog;
         const peerData = dialog.peerData || {};
         this.node = createElement("div", {
-            class: this.getClassName()
+            class: this.getClassName(),
+            id: Math.abs(dialog.peerID())
         });
-        this.node.setAttribute("id", Math.abs(dialog.peerID()));
+
         this.photoNode = createElement(
             "div", {
-                class: "ui-dialog__photo-node"
+                class: `ui-dialog__photo-node ui-user__bgcolor_${peerData.num} || 1`
             },
             this.node
         );
@@ -79,7 +80,23 @@ export default class UIDialogItem extends BaseComponent {
         );
 
         this.titleTextNode.innerText = dialog.title;
-        this.timeNode = createElement('span', {'class': 'ui-dialog__timestamp'}, this.titleNode);
+
+        const titleAdditionalsNode = createElement('span', {
+            class: 'ui-dialog__title_additionals'
+        }, this.titleNode)
+
+        if (this.dialog.message.pFlags.out || false) {
+            const messageUnread = this.dialog.message.unread;
+            const messageStatusNode = createElement('span', {
+                class: `ui-dialog__message-status ui-dialog__message-status-${messageUnread ? 'unread' : 'read'}`
+            });
+
+            titleAdditionalsNode.appendChild(messageStatusNode);
+        }
+
+        this.timeNode = createElement('span', {'class': 'ui-dialog__timestamp'});
+        titleAdditionalsNode.appendChild(this.timeNode)
+
         this.timeNode.innerText = dialog.message.dateText || '';
         this.messageNode = createElement(
             "div", {
@@ -156,10 +173,15 @@ export default class UIDialogItem extends BaseComponent {
     }
 
     textNodeText() {
+        const message = this.dialog.message || {};
+        const type = message.action && message.action._ === 'messageActionCustomAction' ? 'actionMessage' : ( this.dialog.typing ? 'typing' : (!this.dialog.unreadCount && this.dialog.draft ? 'draft' : (this.dialog.deleted ? 'deleted' : 'message')));
 
-        const type = this.dialog.typing ? 'typing' : (!this.dialog.unreadCount && this.dialog.draft ? 'draft' : (this.dialog.deleted ? 'deleted' : 'message'));
+        const dialogText = createElement('span', {'class': 'ui-dialog__text'});
 
         switch (type) {
+            case 'actionMessage':
+                dialogText.innerText = message.action.message || '';
+                break;
             case 'typing':
                 return 'typing...';
             case 'deleted':
@@ -167,15 +189,18 @@ export default class UIDialogItem extends BaseComponent {
             case 'draft':
                 return 'draft';
             default:
-                const dialogText = createElement('span', {'class': 'ui-dialog__text'});
-
                 let conversation = this.shortConversation();
                 if (conversation) {
                     dialogText.appendChild(conversation)
                 }
-                const dialogMedia = createElement('span', {'class': 'ui-dialog__text-media', 'media-type': this.dialog.message.media ? this.dialog.message.media._ : ''});
-                dialogMedia.innerText = this.shortMessageMedia()
-                dialogText.appendChild(dialogMedia);
+
+                let mediaMessage = this.shortMessageMedia();
+
+                if (mediaMessage) {
+                    const dialogMedia = createElement('span', {'class': 'ui-dialog__text-media', 'media-type': this.dialog.message.media ? this.dialog.message.media._ : ''});
+                    dialogMedia.innerText = mediaMessage;
+                    dialogText.appendChild(dialogMedia);
+                }
 
                 let text = this.shortMessageText();
 
@@ -187,11 +212,10 @@ export default class UIDialogItem extends BaseComponent {
                     dialogText.appendChild(messageNode);
 
                 }
-
-                return dialogText;
-
+            break;
         }
 
+        return dialogText;
     }
 
     shortMessageText() {
@@ -206,17 +230,17 @@ export default class UIDialogItem extends BaseComponent {
     shortConversation() {
         const dialogConveration = createElement('span', {'class': 'ui-dialog__text_conversation'});
         const conversation = this.dialog.peerID() > 0 || this.dialog.fromID < 0;
-
         if (this.dialog.fromID > 0) {
 
             let conversationNode = null
 
             if (conversation) {
+
                 if (this.dialog.message.pFlags.out && this.dialog.fromID > 0) {
                     conversationNode = this.createConversation('You');
                 }
             } else {
-                if (this.dialog.pFlags.out && this.dialog.message._ !== 'messageService') {
+                if (this.dialog.message.pFlags.out && this.dialog.message._ !== 'messageService') {
                     conversationNode = this.createConversation('You');
                 } else {
                     const messageFrom = this.dialog.message.messageFrom || {};
@@ -249,44 +273,44 @@ export default class UIDialogItem extends BaseComponent {
     shortMessageMedia() {
         const media = this.dialog.message.media || null;
 
-        if (media) {
-            const mediaType = media._;
+        if(!media) {
+            return null;
+        }
+        const mediaType = media._;
 
-            switch (mediaType) {
-                case "messageMediaPhoto":
-                    return "Photo";
-                case "messageMediaDocument":
-                    const documentType = media.document;
-                    switch (documentType) {
-
-                        case 'sticker':
-                            const attribute = media.document.attributes.find(attribute => attribute._ === 'documentAttributeSticker');
-                            if (attribute && attribute.alt) {
-                                return attribute.alt;
-                            } else {
-                                return '';
-                            }
-                        default:
-                            return '';
-                    }
-
-                    case "messageMediaGeo":
-                        return "Location";
-                    case "messageMediaVenue":
-                        return "Venue";
-                    case "messageMediaContact":
-                        return "Contact";
-                    case "messageMediaGame":
-                        return "🎮";
-                    case "messageMediaUnsupported":
-                        return "Unsupported attachment";
-                    case "messageMediaUnsupportedWeb":
-                        return "Unsupported web";
+        switch (mediaType) {
+            case "messageMediaPhoto":
+                return ConversationType.conversation_media_photo;
+            case "messageMediaDocument":
+                const documentType = media.document.type;
+                switch (documentType) {
+                    case 'sticker':
+                        return `${ConversationType.conversation_media_sticker} ${media.document.stickerEmoji}`;
+                    case 'gif':
+                        return ConversationType.conversation_media_gif;
+                    case 'round':
+                        return ConversationType.conversation_media_round;
+                    case 'audio',
+                         'voice':
+                        return ConversationType.conversation_media_audio;
+                    case 'video':
+                        return ConversationType.conversation_media_video
                     default:
-                        return '';
-            }
-        } else {
-            return '';
+                        return media.document.fileName || '';
+                }
+
+            case "messageMediaGeo",
+                "messageMediaVenue":
+                return ConversationType.conversation_media_location;
+            case "messageMediaContact":
+                return ConversationType.conversation_media_contact;
+            case "messageMediaGame":
+                return ConversationType.conversation_media_game;
+            case "messageMediaUnsupported",
+                    "messageMediaUnsupportedWeb":
+                return ConversationType.conversation_media_unsupported;
+            default:
+                return '';
         }
     }
 }

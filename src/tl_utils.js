@@ -207,7 +207,7 @@ export const wrapForDialog = object => {
         let preffix = dialog.idPreffix;
         let foundMsg = message['to_id'][preffix] === dialog.id;
         if (!foundMsg) {
-            foundMsg = message['from_id'] === dialog.id;
+            foundMsg = message['from_id'] === dialog.id && message['to_id']._ === dialog.peerType.key;
         }
         return foundMsg
     }) || { };
@@ -267,7 +267,11 @@ export const wrapForDocument = (document = {}) => {
     (document.attributes || []).forEach(attribute => {
         switch (attribute._) {
             case 'documentAttributeFilename':
-                document.fileName = attribute.file_name || ''
+                document.fileName = attribute.file_name || '';
+                break;
+            case 'documentAttributeSticker':
+                document.stickerEmoji = attribute.alt || '';
+                document.type = 'sticker';
                 break;
             case 'documentAttributeAudio':
                 document.duration = attribute.duration
@@ -291,7 +295,7 @@ export const wrapForDocument = (document = {}) => {
                 document.w = attribute.w
                 document.h = attribute.h
                 break
-                case 'documentAttributeAnimated':
+            case 'documentAttributeAnimated':
                 if ((document.mime_type == 'image/gif' || document.mime_type == 'video/mp4') &&
                     document.thumb) {
                     document.type = 'gif'
@@ -334,4 +338,21 @@ export const wrapForDocument = (document = {}) => {
       }
 
     return document;
+}
+
+export const ConversationType = {
+    "conversation_you": "You",
+	"conversation_draft": "Draft:",
+	"conversation_media_photo": "Photo",
+	"conversation_media_video": "Video",
+	"conversation_media_round": "Video message",
+	"conversation_media_document": "File",
+	"conversation_media_sticker": "Sticker",
+	"conversation_media_gif": "GIF",
+	"conversation_media_audio": "Audio",
+	"conversation_media_location": "Location",
+	"conversation_media_contact": "Contact",
+	"conversation_media_attachment": "Attachment",
+    "conversation_media_unsupported": "Unsupported attachment",
+    "conversation_media_game": "🎮"
 }
