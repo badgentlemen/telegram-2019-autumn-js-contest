@@ -245,7 +245,7 @@ export default class UIHistory extends BaseComponent {
             limit = 15;
             backLimit = limit;
         } else if (forceRecent) {
-            limit = 20;
+            limit = 30;
         }
 
         this.state.moreActive = this.moreActive = false;

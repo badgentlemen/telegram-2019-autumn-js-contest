@@ -182,7 +182,7 @@ export class MessagesManager {
 		}
 
 		var fromUser =
-			message.fromID = getUser(message.from_id);
+			message.messageFrom = getUser(message.from_id);
 		var fromBot =
 			(fromUser && fromUser.pFlags.bot && fromUser.username) || false;
 		var withBot =
@@ -190,117 +190,6 @@ export class MessagesManager {
 			(message.to_id &&
 				(message.to_id.chat_id ||
 					(message.to_id.user_id)));
-
-		if (message.media) {
-			if (message.media.caption && message.media.caption.length) {
-				message.media.rCaption = RichTextProcessor.wrapRichText(
-					message.media.caption,
-					{
-						noCommands: !withBot,
-						fromBot: fromBot
-					}
-				);
-			}
-
-			// switch (message.media._) {
-			// 	case 'messageMediaPhoto':
-			// 		message.media.photo = AppPhotosManager.wrapForHistory(
-			// 			message.media.photo.id
-			// 		);
-			// 		break;
-
-			// 	case 'messageMediaDocument':
-			// 		message.media.document = AppDocsManager.wrapForHistory(
-			// 			message.media.document.id
-			// 		);
-			// 		break;
-
-			// 	case 'messageMediaGeo':
-			// 		var mapUrl =
-			// 			'https://maps.google.com/?q=' +
-			// 			message.media.geo['lat'] +
-			// 			',' +
-			// 			message.media.geo['long'];
-			// 		message.media.mapUrl = $sce.trustAsResourceUrl(mapUrl);
-			// 		break;
-
-			// 	case 'messageMediaVenue':
-			// 		var mapUrl;
-			// 		if (
-			// 			message.media.provider == 'foursquare' &&
-			// 			message.media.venue_id
-			// 		) {
-			// 			mapUrl =
-			// 				'https://foursquare.com/v/' +
-			// 				encodeURIComponent(message.media.venue_id);
-			// 		} else {
-			// 			mapUrl =
-			// 				'https://maps.google.com/?q=' +
-			// 				message.media.geo['lat'] +
-			// 				',' +
-			// 				message.media.geo['long'];
-			// 		}
-			// 		message.media.mapUrl = $sce.trustAsResourceUrl(mapUrl);
-			// 		break;
-
-			// 	case 'messageMediaContact':
-			// 		message.media.rFullName = RichTextProcessor.wrapRichText(
-			// 			message.media.first_name +
-			// 				' ' +
-			// 				(message.media.last_name || ''),
-			// 			{ noLinks: true, noLinebreaks: true }
-			// 		);
-			// 		break;
-
-			// 	case 'messageMediaWebPage':
-			// 		if (
-			// 			!message.media.webpage ||
-			// 			message.media.webpage._ == 'webPageEmpty'
-			// 		) {
-			// 			delete message.media;
-			// 			break;
-			// 		}
-			// 		message.media.webpage = AppWebPagesManager.wrapForHistory(
-			// 			message.media.webpage.id
-			// 		);
-			// 		break;
-
-			// 	case 'messageMediaGame':
-			// 		message.media.game = AppGamesManager.wrapForHistory(
-			// 			message.media.game.id
-			// 		);
-			// 		break;
-			// }
-		} else if (message.action) {
-			// switch (message.action._) {
-			// 	case 'messageActionChatEditPhoto':
-			// 	case 'messageActionChannelEditPhoto':
-			// 		message.action.photo = AppPhotosManager.wrapForHistory(
-			// 			message.action.photo.id
-			// 		);
-			// 		break;
-
-			// 	case 'messageActionChatCreate':
-			// 	case 'messageActionChatEditTitle':
-			// 	case 'messageActionChannelCreate':
-			// 	case 'messageActionChannelEditTitle':
-			// 		message.action.rTitle =
-			// 			RichTextProcessor.wrapRichText(message.action.title, {
-			// 				noLinebreaks: true
-			// 			}) || _('chat_title_deleted');
-			// 		break;
-
-			// 	case 'messageActionBotIntro':
-			// 		message.action.rDescription = RichTextProcessor.wrapRichText(
-			// 			message.action.description,
-			// 			{
-			// 				noCommands: !withBot,
-			// 				fromBot: fromBot
-			// 			}
-			// 		);
-			// 		break;
-			// }
-		}
 
 		return (this.messagesForHistory[msgID] = message);
 	}
