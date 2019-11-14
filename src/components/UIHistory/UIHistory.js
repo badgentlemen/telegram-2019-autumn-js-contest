@@ -3,11 +3,8 @@ import { createElement } from '../../lib';
 import ScrollableView from '../ScrollableView';
 import PeerPhoto from '../nodes/PeerPhoto';
 import {safeReplaceObject, removeAllChild} from '../../utils';
-import {getHistory} from '../../lib/api.manager';
 import MessagesManagerInstance from '../../lib/messages.manager';
 import {getPeerData} from '../../tl_utils';
-
-
 
 export default class UIHistory extends BaseComponent {
 	constructor(options = {}) {
@@ -108,18 +105,81 @@ export default class UIHistory extends BaseComponent {
         this.historyNodeBodyNode = this.historyBodyScrollable.getNode();
         this.historyNodeBody.appendChild(this.historyNodeBodyNode);
 
-        this.bodyNodeContent = createElement('div', {
+        const bodyNodeContent = createElement('div', {
             class: 'ui-history__content'
-        }, this.historyBodyScrollable.getContentNode())
+        }, this.historyBodyScrollable.getContentNode());
+
+        this.bodyNodeContainer = createElement('div', {
+            class: 'ui-history__container'
+        });
+
+        bodyNodeContent.appendChild(this.bodyNodeContainer)
     }
 
     cleanBodyContent() {
-        removeAllChild(this.bodyNodeContent);
+        removeAllChild(this.bodyNodeContainer);
     }
 
     renderPeerHistory() {
-        console.log(this.peerHistory);
+
+        const self = this;
         this.cleanBodyContent();
+
+        const messages = this.peerHistory.messages;
+
+        let lastRow = null;
+        let lastGrouped = null;
+
+        for (let index = 0; index < messages.length; index++) {
+            const message = messages[index];
+
+            const isOut = message.pFlags.out || false;
+
+            let historyRow = this.renderHistoryRow(message);
+
+            const messageNode = this.renderMessageNode(message);
+
+            if (index > 0) {
+                const prevMessageFromID = messages[index - 1].messageFrom.id;
+                const fromID = message.messageFrom.id;
+
+                if (prevMessageFromID === fromID) {
+                    if (!lastRow) {
+                        lastRow = historyRow;
+                    }
+
+                    lastRow.appendChild(messageNode);
+                } else {
+                    appendInline();
+                }
+            } else {
+               appendInline()
+            }
+
+            function appendInline() {
+                lastRow = historyRow;
+                messageNode.style.background = 'yellow';
+                historyRow.appendChild(messageNode);
+                self.bodyNodeContainer.appendChild(historyRow);
+            }
+        }
+    }
+
+    renderHistoryRow(message) {
+        return createElement('div', {
+            class: `ui-history__row${message.pFlags.out ? ' ui-history__row_out' : ''}`,
+            'from-id': (message.messageFrom || {}).id || 0
+        });
+    }
+
+    renderMessageNode(message) {
+        const isOut = message.pFlags.out || false;
+
+        const messageNode = createElement('div', {
+            class: `ui-message${isOut ? ' ui-message__out' : ''}`
+        });
+
+        return messageNode;
     }
 
 	setCurrentDialog(dialog) {
@@ -245,7 +305,7 @@ export default class UIHistory extends BaseComponent {
             limit = 15;
             backLimit = limit;
         } else if (forceRecent) {
-            limit = 30;
+            limit = 20;
         }
 
         this.state.moreActive = this.moreActive = false;

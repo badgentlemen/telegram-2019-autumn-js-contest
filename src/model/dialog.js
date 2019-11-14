@@ -44,6 +44,7 @@ export default class Dialog {
 
     setMessage(message) {
         this.message = message || {};
+        this.fromID = this.message.from_id || 0;
     }
 
     setPeerData(peerData) {

@@ -45,7 +45,7 @@ export default class PeerPhoto extends BaseComponent {
                 loading: "lazy"
             });
         }
-        this.photoNodeImage.src = source;
+        // this.photoNodeImage.src = source;
         this.node.appendChild(this.photoNodeImage);
     }
 
