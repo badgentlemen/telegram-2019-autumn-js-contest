@@ -1,53 +1,324 @@
 import BaseComponent from '../base.component';
 import { createElement } from '../../lib';
-import UIHistoryHeader from './UIHistoryHeader';
-import UIHistoryBody from './UIHistoryBody';
+import ScrollableView from '../ScrollableView';
+import PeerPhoto from '../nodes/PeerPhoto';
+import {safeReplaceObject} from '../../utils';
+import {getHistory} from '../../lib/api.manager';
+import MessagesManagerInstance from '../../lib/messages.manager';
+import {getPeerData} from '../../tl_utils';
+
+
 
 export default class UIHistory extends BaseComponent {
+	constructor(options = {}) {
+		super(options);
 
-    constructor(options = {}) {
-        super(options);
+		this.peerHistories = [];
+		this.selectedMsgs = {};
+		this.selectedCount = 0;
+		this.historyState = {
+            selectActions: false,
+            botActions: false,
+            channelActions: false,
+            canDelete: false,
+            canReply: false,
+            missedCount: 0,
+            skipped: false,
+        };
 
-        this.currentDialog = options.currentDialog || null;
-        this.historyNode = createElement('div', {'class': 'ui-history__node'}, this.node);
-        this.historyNodeHeader = new UIHistoryHeader();
-        this.historyNodeBody = new UIHistoryBody({
-            currentDialog: this.currentDialog
+		this.state = {};
+
+		this.peerID = null;
+		this.peerHistory = {
+
+        };
+		this.unreadAfterIdle = false;
+		this.hasMore = false;
+		this.hasLess = false;
+		this.maxID = 0;
+		this.minID = 0;
+		this.lastSelectID = false;
+		this.inputMediaFilters = {
+			photos: 'inputMessagesFilterPhotos',
+			video: 'inputMessagesFilterVideo',
+			documents: 'inputMessagesFilterDocument',
+			audio: 'inputMessagesFilterVoice',
+			round: 'inputMessagesFilterRoundVideo',
+			music: 'inputMessagesFilterMusic',
+			urls: 'inputMessagesFilterUrl',
+			mentions: 'inputMessagesFilterMyMentions'
+		};
+		this.jump = 0;
+		this.moreJump = 0;
+		this.moreActive = false;
+		this.morePending = false;
+		this.lessJump = 0;
+		this.lessActive = false;
+		this.lessPending = false;
+
+		this.currentDialog = options.currentDialog || null;
+		this.node = createElement(
+			'div',
+			{ class: 'ui-history__node' },
+        );
+
+        this.historyNodeHeader = null;
+        this.historyNodeBody = null;
+
+        this.renderMainView();
+    }
+
+    renderMainView() {
+        this.renderHeader();
+        this.renderBody();
+		this.node.appendChild(this.historyNodeHeader);
+		this.node.appendChild(this.historyNodeBody);
+    }
+
+    renderHeader() {
+        this.historyNodeHeader = createElement('div', {
+			class: 'ui-history__header'
+		});
+
+        this.historyNodeHeaderTitleWrapper = createElement('div', {
+            class: 'ui-peer__title-wrapper'
+        }, this.historyNodeHeader)
+
+        this.peerPhotoNode = new PeerPhoto();
+        this.historyNodeHeaderTitleWrapper.appendChild(this.peerPhotoNode.getNode());
+
+        this.peerInfoNode = createElement('div', {
+            class: 'ui-peer-info'
+        }, this.historyNodeHeaderTitleWrapper);
+
+        this.peerAdditionalsNode = createElement('div', {
+            class: 'ui-peer-additionals'
         });
 
-        this.historyNode.appendChild(this.historyNodeHeader.getNode());
-        this.historyNode.appendChild(this.historyNodeBody.getNode());
-
-
-        this.peerHistories = []
-        this.selectedMsgs = {}
-        this.selectedCount = 0
-        this.historyState = {};
-        this.historyState.selectActions = false
-        this.historyState.botActions = false
-        this.historyState.channelActions = false
-        this.historyState.canDelete = false
-        this.historyState.canReply = false
-        this.historyState.missedCount = 0
-        this.historyState.skipped = false
-        this.state = {}
+        this.historyNodeHeader.appendChild(this.peerAdditionalsNode);
     }
 
-    setCurrentDialog(dialog) {
-        this.historyNodeBody.setCurrentDialog(dialog);
-        this.historyNodeHeader.setCurrentDialog(dialog);
+    renderBody() {
+        this.historyNodeBody = createElement('div', {
+			class: 'ui-history__body'
+		});
+		this.historyBodyScrollable = new ScrollableView({
+			className: 'ui-history__body-wrapper'
+		});
+		this.historyNodeBody.appendChild(this.historyBodyScrollable.getNode());
+    }
+
+	setCurrentDialog(dialog) {
+        this.applyDialogSelect(dialog);
         console.log(dialog);
+	}
+
+	applyDialogSelect(newDialog) {
+
+        this.peerID = newDialog.peerID();
+
+		if (this.currentDialog === newDialog) {
+            this.messageFocusHistory();
+		} else {
+            this.currentDialog = newDialog;
+
+            this.updateHistoryPeer(true);
+            this.loadHistory();
+        }
+	}
+
+	showEmptyHistory() {
+        this.incrementJump();
+        this.peerHistory = false;
+        this.hasMore = false;
     }
 
-    getNode() {
-        return this.historyNode
+    incrementJump(replace = false) {
+        const newJump = this.jump + 1;
+        if (replace) {
+            this.jump = newJump;
+        }
+        return newJump;
     }
 
-    getHeader() {
+    // HISTORY METHODS
+
+	messageFocusHistory() {
+        let history = this.historiesQueueFind(this.peerID);
+
+        if (history) {
+
+        } else {
+            this.loadHistory();
+        }
+    }
+
+    createEmptyHistory(peerID = 0) {
+        return { peerID, messages: [], ids: [] };
+    }
+
+    historiesQueueFind(peerID) {
+        return this.peerHistories.find(history => history.peerID === this.peerID) || false;
+    }
+
+    historiesQueuePush(peerID) {
+        let position = -1;
+        let maxLength = 10;
+        let i, history, diff;
+
+        for (let index = 0; index < this.peerHistories.length; index++) {
+            const history = this.peerHistories[index];
+
+            if (history.peerID === peerID) {
+                position = index;
+                break;
+            }
+        }
+
+        if (position > -1) {
+            history = this.peerHistories[position];
+            return history
+        }
+
+        history = this.createEmptyHistory(peerID);
+        this.peerHistories.unshift(history);
+        diff = this.peerHistories.length - maxLength;
+
+        if (diff > 0) {
+            this.peerHistories.splice(maxLength - 1, diff);
+        }
+
+        return history;
+    }
+
+    updateHistoryPeer(preload = false) {
+        const peerData = getPeerData(this.peerID);
+
+        if (!peerData || peerData.deleted) {
+            this.state.loaded = false;
+            return false;
+        }
+
+        this.peerHistory = this.historiesQueuePush(this.peerID);
+
+        this.historyPeer = {
+            id: this.peerID,
+            data: this.currentDialog.peerData
+        };
+
+        if (preload) {
+            (this.historyState.typing || []).splice(0, (this.historyState.typing || []).length);
+        }
+    }
+
+    loadHistory(forceRecent = true) {
+        this.historyState.missedCount = 0;
+        this.historyState.skipped = this.hasLess = false;
+        this.hasMore = false;
+
+        this.maxID = 0;
+        this.minID = 0;
+
+        this.peerHistory = this.historiesQueuePush(this.peerID);
+
+        let limit = 0;
+        let backLimit = 0;
+
+
+        if (this.currentDialog.messageID) {
+            this.maxID = parseInt(this.currentDialog.messageID);
+            limit = 20;
+            backLimit = limit;
+        } else if (forceRecent) {
+            limit = 10;
+        }
+
+        this.state.moreActive = this.moreActive = false;
+        this.morePending = false;
+        this.state.lessActive = this.lessActive = false;
+        this.lessPending = false;
+
+        let prerenderedLen = this.peerHistory.messages.length;
+
+        if (prerenderedLen && (this.maxID && backLimit)) {
+            prerenderedLen = 0;
+            this.peerHistory.messages = [];
+            this.state.empty = true;
+        }
+        let currentJump = this.incrementJump()
+        let getMessagesPromise = this.getHistory(this.maxID, limit, backLimit, prerenderedLen);
+        this.state.maybeHasMore = true;
+
+        getMessagesPromise.then(historyResult => {
+            let fetchedLength = historyResult.history.length;
+
+            this.minID = (historyResult.unreadSkip || (this.maxID && historyResult.history.indexOf(this.maxID) >= backLimit - 1))
+                        ? historyResult.history[0]
+                        : 0;
+
+            this.maxID = historyResult.history[historyResult.history.length - 1];
+
+
+            this.state.skipped = this.hasLess = this.minID > 0;
+            this.hasMore = historyResult.missedCount === null || (fetchedLength && fetchedLength < historyResult.count)
+            this.updateHistoryPeer();
+
+            safeReplaceObject(this.state, {
+                loaded: true,
+                empty: !fetchedLength
+            });
+
+            this.peerHistory.messages = [];
+            this.peerHistory.ids = [];
+
+            historyResult.history.forEach(id => {
+                let message = MessagesManagerInstance.wrapForHistory(id);
+                if (this.historyState.skipped) {
+                    delete message.pFlags.unread;
+                }
+
+                if (historyResult.unreadOffset) {
+                    message.unreadAfter = true;
+                }
+
+                this.peerHistory.messages.push(message);
+                this.peerHistory.ids.push(id);
+            })
+
+            this.peerHistory.messages.reverse();
+            this.peerHistory.ids.reverse();
+
+
+        }).catch(error => {
+
+            safeReplaceObject(this.state, {
+                error,
+                loaded: true
+            });
+
+        })
+    }
+
+    getHistory(maxID, limit, backLimit, prerenderedLen) {
+        return MessagesManagerInstance.getHistory(this.currentDialog.peerID(), maxID, limit, backLimit, prerenderedLen);
+    }
+
+    fetchSearchHistory() {
 
     }
 
-    getBody() {
+    toggleMessage() {
+
+    }
+
+
+    // CHANNEL/SUPERGROUP/CHAT METHODS
+
+    joinChannel() {
+
+    }
+
+    togglePeerMuted() {
 
     }
 }

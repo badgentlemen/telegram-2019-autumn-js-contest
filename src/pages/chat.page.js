@@ -46,10 +46,10 @@ export default class ChatsPage extends BaseComponent {
             this.chatSidebar.setDialogs(dialogs);
 
             if (this.peerQuery && this.peerQuery.length) {
-                const currentDialog = dialogs.find(dialog => (dialog.peerData || {}).username === this.peerQuery);
+                const currentDialog = dialogs.find(dialog => dialog.peerString || '' === this.peerQuery);
 
                 if (currentDialog) {
-                    this.chatContent.setCurrentDialog(currentDialog);
+                    this.handleDialogSelect(currentDialog);
                 }
             }
 
@@ -65,6 +65,7 @@ export default class ChatsPage extends BaseComponent {
 
 
     handleDialogSelect(dialog) {
+        this.chatSidebar.setDialog(dialog);
         this.chatContent.setCurrentDialog(dialog);
     }
 }

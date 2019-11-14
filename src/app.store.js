@@ -4,18 +4,23 @@ class AppStore {
         this.chats = [];
         this.messages = [];
         this.users = [];
+        this.dialogs = [];
     }
 
     saveChats(chats) {
-        this.chats = chats;
+        this.chats = this.chats.concat(chats);
     }
 
     saveMessages(messages) {
-        this.messages = messages;
+        this.messages = this.messages.concat(messages);
     }
 
     saveUsers(users) {
-        this.users = users;
+        this.users = this.users.concat(users);
+    }
+
+    saveDialogs(dialogs) {
+        this.dialogs = this.dialogs.concat(dialogs);
     }
 
     messagesTarget() {

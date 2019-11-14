@@ -1,5 +1,4 @@
-import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter, getUser, wrapForDocument, getPeerString} from "../tl_utils";
-import {tsNow} from "../utils";
+import {PeerTypeCollection, isPeerNotificationMuted, getPeerID, onlineStatus, dateOrTimeFilter, getUser, wrapForDocument, getPeerString, isChannel} from "../tl_utils";
 import {DateTime} from 'luxon';
 
 export default class Dialog {
@@ -31,28 +30,8 @@ export default class Dialog {
         this.notifySettings = object['notify_settings'] || {};
         this.isMuted = isPeerNotificationMuted(this.notifySettings);
         this.fromID = 0;
-        this.peerString = getPeerString(this.peerID())
-        //
-        // var message =
-        //     AppstoreInstance.messages.find(function(message) {
-        //         var toId = message.to_id;
-        //         return toId[id_preffix] === id;
-        //     }) || {};
-        // dialog.message = message;
-
-        // dialog.peerData = collectionTarget.find(function(target) {
-        //     return target.id === id;
-        // });
-
-        // dialog.onlineStatus = onlineStatus(dialog.peerData);
-        // dialog.isOnline = dialog.onlineStatus.statusType === 'userStatusOnline';
-        // dialog.title = getTitleForPeerData(dialog.peerData);
-        // dialog.hasAvatar = dialog.peerData.photo !== undefined;
-
-        // if (message['from_id'] > 0) {
-        //     dialog.peerID = message['from_id'];
-        //     dialog.foundHistory = true;
-        // }
+        this.peerString = getPeerString(this.peerID());
+        this.messageID = false;
     }
 
     hasUnread() {
@@ -101,6 +80,18 @@ export default class Dialog {
 
     peerID() {
         return getPeerID(this.peer);
+    }
+
+    isMessageUnread() {
+
+        if (isChannel(this.peerID())) {
+            return false;
+        }
+
+        const message = this.message || {}
+        const unreadTarget = message.pFlags.out ? this.readOutboxMaxId : this.readInboxMaxId;
+        const messageID = message.id || 0;
+        return messageID > unreadTarget;
     }
  }
 

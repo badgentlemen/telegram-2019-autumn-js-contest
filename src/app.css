@@ -347,6 +347,42 @@ ul {
     border-bottom: 1px solid var(--component-border-color);
     z-index: 1;
     flex-shrink: 0;
+    padding: 8px 19px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ui-peer__title-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1 1 auto;
+}
+
+.ui-peer-info {
+
+}
+
+.ui-peer__title-wrapper .ui-peer__photo {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    margin-right: 17px;
+}
+
+.ui-peer-info__logo {
+
+}
+
+.ui-peer-info__title {
+
+}
+
+.ui-peer-info__subtitle {
+
 }
 
 .ui-history__body {
@@ -475,7 +511,7 @@ ul {
     display: none;
 }
 
-.ui-user__photo {
+.ui-peer__photo {
     position: relative;
     width: 54px;
     height: 54px;
@@ -488,7 +524,7 @@ ul {
     border-radius: 50%;
 }
 
-.ui-user__photo::before {
+.ui-peer__photo::before {
     content: attr(peer-initials);
     line-height: 48px;
     font-size: 18px;
@@ -580,7 +616,7 @@ ul {
     margin-right: 3px;
 }
 
-.ui-dialog__message-status_unread {
+.ui-dialog__message-status-unread {
     background-image: url('./assets/message/message_unread.svg');
 }
 

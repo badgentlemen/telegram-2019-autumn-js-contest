@@ -5,7 +5,9 @@ import {
     createElement
 } from "../../../lib";
 import faveIcon from "../../../assets/fave.png";
-import {wrapRichText, ConversationType} from "../../../tl_utils";
+import {wrapRichText, ConversationType, isChannel} from "../../../tl_utils";
+import {downloadPhoto} from "../../../lib/api.manager";
+import PeerPhoto from "../PeerPhoto";
 
 export default class DialogListItem extends BaseComponent {
     nodeClassName() {
@@ -49,16 +51,13 @@ export default class DialogListItem extends BaseComponent {
             id: Math.abs(dialog.peerID())
         });
 
-        this.photoNode = createElement(
-            "div", {
-                class: `ui-user__photo ui-user__bgcolor_${peerData.num || 1}`
-            },
-            this.node
-        );
+        this.photoNode = new PeerPhoto({
+            'num': peerData.num,
+            'peer-initials': this.dialog.title.substring(0, 2),
+            'online': this.dialog.isOnline && !this.dialog.peerData.pFlags.self
+        });
 
-        if (dialog.isOnline && !dialog.peerData.pFlags.self) {
-            this.photoNode.classList.add("ui-dialog__online");
-        }
+        this.node.appendChild(this.photoNode.getNode());
 
         this.messageWrapper = createElement(
             "div", {
@@ -85,8 +84,8 @@ export default class DialogListItem extends BaseComponent {
             class: 'ui-dialog__title_additionals'
         }, this.titleNode)
 
-        if (this.dialog.message.pFlags.out || false) {
-            const messageUnread = this.dialog.message.unread;
+        if (this.dialog.message.pFlags.out) {
+            const messageUnread = this.dialog.isMessageUnread();
             const messageStatusNode = createElement('span', {
                 class: `ui-dialog__message-status ui-dialog__message-status-${messageUnread ? 'unread' : 'read'}`
             });
@@ -141,35 +140,13 @@ export default class DialogListItem extends BaseComponent {
             }
         }
 
-        this.photoNode.setAttribute(
-            "peer-initials",
-            this.dialog.title.substring(0, 2)
-        );
-
         if (dialog.peerData.pFlags.self) {
-            this.setPhotoNodeImage(faveIcon);
-            this.photoNode.appendChild(this.photoNodeImage);
+            this.photoNode.setImageSrc(faveIcon);
         } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
-            telegramApi
-                .downloadPhoto(dialog.peerData.photo.photo_small)
-                .then(data => {
-                    const blob = new Blob(data.bytes, {
-                        type: data.type
-                    });
-                    const url = URL.createObjectURL(blob);
-                    this.setPhotoNodeImage(url);
-                });
-        }
-    }
-
-    setPhotoNodeImage(imageSrc) {
-        if (!this.photoNodeImage) {
-            this.photoNodeImage = createElement("img", {
-                class: "ui-dialog__photo",
+            downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
+                this.photoNode.setImageSrc(url);
             });
         }
-        this.photoNodeImage.src = imageSrc;
-        this.photoNode.appendChild(this.photoNodeImage);
     }
 
     textNodeText() {

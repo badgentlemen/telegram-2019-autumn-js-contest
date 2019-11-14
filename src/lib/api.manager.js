@@ -1,6 +1,6 @@
 import { getValue, removeValue } from './storage';
 import AppstoreInstance from '../app.store';
-import {wrapForDialog, getPeerID} from '../tl_utils';
+import {wrapForDialog, getPeerID, isChannel, getDialog} from '../tl_utils';
 
 export const annihilation = () => {
 	removeValue(['user_auth']);
@@ -19,6 +19,17 @@ export const sendCode = phoneNumber => {
 export const logIn = (phoneNumber, phoneCodeHash, smsCode) => {
 	return telegramApi.signIn(phoneNumber, phoneCodeHash, smsCode);
 };
+
+export const downloadPhoto = (location) => {
+    return telegramApi
+        .downloadPhoto(location)
+        .then(response => {
+            const blob = new Blob(response.bytes, {
+                type: response.type
+            });
+            return URL.createObjectURL(blob);
+        });
+}
 
 export const getUserID = () => {
 	return getValue('user_auth').then(user => {
@@ -44,37 +55,22 @@ export const getDialogs = (limit = 200, offset = 0) => {
 				const dialog = wrapForDialog(object);
 				dialogs.push(dialog);
             });
-
-			// dialogs.forEach(function(dialog) {
-			// 	const peerID = getPeerID(dialog.peer);
-			// 	const message = dialog.message;
-			// 	// MessageServices.saveMessages([message], peerID);
-			// });
         }
 
         dialogs = dialogs.filter(dialog => {
             return ((dialog.message || {}).action || {})._ != 'messageActionChatMigrateTo'
         });
 
-		AppstoreInstance.dialogs = dialogs;
+		AppstoreInstance.saveDialogs(dialogs);
 		return dialogs;
 	});
 };
 
-export const getHistory = (peerID, limit, offset) => {
-	limit = limit || 15;
-	offset = offset || 0;
-	var channel = isChannel(peerID);
-	var dialog = getDialog(peerID);
+export const getHistory = (peerID, peerType, maxID, limit = 15, offset = 0) => {
 	return telegramApi
 		.getHistory({
 			id: peerID,
-			take: limit
-		})
-		.then(function(result) {
-			var messages = result.messages || [];
-			return messages.sort(function(prev, next) {
-				return prev.id - next.id;
-			});
+            take: limit,
+            type: peerType
 		});
 };

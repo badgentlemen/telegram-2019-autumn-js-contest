@@ -36,7 +36,7 @@ export const PeerTypeCollection = [
 ];
 
 function getPeerSettings(peerID) {
-    var found = AppstoreInstance.dialogs.find(function(dialog) {
+    var found = AppstoreInstance.dialogs.en.find(function(dialog) {
         return dialog.peerID === peerID;
     });
     if (!found) {
@@ -131,7 +131,7 @@ export const getPeerID = peerObject => {
         : -(peerObject.channel_id || peerObject.chat_id || -0);
 };
 
-function isChannel(peerID) {
+export const isChannel = peerID => {
     const chat = getChat(peerID);
 
     if (!chat) {
@@ -141,9 +141,15 @@ function isChannel(peerID) {
     return chat._ === "channel";
 }
 
-function getDialog(peerID) {
+export const getDialog = peerID => {
     return AppstoreInstance.dialogs.find(function(dialog) {
         return dialog.peerID === peerID;
+    });
+}
+
+export const getPeerData = peerID => {
+    return AppstoreInstance.dialogs.find(dialog => {
+        return dialog.peerData.id === peerID
     });
 }
 
@@ -357,6 +363,10 @@ export const ConversationType = {
     conversation_media_game: "🎮"
 };
 
+export const TelegramAttrKeys = {
+    peerInitials: 'peer-initials'
+}
+
 export const getUser = user_id => {
     return AppstoreInstance.users.find(user => user.id === user_id);
 };
@@ -369,6 +379,10 @@ export const getUserString = peerID => {
     const user = getUser(Math.abs(peerID));
     return "u" + peerID + (user.access_hash ? "_" + user.access_hash : "");
 };
+
+export const getMessage = id => {
+    return AppstoreInstance.messages.find(message => message.id === id);
+}
 
 export const getChatString = peerID => {
     if (peerID < 0) {
