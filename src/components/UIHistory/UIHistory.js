@@ -2,7 +2,7 @@ import BaseComponent from '../base.component';
 import { createElement } from '../../lib';
 import ScrollableView from '../ScrollableView';
 import PeerPhoto from '../nodes/PeerPhoto';
-import {safeReplaceObject} from '../../utils';
+import {safeReplaceObject, removeAllChild} from '../../utils';
 import {getHistory} from '../../lib/api.manager';
 import MessagesManagerInstance from '../../lib/messages.manager';
 import {getPeerData} from '../../tl_utils';
@@ -103,14 +103,28 @@ export default class UIHistory extends BaseComponent {
 			class: 'ui-history__body'
 		});
 		this.historyBodyScrollable = new ScrollableView({
-			className: 'ui-history__body-wrapper'
-		});
-		this.historyNodeBody.appendChild(this.historyBodyScrollable.getNode());
+			className: 'ui-history__body-scrollable'
+        });
+        this.historyNodeBodyNode = this.historyBodyScrollable.getNode();
+        this.historyNodeBody.appendChild(this.historyNodeBodyNode);
+
+        this.bodyNodeContent = createElement('div', {
+            class: 'ui-history__content'
+        }, this.historyBodyScrollable.getContentNode())
+    }
+
+    cleanBodyContent() {
+        removeAllChild(this.bodyNodeContent);
+    }
+
+    renderPeerHistory() {
+        console.log(this.peerHistory);
+        this.cleanBodyContent();
     }
 
 	setCurrentDialog(dialog) {
-        this.applyDialogSelect(dialog);
         console.log(dialog);
+        this.applyDialogSelect(dialog);
 	}
 
 	applyDialogSelect(newDialog) {
@@ -125,6 +139,7 @@ export default class UIHistory extends BaseComponent {
             this.updateHistoryPeer(true);
             this.loadHistory();
         }
+
 	}
 
 	showEmptyHistory() {
@@ -153,12 +168,12 @@ export default class UIHistory extends BaseComponent {
         }
     }
 
-    createEmptyHistory(peerID = 0) {
+    createPeerHistory(peerID = 0) {
         return { peerID, messages: [], ids: [] };
     }
 
     historiesQueueFind(peerID) {
-        return this.peerHistories.find(history => history.peerID === this.peerID) || false;
+        return this.peerHistories.find(history => history.peerID === peerID) || false;
     }
 
     historiesQueuePush(peerID) {
@@ -180,7 +195,7 @@ export default class UIHistory extends BaseComponent {
             return history
         }
 
-        history = this.createEmptyHistory(peerID);
+        history = this.createPeerHistory(peerID);
         this.peerHistories.unshift(history);
         diff = this.peerHistories.length - maxLength;
 
@@ -221,16 +236,16 @@ export default class UIHistory extends BaseComponent {
 
         this.peerHistory = this.historiesQueuePush(this.peerID);
 
-        let limit = 0;
+        let limit = 10;
         let backLimit = 0;
 
 
         if (this.currentDialog.messageID) {
             this.maxID = parseInt(this.currentDialog.messageID);
-            limit = 20;
+            limit = 15;
             backLimit = limit;
         } else if (forceRecent) {
-            limit = 10;
+            limit = 20;
         }
 
         this.state.moreActive = this.moreActive = false;
@@ -288,6 +303,8 @@ export default class UIHistory extends BaseComponent {
             this.peerHistory.messages.reverse();
             this.peerHistory.ids.reverse();
 
+
+            this.renderPeerHistory();
 
         }).catch(error => {
 

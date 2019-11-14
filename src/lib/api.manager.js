@@ -1,6 +1,6 @@
 import { getValue, removeValue } from './storage';
 import AppstoreInstance from '../app.store';
-import {wrapForDialog, getPeerID, isChannel, getDialog} from '../tl_utils';
+import {wrapForDialog, getPeerID, isChannel, getDialog, wrapForMessage} from '../tl_utils';
 
 export const annihilation = () => {
 	removeValue(['user_auth']);
@@ -43,12 +43,19 @@ export const getUserID = () => {
 export const getDialogs = (limit = 200, offset = 0) => {
 	return telegramApi.getDialogs(offset, limit).then(response => {
 		const result = response.result;
-		let dialogs = [];
+        let dialogs = [];
+        let messages = [];
 		AppstoreInstance.saveChats(result.chats || []);
-		AppstoreInstance.saveMessages(result.messages || []);
         AppstoreInstance.saveUsers(result.users || []);
 
-        console.log(AppstoreInstance);
+        if (result.messages.length) {
+            result.messages.forEach(object => {
+                const message = wrapForMessage(object);
+                messages.push(message);
+            });
+        }
+
+        AppstoreInstance.saveMessages(messages);
 
 		if (result.dialogs.length) {
 			result.dialogs.forEach(function(object) {
@@ -61,7 +68,9 @@ export const getDialogs = (limit = 200, offset = 0) => {
             return ((dialog.message || {}).action || {})._ != 'messageActionChatMigrateTo'
         });
 
-		AppstoreInstance.saveDialogs(dialogs);
+        AppstoreInstance.saveDialogs(dialogs);
+
+        console.log(AppstoreInstance);
 		return dialogs;
 	});
 };

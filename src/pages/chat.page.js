@@ -17,15 +17,8 @@ export default class ChatsPage extends BaseComponent {
 			onDialogClicked: dialog => {
                 this.handleDialogSelect(dialog);
             }
-		});
+        });
 
-		// var sidebarNode = null;
-		// var dialogs = [];
-		// var chatContentNode = null;
-		// var currentDialog = null;
-		// var destroyed = false;
-		// var selectedChatId = null;
-		// chatLists = [];
 		this.renderMainWindow();
 	}
 
@@ -35,10 +28,7 @@ export default class ChatsPage extends BaseComponent {
 		this.node.appendChild(this.sidebarNode);
 		this.node.appendChild(this.chatContentNode);
 		this.fetchDialogsList();
-	}
-	renderChatList() {}
-
-	renderChatMessages() {}
+    }
 
 	fetchDialogsList() {
         this.chatSidebar.setLoading(true);
@@ -46,7 +36,7 @@ export default class ChatsPage extends BaseComponent {
             this.chatSidebar.setDialogs(dialogs);
 
             if (this.peerQuery && this.peerQuery.length) {
-                const currentDialog = dialogs.find(dialog => dialog.peerString || '' === this.peerQuery);
+                const currentDialog = AppstoreInstance.dialogs.find(dialog => dialog.peerString === this.peerQuery);
 
                 if (currentDialog) {
                     this.handleDialogSelect(currentDialog);
@@ -58,11 +48,6 @@ export default class ChatsPage extends BaseComponent {
             this.chatSidebar.setDialogs([]);
         });
     }
-
-
-
-    fetchMessagesForChatId(id) {}
-
 
     handleDialogSelect(dialog) {
         this.chatSidebar.setDialog(dialog);

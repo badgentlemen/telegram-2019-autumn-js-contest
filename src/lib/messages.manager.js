@@ -1,4 +1,4 @@
-import { getPeerData, getDialog, getUser, getMessage } from '../tl_utils';
+import { getPeerData, getDialog, getUser, getMessage, wrapForMessage } from '../tl_utils';
 import { getHistory as fetchHistory } from './api.manager';
 import AppstoreInstance from '../app.store';
 
@@ -323,7 +323,7 @@ export class MessagesManager {
 			response => {
 				AppstoreInstance.saveUsers(response.users || []);
 				AppstoreInstance.saveChats(response.chats || []);
-				AppstoreInstance.saveMessages(response.messages || []);
+				AppstoreInstance.saveMessages((response.messages || []).map(msg => wrapForMessage(msg)));
 				return response;
 			}
 		);
@@ -333,8 +333,6 @@ export class MessagesManager {
 		var offset = 0;
 		return this.requestHistory(peerID, type, maxID, fullLimit, offset).then(
 			historyResult => {
-				console.log(historyResult);
-
 				var isMigrated = false;
 
 				historyResult.count =

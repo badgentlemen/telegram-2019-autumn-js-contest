@@ -2,6 +2,7 @@ import AppstoreInstance from "./app.store";
 import Dialog from "./model/Dialog";
 import { tsNow } from "./utils";
 import { DateTime } from "luxon";
+import Message from "./model/Message";
 
 var MessageServices = {
     history: {},
@@ -195,7 +196,24 @@ function getInputPeerByID(peerID) {
     }
 }
 
-function wrapForMessage(message) {}
+export const wrapForMessage = object => {
+    let message = new Message(object);
+
+    if (message.media && message.media.document) {
+        message.media.document = wrapForDocument(message.media.document);
+    }
+
+    if (message.date) {
+        message.dateMoment = DateTime.fromSeconds(message.date);
+        message.dateText = dateOrTimeFilter(message.date);
+    }
+
+    if (message.from_id) {
+        message.messageFrom = getUser(message.from_id);
+    }
+
+    return message;
+}
 
 export const wrapForDialog = object => {
     let dialog = new Dialog(object);

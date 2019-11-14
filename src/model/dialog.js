@@ -44,23 +44,6 @@ export default class Dialog {
 
     setMessage(message) {
         this.message = message || {};
-        if (this.message.media && this.message.media.document) {
-            this.updateMediaDocument();
-        }
-
-        if (this.message.date) {
-            this.message.dateMoment = DateTime.fromSeconds(this.message.date);
-            this.message.dateText = dateOrTimeFilter(this.message.date);
-        }
-
-        if (this.message.from_id) {
-            this.fromID = this.message.from_id;
-            this.message.messageFrom = getUser(this.message.from_id);
-        }
-    }
-
-    updateMediaDocument() {
-        this.message.media.document = wrapForDocument(this.message.media.document);
     }
 
     setPeerData(peerData) {
@@ -88,9 +71,8 @@ export default class Dialog {
             return false;
         }
 
-        const message = this.message || {}
-        const unreadTarget = message.pFlags.out ? this.readOutboxMaxId : this.readInboxMaxId;
-        const messageID = message.id || 0;
+        const unreadTarget = this.message.pFlags.out ? this.readOutboxMaxId : this.readInboxMaxId;
+        const messageID = this.message.id || 0;
         return messageID > unreadTarget;
     }
  }

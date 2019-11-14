@@ -100,7 +100,7 @@
 
     function historiesQueuePush (peerID) {
       var pos = -1
-      var maxLen = 10
+      var maxLen = 15
       var i, history, diff
 
       for (i = 0; i < $scope.peerHistories.length; i++) {

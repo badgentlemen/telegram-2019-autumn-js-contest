@@ -151,7 +151,7 @@ export default class Sidebar extends BaseComponent {
 
     setDialog(dialog) {
         this.dialogListItems.forEach(item => {
-            if (item.dialog === dialog) {
+            if (item.dialog.id === dialog.id) {
                 item.chatListItem.classList.add('ui-dialog__active')
             } else {
                 item.chatListItem.classList.remove('ui-dialog__active');

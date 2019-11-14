@@ -391,7 +391,7 @@ ul {
     flex-grow: 1;
 }
 
-.ui-history__body-wrapper {
+.ui-history__body-scrollable {
     position: absolute;
     overflow: hidden;
     left: 0;
