@@ -47,7 +47,8 @@ export default class UICountySelect extends BaseComponent {
         this.renderList();
 
         window.addEventListener('click', event => {
-            if (this.skeletorWrapper.getContentNode() !== event.target && this.selectContainer !== event.target) {
+            if (this.skeletorWrapper.getContentNode() !== event.target
+                && this.selectContainer !== event.target) {
                 self.close();
             }
         });
