@@ -29,9 +29,11 @@ export default class Sidebar extends BaseComponent {
             },
             this.node
         );
+
         this.dialogScrollableView = new ScrollableView({
             className: 'ui-dialog__list',
         });
+
         this.dialogList = this.dialogScrollableView.getNode();
         this.sidebarBody.appendChild(this.dialogList);
 
@@ -137,6 +139,16 @@ export default class Sidebar extends BaseComponent {
             );
 
             this.dialogScrollableView.appendChild(dialogListItemNode);
+
+
+            if (dialog.peerData.pFlags.self) {
+                this.dialogListItem.photoNode.setImageSrc(faveIcon);
+            } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
+                downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
+                    this.dialogListItem.photoNode.setImageSrc(url);
+                });
+            }
+
         })
     }
 

@@ -16,11 +16,11 @@ export default class BaseComponent {
     }
 
     getClassName() {
-        return `${this.nodeClassName()} ${this.options.className || ''}`
+        return `${this.nodeClassName()} ${this.options.class || ''}`
     }
 
     nodeClassName() {
-
+        return '';
     }
 
     addEventListeners() {

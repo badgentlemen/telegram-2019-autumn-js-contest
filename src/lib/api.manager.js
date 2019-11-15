@@ -76,6 +76,8 @@ export const getDialogs = (limit = 200, offset = 0) => {
 };
 
 export const getHistory = (peerID, peerType, maxID, limit = 15, offset = 0) => {
+    peerType = peerType === 'user' ? 'user' : 'chat';
+    console.log(peerType);
 	return telegramApi
 		.getHistory({
 			id: peerID,

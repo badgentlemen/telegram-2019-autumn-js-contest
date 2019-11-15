@@ -12,7 +12,7 @@ export default class LoginPage extends BaseComponent {
 
         this.destroyed = false;
         this.phoneCountry = null;
-        this.phoneNumber = '+79604245511';
+        this.phoneNumber = null;
         this.phoneCodeHash = null;
         this.confirmCode = null;
 
@@ -81,24 +81,27 @@ export default class LoginPage extends BaseComponent {
     }
 
     sendCode() {
+
+        this.signInNode.uibutton.setLoading(true);
+
         if (this.phoneNumber) {
-            sendCode(this.phoneNumber).then(response => {
-                if (response.pFlags.phone_registered && response.phone_code_hash) {
-                    this.phoneCodeHash = response.phone_code_hash;
-                    this.renderCodeConfirmNode();
-                }
-            }).catch(error => {
-                console.log(error);
-                alert(error);
-            })
+            // sendCode(this.phoneNumber).then(response => {
+            //     if (response.pFlags.phone_registered && response.phone_code_hash) {
+            //         this.phoneCodeHash = response.phone_code_hash;
+            //         this.renderCodeConfirmNode();
+            //     }
+            // }).catch(error => {
+            //     console.log(error);
+            //     alert(error);
+            // });
         }
     }
 
     sendNext() {
         if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
-            logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
-                return response;
-            });
+            // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
+            //     return response;
+            // });
         }
     }
 

@@ -56,19 +56,46 @@ ul {
 }
 
 .ui-button {
+    position: relative;
     min-height: 54px;
-    text-transform: uppercase;
-    font-size: 16px;
-    padding: 10px 30px;
     cursor: pointer;
     box-sizing: border-box;
     cursor: pointer;
     border-radius: 8px;
+    padding: 10px 30px;
+}
+
+.ui-button__title {
+    width: 100%;
+    text-transform: uppercase;
+    font-size: 16px;
 }
 
 .ui-button__primary {
     background: var(--primary-color);
     color: white;
+}
+
+.ui-button__loading {
+
+}
+
+
+.ui-button__primary .ui-button__spinner {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 2px solid white;
+    border-left-color: transparent;
+    display: none;
+    right: 15px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+}
+
+.ui-button__loading .ui-button__spinner {
+    display: block;
 }
 
 .ui-form {
@@ -104,25 +131,17 @@ ul {
 
 .ui-input__input,
 .ui-select {
-    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
     padding: 15px;
-    border-radius: 8px;
     font-size: 16px;
     width: 100%;
 }
 
-.ui-input__label {
-    position: absolute;
-    background-color: white;
-    padding: 5px;
-    top: -10px;
-    left: 12px;
-    display: block;
-    opacity: 0;
-    font-weight: 500;
-    font-size: 12px;
-    color: #939393;
-    letter-spacing: 0.2px;
+.ui-input__error .ui-input__input {
+    border-color: red;
+}
+
+.ui-input__error .ui-input__label {
+    color: red;
 }
 
 .ui-input__focus .ui-input__input {
@@ -134,21 +153,6 @@ ul {
     color: var(--primary-color);
 }
 
-.ui-input__not-empty .ui-input__label {
-    opacity: 1;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.ui-select {
-    cursor: pointer;
-    padding: 0;
-}
-
-.ui-dropdown__root {
-    padding: 15px;
-    min-height: var(--component-min-height);
-    box-sizing: border-box;
-}
 
 .ui-container {
     padding-right: 15px;
@@ -947,4 +951,57 @@ ul {
 
 .ui-user__bgcolor_8 {
     background: #fba76f;
+}
+
+/* SKELETON */
+
+.ui-skeleton-component {
+    position: relative;
+    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
+    border-radius: 8px;
+}
+
+.ui-skeleton-component.ui-skeleton__error {
+    border-color: red;
+}
+
+.ui-skeleton__error .ui-skeleton__label {
+    color: red;
+}
+
+.ui-skeleton__label {
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    top: -12px;
+    left: 12px;
+    display: block;
+    opacity: 0;
+    font-weight: 500;
+    font-size: 12px;
+    color: #939393;
+    letter-spacing: 0.2px;
+}
+
+.ui-skeleton__focus {
+    border-width: var(--component-active-state-border-weight);
+    border-color: var(--primary-color);
+}
+
+.ui-skeleton__focus .ui-skeleton__label {
+    color: var(--primary-color);
+}
+
+.ui-skeleton__not-empty {
+
+}
+
+.ui-skeleton__not-empty .ui-skeleton__label {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.ui-skeleton__content {
+    position: relative;
+    min-height: 54px;
 }

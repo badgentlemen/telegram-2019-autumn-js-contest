@@ -1,12 +1,24 @@
 import {BaseComponent} from "..";
 import {createElement} from "../../lib";
+import {uiSpinner} from "../../utils";
+
+const loadingClass = 'ui-button__loading';
+const spinnerClass = 'ui-button__spinner';
 
 export default class UIButton extends BaseComponent {
+
     constructor(options) {
         super(options);
         this.title = options.title || '';
         this.node = createElement('button', {'class': this.getClassName()});
-        this.node.innerText = this.title;
+
+        this.titleNode = createElement('span', {
+            class: 'ui-button__title'
+        }, this.node);
+
+        this.titleNode.innerText = this.title;
+        this.loadingSpinner = uiSpinner(spinnerClass);
+        this.node.appendChild(this.loadingSpinner);
         this.theme = this.options.theme || 'primary';
         this.node.classList.add(this.themeClassName());
         this.addEventListeners();
@@ -21,8 +33,16 @@ export default class UIButton extends BaseComponent {
         }
     }
 
-    setLoading() {
-
+    setLoading(state) {
+        if (state) {
+            this.node.classList.add(loadingClass);
+            this.titleNode.innerText = this.options.waitText || 'PLEASE WAIT...';
+            this.node.setAttribute('disabled', 'disabled');
+        } else {
+            this.node.classList.remove(loadingClass);
+            this.titleNode.innerText = this.title;
+            this.node.removeAttribute('disabled');
+        }
     }
 
     nodeClassName() {

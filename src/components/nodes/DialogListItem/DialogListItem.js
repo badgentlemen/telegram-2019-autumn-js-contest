@@ -140,13 +140,6 @@ export default class DialogListItem extends BaseComponent {
             }
         }
 
-        if (dialog.peerData.pFlags.self) {
-            this.photoNode.setImageSrc(faveIcon);
-        } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
-            // downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
-            //     this.photoNode.setImageSrc(url);
-            // });
-        }
     }
 
     textNodeText() {

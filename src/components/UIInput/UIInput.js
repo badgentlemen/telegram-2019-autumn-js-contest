@@ -1,5 +1,7 @@
 import { BaseComponent } from '..';
 import { createElement } from '../../lib';
+import Inputmask from "inputmask";
+import ComponentSkeleton from '../ComponentSkeleton';
 
 export default class UIInput extends BaseComponent {
 	constructor(options = {}) {
@@ -8,22 +10,28 @@ export default class UIInput extends BaseComponent {
         this.placeholder = options.placeholder || '';
         this.labelPlaceholder = options.labelPlaceholder || this.placeholder;
 		this.value = options.value || '';
-		this.errorClassName = 'ui-input__error';
-		this.focusClassName = 'ui-input__focus';
-		this.notEmptyClassName = 'ui-input__not-empty';
 
         this.requireValid = this.options.requireValid || false;
+
+        this.inputMask = null;
 
         if (options.mask) {
             this.setMask(mask);
         }
 
-		this.node = createElement('div', { class: this.getClassName() });
+        this.skeletonNode = new ComponentSkeleton({
+            class: this.getClassName()
+        })
+
+        this.node = this.skeletonNode.getContentNode();
+
 		this.input = createElement(
 			'input',
 			{ class: 'ui-input__input' },
 			this.node
         );
+
+        this.skeletonNode.insertContentNode(this.input);
 
         this.input.value = this.value;
         this.input.placeholder = this.placeholder;
@@ -33,37 +41,35 @@ export default class UIInput extends BaseComponent {
             this.setMaxLength(this.options.maxLength);
         }
 
-		this.label = createElement(
-			'label',
-			{ class: 'ui-input__label' },
-			this.node
-        );
+        this.skeletonNode.setPlaceholder(this.labelPlaceholder);
 
-        this.label.innerText = this.labelPlaceholder;
 		this.addEventListeners();
 	}
 
 	addEventListeners() {
 		this.input.addEventListener('focus', event => {
-			this.node.classList.add(this.focusClassName);
+            this.skeletonNode.setFocus(true);
 			this.options.onFocus && this.options.onFocus(event);
 		});
 
 		this.input.addEventListener('blur', event => {
-			this.node.classList.remove(this.focusClassName);
+			this.skeletonNode.setFocus(false);
 			this.options.onBlur && this.options.onBlur(event);
 		});
 
 		this.input.addEventListener('input', event => {
-			this.value = event.target.value;
-			if (this.value.length) {
-				this.node.classList.add(this.notEmptyClassName);
-			} else {
-				this.node.classList.remove(this.notEmptyClassName);
-			}
-
+            this.value = event.target.value;
+            this.handleInput();
             this.options.onChange && this.options.onChange(this.value);
 		});
+    }
+
+    getNode() {
+        return this.skeletonNode.getNode();
+    }
+
+    handleInput() {
+        this.skeletonNode.setIsNotEmpty(this.value.length)
     }
 
     getValue() {
@@ -72,6 +78,13 @@ export default class UIInput extends BaseComponent {
 
     setMask(mask) {
         this.mask = mask;
+        this.inputMask = Inputmask({
+            numericInput: true,
+            mask: this.mask,
+            placeholder: ''
+        }).mask(this.input);
+
+        this.handleInput();
     }
 
     setError(error) {
@@ -88,11 +101,11 @@ export default class UIInput extends BaseComponent {
     }
 
     removeErrorFlag() {
-        this.node.classList.remove(this.errorClassName);
+        this.skeletonNode.setError(false);
     }
 
     addErrorFlag() {
-        this.node.classList.add(this.errorClassName);
+        this.skeletonNode.setError(true);
     }
 
     nodeClassName() {

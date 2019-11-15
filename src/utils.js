@@ -1,7 +1,11 @@
-function uiSpinner(className, parent) {
+import {createElement} from "./lib";
+
+export const uiSpinner = (className, parent) => {
 	var className = className || '';
 	var classes = 'ui-spinner ' + className;
-	return createElement('div', classes, parent);
+	return createElement('div', {
+        class: classes
+    }, parent);
 }
 
 export const elementRemoveFromSuperView = element => {
@@ -41,3 +45,18 @@ export const safeReplaceObject = (oldObject, newObject) => {
 		}
 	}
 };
+
+export const replaceAllString = (string, what, by) => {
+    return string.split(what).join(by);
+}
+
+export const phoneMaskByCode = (code) => {
+    const phoneLength = 12;
+    const subLength = phoneLength - code.length;
+
+    for (let index = 0; index <= subLength; index++) {
+        code += '*';
+    }
+
+    return code;
+}
