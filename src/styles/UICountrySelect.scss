@@ -8,11 +8,46 @@
         .ui-country-select__container {
             display: block;
         }
+
+        .ui-country-select__arrow {
+            transform: rotate(0);
+        }
     }
+}
+
+.ui-country-select__title {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding: 15px;
+    font-size: 16px;
+    font-family: 500;
 }
 
 .ui-country-select__root {
     display: flex;
+    height: 100%;
+
+
+    .ui-input__input {
+        padding-right: 40px;
+    }
+}
+
+.ui-country-select__arrow {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-image: url('../assets/arrow.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    transform: rotate(-180deg);
+    transition: transform 0.2s ease-in-out;
+    right: 18px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    pointer-events: none;
 }
 
 .ui-country-select__container {

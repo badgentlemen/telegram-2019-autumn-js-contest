@@ -127,6 +127,7 @@ ul {
 .ui-input__input {
     height: var(--component-min-height);
     box-sizing: border-box;
+    font-weight: 500;
 }
 
 .ui-input__input,
@@ -1003,5 +1004,6 @@ ul {
 
 .ui-skeleton__content {
     position: relative;
-    min-height: 54px;
+    height: 54px;
+    width: 100%;
 }

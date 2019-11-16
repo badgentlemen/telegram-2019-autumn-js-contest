@@ -6,24 +6,34 @@ export default class CodeConfirmNode extends BaseComponent {
 
     constructor(options = {}) {
         super(options);
+        this.currentPhoneNumber = '+5423 432 42 34';
+        this.validated = false;
         this.codeMaxLength = this.options.maxLength || 5;
         this.node = createElement('div', {'class': this.getClassName()});
         this.renderForm();
     }
 
     renderForm() {
-        var codeConfirmInput = new UIInput({
+        this.codeConfirmInput = new UIInput({
             placeholder: '•••••',
             labelPlaceholder: 'Code',
             maxLength: this.codeMaxLength,
             type: 'tel',
+            requireValid: true,
             onChange: value => {
-                if (value.length === this.codeMaxLength) {
+                this.validated = value.length === this.codeMaxLength;
+                if (this.validated) {
                     this.options.onMaxLength && this.options.onMaxLength(value);
                 }
+            },
+            onFocus: _ => {
+                this.codeConfirmInput.setError(false)
+            },
+            onBlur: _ => {
+                this.codeConfirmInput.setError(!this.validated)
             }
         });
-        this.node.appendChild(codeConfirmInput.getNode());
+        this.node.appendChild(this.codeConfirmInput.getNode());
     }
 
     nodeClassName() {

@@ -84,6 +84,8 @@ export default class UIInput extends BaseComponent {
             placeholder: ''
         }).mask(this.input);
 
+        this.inputMask.setValue(this.value);
+
         this.handleInput();
     }
 

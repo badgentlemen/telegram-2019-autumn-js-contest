@@ -3,14 +3,14 @@ import { BaseComponent, UIFormRow } from '../..';
 import UIInput from '../../UIInput/UIInput';
 import UICountySelect from '../../UICountrySelect';
 import UIButton from '../../UIButton/UIButton';
-import { replaceAllString, phoneMaskByCode } from '../../../utils';
+import { replaceAllString, phoneMaskByCode, isPhoneValid } from '../../../utils';
 
 export default class SignInNode extends BaseComponent {
 	constructor(options) {
 		super(options);
 
         this.phoneValidated = false;
-        this.selectedCountry = null;
+        this.country = null;
 
 		options = options || {};
 		this.phone_code_hash = null;
@@ -20,7 +20,7 @@ export default class SignInNode extends BaseComponent {
 		this.node = createElement('div', {
 			class: 'ui-sign-in__node'
 		});
-		this.uibutton = null;
+        this.uibutton = null;
 		this.renderForm();
 	}
 
@@ -56,28 +56,34 @@ export default class SignInNode extends BaseComponent {
 			},
 			this.node
 		);
-		var countrySelector = new UICountySelect({
+		this.countrySelector = new UICountySelect({
 			placeholder: 'Country',
             class: 'ui-sign-in__country-select',
             onChange: country => {
-                this.selectedCountry = country;
-                const phoneCode = this.selectedCountry.code;
+                this.country = country;
+
+                if (this.country) {
+                    this.phoneNumberInput.getNode().style.display = 'flex';
+                }
+
+                const phoneCode = this.country.code;
                 const phoneMask = phoneMaskByCode(phoneCode);
                 this.phoneNumberInput.setMask(phoneMask);
+            },
+            onBlur: _ => {
+                this.countrySelector.skeletorWrapper.setError(this.country == null);
             }
 		});
 		var countrySelectFormRow = UIFormRow(form);
-		countrySelectFormRow.appendChild(countrySelector.getNode());
+		countrySelectFormRow.appendChild(this.countrySelector.getNode());
 		form.appendChild(countrySelectFormRow);
 		this.phoneNumberInput = new UIInput({
 			placeholder: 'Phone Number',
 			requireValid: true,
 			onChange: value => {
-				this.value = value;
-			},
-			didFillCharacters: (completed, validated) => {
-				this.togglePhoneInputValidate(completed);
-			},
+                this.phoneValue = value;
+                this.togglePhoneInputValidate(isPhoneValid(value));
+            },
 			onFocus: event => {
 				this.phoneNumberInput.setError(false);
 			},
@@ -87,7 +93,9 @@ export default class SignInNode extends BaseComponent {
             },
 			value: this.options.phoneNumber || '',
 			class: 'ui-sign-in__phone-number-input'
-		});
+        });
+
+        this.phoneNumberInput.getNode().style.display = 'none';
 
 		var inputFormRow = UIFormRow(form);
 		inputFormRow.appendChild(this.phoneNumberInput.getNode());
@@ -97,17 +105,16 @@ export default class SignInNode extends BaseComponent {
 			onClick: event => {
 				event.preventDefault();
 				if (this.options.onNextClicked) {
-					let phoneNumber = this.phoneNumberInput.getValue();
-
-					['(', ')', ' ', '+', '-'].forEach(what => {
-						phoneNumber = replaceAllString(phoneNumber, what, '');
-					});
-
-					this.options.onNextClicked(phoneNumber, this.selectedCountry);
+                    this.options.onNextClicked(this.phoneValue, this.country)
 				}
 			}
 		});
-		form.appendChild(this.uibutton.getNode());
+        form.appendChild(this.uibutton.getNode());
+        this.togglePhoneInputValidate(false);
+
+
+
+
 		// var checkbox = new uiCheckbox({}, 'ui-sign-in__keep-state', new uiFormRow(form));
 		// var button = createElement('button', {'class': 'ui-button'}, new uiFormRow(form));
 		// button.innerText = 'NEXT';

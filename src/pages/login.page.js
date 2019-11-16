@@ -1,9 +1,8 @@
 import {createElement} from "../lib";
 import {BaseComponent} from "../components";
-import { sendCode, logIn } from "../lib/api.manager";
 import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
-import {removeAllChild} from "../utils";
+import {removeAllChild, internationalPhoneValue} from "../utils";
 
 export default class LoginPage extends BaseComponent {
 
@@ -19,6 +18,8 @@ export default class LoginPage extends BaseComponent {
         this.signInNode = null;
         this.confirmCodeNode = null;
         this.setPasswordNode = null;
+
+        this.phoneRawValue = null;
 
         this.node = createElement(
             'div',
@@ -49,8 +50,10 @@ export default class LoginPage extends BaseComponent {
         this.removeAllNodes();
         const self = this;
         this.signInNode = new SignInNode({
-            onNextClicked: (phoneNumber, selectedCountry) => {
-                self.phoneNumber = phoneNumber;
+            onNextClicked: (phoneNumber, phoneCountry) => {
+                self.phoneRawValue = phoneNumber;
+                self.phoneCountry = phoneCountry
+                self.phoneNumber = internationalPhoneValue(phoneNumber);
                 self.sendCode();
             },
             phoneNumber: this.phoneNumber
@@ -94,6 +97,10 @@ export default class LoginPage extends BaseComponent {
             //     console.log(error);
             //     alert(error);
             // });
+
+            setTimeout(() => {
+                this.renderCodeConfirmNode();
+            }, 2000);
         }
     }
 

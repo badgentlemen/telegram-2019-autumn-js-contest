@@ -5,8 +5,10 @@ import countries from '../countries';
 import ScrollableView from "./ScrollableView";
 
 import '../styles/UICountrySelect.scss';
+import UIInput from "./UIInput/UIInput";
 
-const openedClassName = 'ui-country-select__opened'
+const openedClassName = 'ui-country-select__opened';
+const placeholder = 'Country';
 
 export default class UICountySelect extends BaseComponent {
 
@@ -20,12 +22,13 @@ export default class UICountySelect extends BaseComponent {
 
         this.skeletorWrapper = new ComponentSkeleton({
             class: this.getClassName(),
-            placeholder: 'Country'
+            placeholder
         });
 
         this.node = this.skeletorWrapper.getContentNode();
 
         this.node.addEventListener('click', event => {
+            this.isOpen = true;
             this.handleClick(event)
         })
 
@@ -36,6 +39,16 @@ export default class UICountySelect extends BaseComponent {
         this.rootNode = createElement('div', {
             class: 'ui-country-select__root'
         }, this.node);
+
+        this.titleNode = createElement('input', {
+            class: 'ui-input__input',
+            placeholder
+        }, this.rootNode)
+
+        this.arrowNode = createElement('span', {
+            class: 'ui-country-select__arrow'
+        }, this.rootNode);
+
         this.selectContainer = createElement('div', {
             class: 'ui-country-select__container'
         }, this.node);
@@ -47,9 +60,10 @@ export default class UICountySelect extends BaseComponent {
         this.renderList();
 
         window.addEventListener('click', event => {
-            if (this.skeletorWrapper.getContentNode() !== event.target
+            if (this.titleNode !== event.target
                 && this.selectContainer !== event.target) {
-                self.close();
+                    this.options.onBlur && this.options.onBlur(event);
+                    this.close();
             }
         });
 
@@ -82,7 +96,7 @@ export default class UICountySelect extends BaseComponent {
             class: 'ui-country-select__code'
         }, countryItem);
 
-        const countryEmoji = createElement('div', {
+        const countryEmoji = createElement('span', {
             class: 'ui-country-select__emoji'
         }, wrapper);
 
@@ -95,6 +109,8 @@ export default class UICountySelect extends BaseComponent {
         countryItem.addEventListener('click', _ => {
             this.selectCountry(country);
         });
+
+        // countryEmoji.innerHTML = '&#128512;';
 
         countryCode.innerText = country.code;
 
@@ -119,7 +135,12 @@ export default class UICountySelect extends BaseComponent {
     updateContext() {
         this.updateSkeletonAutoFocus();
         this.updateDisplayState();
+
+        if (this.currentCountry) {
+            this.titleNode.value = this.currentCountry.name;
+        }
     }
+
 
     close() {
         this.isOpen = false;

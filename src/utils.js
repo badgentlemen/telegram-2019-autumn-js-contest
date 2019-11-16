@@ -51,12 +51,19 @@ export const replaceAllString = (string, what, by) => {
 }
 
 export const phoneMaskByCode = (code) => {
-    const phoneLength = 12;
-    const subLength = phoneLength - code.length;
+    const phoneMask = '+* *** *** ** **'
+    return code + phoneMask.substring(code.length + 1);
+}
 
-    for (let index = 0; index <= subLength; index++) {
-        code += '*';
-    }
+export const internationalPhoneValue = (phoneValue) => {
+    ['(', ')', ' ', '+', '-'].forEach(what => {
+        phoneValue = replaceAllString(phoneValue, what, '');
+    });
 
-    return code;
+    return phoneValue;
+}
+
+export const isPhoneValid = (phone) => {
+    const phoneUmnask = internationalPhoneValue(phone);
+    return phoneUmnask.length == 11;
 }
