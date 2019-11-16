@@ -33,9 +33,17 @@ export default class UIInput extends BaseComponent {
 
         this.skeletonNode.insertContentNode(this.input);
 
+        this.additionalsNode = createElement('div', {
+            class: 'ui-input__additionals'
+        });
+
+        this.skeletonNode.insertContentNode(this.additionalsNode);
+
+
         this.input.value = this.value;
         this.input.placeholder = this.placeholder;
-        this.input.setAttribute('type', this.type);
+
+        this.setType(this.type);
 
         if (this.options.maxLength) {
             this.setMaxLength(this.options.maxLength);
@@ -48,6 +56,7 @@ export default class UIInput extends BaseComponent {
 
 	addEventListeners() {
 		this.input.addEventListener('focus', event => {
+            this.setError(false);
             this.skeletonNode.setFocus(true);
 			this.options.onFocus && this.options.onFocus(event);
 		});
@@ -63,12 +72,17 @@ export default class UIInput extends BaseComponent {
 		});
     }
 
+    insertAdditional(node) {
+        this.additionalsNode.appendChild(node);
+    }
+
     getNode() {
         return this.skeletonNode.getNode();
     }
 
     handleInput() {
         this.skeletonNode.setIsNotEmpty(this.value.length);
+        this.setError(false);
         this.options.onChange && this.options.onChange(this.value);
     }
 
@@ -116,5 +130,9 @@ export default class UIInput extends BaseComponent {
 
     nodeClassName() {
         return 'ui-input';
+    }
+
+    setType(type) {
+        this.input.setAttribute('type', type || 'text');
     }
 }

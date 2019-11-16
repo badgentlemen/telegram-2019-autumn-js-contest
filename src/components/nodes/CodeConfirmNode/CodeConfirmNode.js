@@ -4,6 +4,8 @@ import UIInput from "../../UIInput/UIInput";
 import './CodeConfirmNode.scss';
 import {UIFormRow} from "../..";
 
+const monkeyLogoInvalidClassName = 'ui-monkey-logo__invalid'
+
 export default class CodeConfirmNode extends BaseComponent {
 
     constructor(options = {}) {
@@ -22,7 +24,7 @@ export default class CodeConfirmNode extends BaseComponent {
     renderForm() {
 
         this.logo = createElement('div', {
-            class: 'code-confirm__logo ui-desktop__logo'
+            class: 'code-confirm__logo ui-monkey-logo'
         }, this.node);
 
 
@@ -56,10 +58,10 @@ export default class CodeConfirmNode extends BaseComponent {
                 }
             },
             onFocus: _ => {
-                this.codeConfirmInput.setError(false)
+                this.setCodeError(false);
             },
             onBlur: _ => {
-                this.codeConfirmInput.setError(!this.validated)
+                this.setCodeError(!this.validated)
             }
         });
 
@@ -67,7 +69,8 @@ export default class CodeConfirmNode extends BaseComponent {
         formRow.appendChild(this.codeConfirmInput.getNode());
     }
 
-    setCodeError(error = {}) {
-        this.codeConfirmInput.setError(true);
+    setCodeError(error) {
+        error ? this.logo.classList.add(monkeyLogoInvalidClassName) : this.logo.classList.remove(monkeyLogoInvalidClassName);
+        this.codeConfirmInput.setError(error);
     }
 }

@@ -124,7 +124,7 @@ export default class UICountySelect extends BaseComponent {
     selectCountry(country) {
         this.currentCountry = country;
         this.options.onChange && this.options.onChange(country);
-        this.updateTitle();
+        this.updateContext();
     }
 
     updateDisplayState() {
