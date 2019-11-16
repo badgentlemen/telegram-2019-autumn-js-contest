@@ -54,6 +54,7 @@ export default class ComponentSkeleton extends BaseComponent {
     }
 
     addErrorFlag() {
+        this.setFocus(false);
         this.node.classList.add(errorClassName);
     }
 
@@ -62,7 +63,12 @@ export default class ComponentSkeleton extends BaseComponent {
     }
 
     setFocus(focus) {
-        focus ? this.node.classList.add(focusClassName) : this.node.classList.remove(focusClassName)
+        if (focus) {
+            this.node.classList.add(focusClassName)
+            this.removeErrorFlag();
+        } else {
+            this.node.classList.remove(focusClassName)
+        }
     }
 
     setPlaceholder(placeholder) {

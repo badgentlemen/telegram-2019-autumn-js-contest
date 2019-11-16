@@ -3,10 +3,12 @@ import {BaseComponent} from "../components";
 import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
 import {removeAllChild, internationalPhoneValue} from "../utils";
+import Auth2Node from "../components/nodes/Auth2Node";
 
 var NODE_STATES = {
     SIGN_IN: 'SIGN_IN',
-    CODE_CONFIRM: 'CODE_CONFIRM'
+    CODE_CONFIRM: 'CODE_CONFIRM',
+    AUTH2: 'AUTH2'
 }
 
 export default class LoginPage extends BaseComponent {
@@ -22,7 +24,7 @@ export default class LoginPage extends BaseComponent {
 
         this.signInNode = null;
         this.confirmCodeNode = null;
-        this.setPasswordNode = null;
+        this.auth2Node = null;
 
         this.phoneRawValue = null;
 
@@ -73,22 +75,36 @@ export default class LoginPage extends BaseComponent {
 
         this.confirmCodeNode = new CodeConfirmNode({
             onMaxLength: code => {
+                console.log(code);
                 this.confirmCode = code;
-                this.sendNext();
+                this.confirmSMSCode();
             }
         });
 
         this.loginInner.appendChild(this.confirmCodeNode.getNode());
     }
 
+    renderAuth2Node() {
+        this.removeAllNodes();
+
+        this.auth2Node = new Auth2Node({
+
+        });
+
+        this.loginInner.appendChild(this.auth2Node.getNode());
+    }
+
     renderCandidateNode() {
         switch (this.state) {
             case NODE_STATES.CODE_CONFIRM:
                 this.renderCodeConfirmNode();
-                return;
+                break;
+            case NODE_STATES.AUTH2:
+                this.renderAuth2Node();
+                break;
             default:
                 this.renderSignInNode();
-                return;
+                break;
         }
     }
 
@@ -96,15 +112,21 @@ export default class LoginPage extends BaseComponent {
         removeAllChild(this.loginInner);
         this.signInNode = null;
         this.confirmCodeNode = null;
+        this.auth2Node = null;
     }
 
     checkPhone() {
         let isBadPhone = (this.phoneCountry || '') + (this.phoneNumber || '')
     }
 
+    changeState(state) {
+        this.state = state;
+        this.renderCandidateNode();
+    }
+
     sendCode() {
 
-        this.signInNode.uibutton.setLoading(true);
+        this.signInNode.sendCodeButton.setLoading(true);
 
         if (this.phoneNumber) {
             // sendCode(this.phoneNumber).then(response => {
@@ -118,17 +140,23 @@ export default class LoginPage extends BaseComponent {
             // });
 
             setTimeout(() => {
-                this.renderCodeConfirmNode();
-            }, 2000);
+                this.changeState(NODE_STATES.CODE_CONFIRM);
+            }, 3000);
         }
     }
 
-    sendNext() {
+    confirmSMSCode() {
         if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
             // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
             //     return response;
             // });
+
+
         }
+
+        setTimeout(() => {
+            this.changeState(NODE_STATES.AUTH2);
+        }, 1000)
     }
 
     logIn() {

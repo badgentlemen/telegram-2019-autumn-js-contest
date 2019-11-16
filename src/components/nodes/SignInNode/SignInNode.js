@@ -20,9 +20,9 @@ export default class SignInNode extends BaseComponent {
 		this.targetText =
 			'Please confirm your country and <br> enter your phone number';
 		this.node = createElement('div', {
-			class: 'ui-sign-in__node'
+			class: 'ui-sign-in__node login-page__node'
 		});
-		this.uibutton = null;
+		this.sendCodeButton = null;
 		this.renderForm();
 	}
 
@@ -37,7 +37,7 @@ export default class SignInNode extends BaseComponent {
 		const title = createElement(
 			'h1',
 			{
-				class: 'ui-sign-in__title ui-desktop__title ui-text__center'
+				class: 'ui-sign-in__title ui-desktop__title'
 			},
 			this.node
 		);
@@ -45,21 +45,21 @@ export default class SignInNode extends BaseComponent {
 		const text = createElement(
 			'p',
 			{
-				class: 'ui-sign-in__text ui-desktop__text ui-text__center'
+				class: 'ui-sign-in__text ui-desktop__text'
 			},
 			this.node
 		);
 		text.innerHTML = this.targetText;
 		const form = createElement(
-			'form',
+			'div',
 			{
 				class:
 					'ui-form ui-form__incolumn ui-form__confirm-country-phone'
 			},
 			this.node
         );
-        
-        this.uibutton = new UIButton({
+
+        this.sendCodeButton = new UIButton({
 			title: 'NEXT',
 			onClick: event => {
 				event.preventDefault();
@@ -69,8 +69,11 @@ export default class SignInNode extends BaseComponent {
 			}
 		});
 
+        const placeholder = 'Phone Number'
+
 		this.phoneNumberInput = new UIInput({
-			placeholder: 'Phone Number',
+            placeholder,
+            labelPlaceholder: placeholder,
 			requireValid: true,
 			onChange: value => {
 				this.phoneValue = value;
@@ -80,7 +83,6 @@ export default class SignInNode extends BaseComponent {
 				this.phoneNumberInput.setError(false);
 			},
 			onBlur: event => {
-				console.log(this.phoneValidated);
 				this.phoneNumberInput.setError(!this.phoneValidated);
 			},
 			value: this.options.phoneNumber || '',
@@ -108,29 +110,14 @@ export default class SignInNode extends BaseComponent {
 					this.country == null
 				);
 			}
-		});
-		var countrySelectFormRow = UIFormRow(form);
-		countrySelectFormRow.appendChild(this.countrySelector.getNode());
-		form.appendChild(countrySelectFormRow);
+        });
 
-		var inputFormRow = UIFormRow(form);
-		inputFormRow.appendChild(this.phoneNumberInput.getNode());
-		form.appendChild(inputFormRow);
-		
-		form.appendChild(this.uibutton.getNode());
-		this.togglePhoneInputValidate(false);
+        [this.countrySelector, this.phoneNumberInput, this.sendCodeButton].forEach(item => {
+            const formRow = UIFormRow(form);
+            formRow.appendChild(item.getNode());
+        });
 
 		// var checkbox = new uiCheckbox({}, 'ui-sign-in__keep-state', new uiFormRow(form));
-		// var button = createElement('button', {'class': 'ui-button'}, new uiFormRow(form));
-		// button.innerText = 'NEXT';
-		// button.addEventListener('click', function (event) {
-		//     event.preventDefault();
-		//     var code = phoneNumberInput.getValue();
-		//     APIManager.signIn('+79604245511', phone_code_hash, code).then(function (data) {
-		//     });
-		// });
-		// phoneNumberInput.setError(null);
-		// phoneNumberInput.type = 'text';
 	}
 
 	togglePhoneInputValidate(state) {
@@ -139,7 +126,7 @@ export default class SignInNode extends BaseComponent {
 	}
 
 	handleValidate() {
-		this.uibutton.getNode().style.display = this.phoneValidated
+		this.sendCodeButton.getNode().style.display = this.phoneValidated
 			? 'block'
 			: 'none';
 	}

@@ -22,6 +22,10 @@ export default class UIButton extends BaseComponent {
         this.theme = this.options.theme || 'primary';
         this.node.classList.add(this.themeClassName());
         this.addEventListeners();
+
+        if (options.isLoading) {
+            this.setLoading(options.isLoading);
+        }
     }
 
     themeClassName() {

@@ -96,6 +96,8 @@ export default class UIInput extends BaseComponent {
         } else {
             this.removeErrorFlag();
         }
+
+        this.skeletonNode.setPlaceholder(error && this.options.errorPlaceholder ? this.options.errorPlaceholder : this.options.labelPlaceholder || this.placeholder);
     }
 
     setMaxLength(maxLength) {
@@ -108,6 +110,7 @@ export default class UIInput extends BaseComponent {
     }
 
     addErrorFlag() {
+        this.input.blur();
         this.skeletonNode.setError(true);
     }
 

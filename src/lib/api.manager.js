@@ -70,7 +70,6 @@ export const getDialogs = (limit = 200, offset = 0) => {
 
         AppstoreInstance.saveDialogs(dialogs);
 
-        console.log(AppstoreInstance);
 		return dialogs;
 	});
 };
