@@ -251,8 +251,12 @@ ul {
     position: relative;
     width: 100%;
     flex-grow: 1;
-    display: flex;
-    padding-bottom: 80px;
+    display: block;
+    height: 100%;
+}
+
+.ui-sidebar__body .simplebar-content {
+    padding-bottom: 80px!important;
 }
 
 .ui-sidebar__chat-list {}
@@ -1033,4 +1037,10 @@ ul {
 
 .ui-eye__closed {
     background-image: url('./assets/eye__closed.svg');
+}
+
+
+.ui-scrollable-view {
+    height: 100%;
+    width: 100%;
 }

@@ -60,7 +60,10 @@ const renderApp = () => {
             page = new LoginPage();
             renderLayoutContainer(page)
         }
-	});
+    });
+
+    // page = new LoginPage();
+    // renderLayoutContainer(page)
 };
 
 renderApp();

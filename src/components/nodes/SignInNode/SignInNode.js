@@ -6,6 +6,7 @@ import UIButton from '../../UIButton/UIButton';
 import { phoneMaskByCode, isPhoneValid } from '../../../utils';
 
 import './SignInNode.scss';
+import UIChecbox from '../../UICheckbox/UICheckbox';
 
 export default class SignInNode extends BaseComponent {
 	constructor(options) {
@@ -112,13 +113,20 @@ export default class SignInNode extends BaseComponent {
 			}
         });
 
-        [this.countrySelector, this.phoneNumberInput, this.sendCodeButton].forEach(item => {
+        this.checkboxNode = new UIChecbox({
+            title: 'Keep me signed in',
+            class: 'ui-sign-in__keep'
+        });
+
+        [this.countrySelector, this.phoneNumberInput, this.checkboxNode, this.sendCodeButton].forEach(item => {
             const formRow = UIFormRow(form);
             formRow.appendChild(item.getNode());
         });
+    }
 
-		// var checkbox = new uiCheckbox({}, 'ui-sign-in__keep-state', new uiFormRow(form));
-	}
+    wrapFormRowInte(node) {
+
+    }
 
 	togglePhoneInputValidate(state) {
 		this.phoneValidated = state;

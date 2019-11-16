@@ -1,12 +1,16 @@
-import {createElement} from "./lib";
+import { createElement } from './lib';
 
 export const uiSpinner = (className, parent) => {
 	var className = className || '';
 	var classes = 'ui-spinner ' + className;
-	return createElement('div', {
-        class: classes
-    }, parent);
-}
+	return createElement(
+		'div',
+		{
+			class: classes
+		},
+		parent
+	);
+};
 
 export const elementRemoveFromSuperView = element => {
 	if (element.parentNode) {
@@ -47,23 +51,39 @@ export const safeReplaceObject = (oldObject, newObject) => {
 };
 
 export const replaceAllString = (string, what, by) => {
-    return string.split(what).join(by);
-}
+	return string.split(what).join(by);
+};
 
-export const phoneMaskByCode = (code) => {
-    const phoneMask = '+* *** *** ** **'
-    return code + phoneMask.substring(code.length + 1);
-}
+export const phoneMaskByCode = code => {
+	const phoneMask = '+* *** *** ** **';
+	return code + phoneMask.substring(code.length + 1);
+};
 
-export const internationalPhoneValue = (phoneValue) => {
-    ['(', ')', ' ', '+', '-'].forEach(what => {
-        phoneValue = replaceAllString(phoneValue, what, '');
-    });
+export const internationalPhoneValue = phoneValue => {
+	['(', ')', ' ', '+', '-'].forEach(what => {
+		phoneValue = replaceAllString(phoneValue, what, '');
+	});
 
-    return phoneValue;
-}
+	return phoneValue;
+};
 
-export const isPhoneValid = (phone) => {
-    const phoneUmnask = internationalPhoneValue(phone);
-    return phoneUmnask.length == 11;
-}
+export const isPhoneValid = phone => {
+	const phoneUmnask = internationalPhoneValue(phone);
+	return phoneUmnask.length == 11;
+};
+
+export const bufferConcat = (buffer1, buffer2) => {
+	var l1 = buffer1.byteLength || buffer1.length;
+	var l2 = buffer2.byteLength || buffer2.length;
+	var tmp = new Uint8Array(l1 + l2);
+	tmp.set(
+		buffer1 instanceof ArrayBuffer ? new Uint8Array(buffer1) : buffer1,
+		0
+	);
+	tmp.set(
+		buffer2 instanceof ArrayBuffer ? new Uint8Array(buffer2) : buffer2,
+		l1
+	);
+
+	return tmp.buffer;
+};

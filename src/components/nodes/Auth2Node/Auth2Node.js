@@ -3,6 +3,7 @@ import { createElement } from '../../../lib';
 import UIInput from '../../UIInput/UIInput';
 import UIButton from '../../UIButton/UIButton';
 import { UIFormRow } from '../..';
+import {makePasswordHash} from '../../../lib/api.manager';
 
 const notWatchingClassName = 'ui-monkey-logo__not_watching';
 const watchingClassName = 'ui-monkey-logo__watching';
@@ -92,6 +93,7 @@ export default class Auth2Node extends BaseComponent {
 
     handleValidate() {
         this.passwordValidated = this.password.length > 2;
+        this.options.onPasswordConfirm && this.options.onPasswordConfirm(this.password);
         this.passwordInput.setError(!this.passwordValidated);
     }
 

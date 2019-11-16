@@ -583,6 +583,28 @@ function CryptoWorkerModule($timeout) {
     };
 }
 
+window.CryptoWorker = {
+    sha1Hash: function (bytes) {
+        return sha1HashSync(bytes);
+    },
+    sha256Hash: function (bytes) {
+        return sha256HashSync(bytes);
+    },
+    aesEncrypt: function (bytes, keyBytes, ivBytes) {
+        return convertToArrayBuffer(aesEncryptSync(bytes, keyBytes, ivBytes));
+    },
+    aesDecrypt: function (encryptedBytes, keyBytes, ivBytes) {
+        return convertToArrayBuffer(aesDecryptSync(encryptedBytes, keyBytes, ivBytes));
+    },
+    factorize: function (bytes) {
+        bytes = convertToByteArray(bytes);
+        return pqPrimeFactorization(bytes);
+    },
+    modPow: function (x, y, m) {
+        return bytesModPow(x, y, m);
+    }
+};
+
 CryptoWorkerModule.dependencies = [
     '$timeout'
 ];

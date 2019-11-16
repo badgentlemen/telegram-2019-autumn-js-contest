@@ -8,7 +8,7 @@ export default class ScrollableView extends BaseComponent {
 
     constructor(options) {
         super(options);
-        this.node = createElement('div', {'class': this.getClassName(), style: 'height: 100%'});
+        this.node = createElement('div', {'class': this.getClassName()});
         this.scrollableView = new SimpleBar(this.node);
         this.scrollableView.getScrollElement().addEventListener('scroll', event => {
             this.options.onScroll && this.options.onScroll(event);
@@ -23,7 +23,6 @@ export default class ScrollableView extends BaseComponent {
 
     appendChild(element) {
         this.contentNode.appendChild(element);
-        this.scrollableView.recalculate();
     }
 
     removeSubviews() {

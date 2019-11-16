@@ -2,16 +2,18 @@ import {createElement} from "../lib";
 import {BaseComponent} from "../components";
 import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
-import {removeAllChild, internationalPhoneValue} from "../utils";
+import {removeAllChild, internationalPhoneValue, isPhoneValid} from "../utils";
 import Auth2Node from "../components/nodes/Auth2Node";
+import SignUpNode from "../components/nodes/SignUpNode";
 import { sendCode as getSMS, logIn } from "../lib/api.manager";
 
-import loginResponse from '../../helpers/2fa-code-response';
+
 
 var NODE_STATES = {
     SIGN_IN: 'SIGN_IN',
     CODE_CONFIRM: 'CODE_CONFIRM',
-    AUTH2: 'AUTH2'
+    AUTH2: 'AUTH2',
+    SIGN_UP: 'SIGN_UP'
 }
 
 export default class LoginPage extends BaseComponent {
@@ -32,7 +34,7 @@ export default class LoginPage extends BaseComponent {
 
         this.phoneRawValue = null;
 
-        this.state = NODE_STATES.SIGN_IN;
+        this.state = NODE_STATES.AUTH2;
 
         this.node = createElement(
             'div',
@@ -60,7 +62,6 @@ export default class LoginPage extends BaseComponent {
 	};
 
 	renderSignInNode() {
-        this.removeAllNodes();
         const self = this;
         this.signInNode = new SignInNode({
             onNextClicked: (phoneNumber, phoneCountry) => {
@@ -74,8 +75,16 @@ export default class LoginPage extends BaseComponent {
         this.loginInner.appendChild(this.signInNode.getNode());
     }
 
+    renderSignUpNode() {
+        this.signUpNode = new SignInNode({
+            onNextClicked: (firstname, lastname) => {
+                this.firstname = firstname;
+                this.lastname = lastname;
+            }
+        })
+    }
+
     renderCodeConfirmNode() {
-        this.removeAllNodes();
 
         this.confirmCodeNode = new CodeConfirmNode({
             maxLength: this.smsCodeLength,
@@ -89,11 +98,11 @@ export default class LoginPage extends BaseComponent {
     }
 
     renderAuth2Node() {
-        this.removeAllNodes();
-
         this.auth2Node = new Auth2Node({
             onPasswordConfirm: password => {
-
+                this.auth2factorPass = password;
+                console.log(this.auth2factorPass);
+                // this.checkPassword();
             }
         });
 
@@ -101,6 +110,8 @@ export default class LoginPage extends BaseComponent {
     }
 
     renderCandidateNode() {
+        this.removeAllNodes();
+
         switch (this.state) {
             case NODE_STATES.CODE_CONFIRM:
                 this.renderCodeConfirmNode();
@@ -119,6 +130,7 @@ export default class LoginPage extends BaseComponent {
         this.signInNode = null;
         this.confirmCodeNode = null;
         this.auth2Node = null;
+        this.signUpNode = null;
     }
 
     checkPhone() {
@@ -131,8 +143,8 @@ export default class LoginPage extends BaseComponent {
     }
 
     sendCode() {
-        this.signInNode.sendCodeButton.setLoading(true);
-        if (this.phoneNumber) {
+        if (this.phoneNumber && isPhoneValid(this.phoneNumber)) {
+            this.signInNode.sendCodeButton.setLoading(true);
             // getSMS(this.phoneNumber).then(response => {
             //     this.smsCodeLength = response.type.length || 5;
 
@@ -147,25 +159,17 @@ export default class LoginPage extends BaseComponent {
             //     console.log(error);
             //     alert(error);
             // });
-
-            setTimeout(() => {
-                this.changeState(NODE_STATES.CODE_CONFIRM);
-            }, 500)
         }
     }
 
     confirmSMSCode() {
-        // if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
-
-
-        //     // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
-        //     //     document.location.reload();
-        //     // }).catch(error => {
-        //     //     console.log(error);
-        //     // })
-        // }
-
-        this.confirmSMSCodeErrorHandler(loginResponse);
+        if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
+            // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
+            //     document.location.reload();
+            // }).catch(error => {
+            //     this.confirmSMSCodeErrorHandler(error);
+            // });
+        }
     }
 
     confirmSMSCodeErrorHandler(error) {
@@ -175,11 +179,20 @@ export default class LoginPage extends BaseComponent {
             case 'SESSION_PASSWORD_NEEDED':
                 this.changeState(NODE_STATES.AUTH2);
                 break;
+            case '	PHONE_NUMBER_UNOCCUPIED':
+                this.changeState(NODE_STATES.SIGN_UP)
+                break;
             default:
                 this.confirmCodeNode.setCodeError(true);
                 break;
         }
 
+    }
+
+    checkPassword() {
+        if (this.auth2factorPass) {
+
+        }
     }
 
     logIn() {
