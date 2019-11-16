@@ -1,13 +1,13 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-    .BundleAnalyzerPlugin;
+	.BundleAnalyzerPlugin;
 
 module.exports = {
-    entry: __dirname + '/app.js',
+	entry: __dirname + '/app.js',
 	output: {
 		path: __dirname + '/dist',
-		filename: 'bundle.js'
+		filename: 'bundle.[hash].js'
 	},
 	module: {
 		rules: [
@@ -18,11 +18,7 @@ module.exports = {
 			},
 			{
 				test: /\.s[ac]ss$/i,
-				use: [
-					'style-loader',
-					'css-loader',
-					'sass-loader'
-				]
+				use: ['style-loader', 'css-loader', 'sass-loader']
 			},
 			{
 				test: /\.js$/,
@@ -38,7 +34,10 @@ module.exports = {
 				test: /\.(png|jpe?g|gif|svg)$/i,
 				use: [
 					{
-						loader: 'file-loader'
+						loader: 'file-loader',
+						options: {
+							name: 'images/[name].[hash:4].[ext]'
+						}
 					}
 				]
 			}
@@ -46,7 +45,7 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-            template: __dirname + '/public/index.html',
+			template: __dirname + '/public/index.html',
 			inject: true
 		}),
 		new AddAssetHtmlPlugin([
@@ -55,6 +54,9 @@ module.exports = {
 			},
 			{
 				filepath: require.resolve('./src/vendor/telegramApi.js')
+			},
+			{
+				filepath: require.resolve('./src/config.js')
 			}
 		]),
 		new BundleAnalyzerPlugin({
@@ -65,27 +67,16 @@ module.exports = {
 	],
 	optimization: {
 		splitChunks: {
-			chunks: 'async',
-			minSize: 30000,
-			maxSize: 0,
-			minChunks: 1,
-			maxAsyncRequests: 5,
-			maxInitialRequests: 3,
-			automaticNameDelimiter: '~',
-			automaticNameMaxLength: 30,
-			name: true,
 			cacheGroups: {
-				vendors: {
-					test: /[\\/]node_modules[\\/]/,
-					priority: -10
-				},
-				default: {
-					minChunks: 2,
-					priority: -20,
-					reuseExistingChunk: true
+				vendor: {
+					chunks: 'initial',
+					name: 'vendor',
+					test: /node_modules/,
+					enforce: true
 				}
 			}
-		}
+		},
+		runtimeChunk: true
 	},
 	devServer: {
 		contentBase: './src/public',

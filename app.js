@@ -1,7 +1,6 @@
 import { createElement } from './src/lib';
 import { getUserID } from './src/lib/api.manager';
 import { LoginPage } from './src/pages';
-import './src/config';
 import './src/app.css';
 
 telegramApi.setConfig({
@@ -53,13 +52,12 @@ const renderLoginPage = () => {
 
 const renderApp = () => {
 	getUserID().then(userId => {
-		// if (userId) {
-        //     window.currentUserId = userId;
-        //     renderChatPage();
-        // } else {
-
-        // }
-        renderLoginPage();
+		if (userId) {
+            window.currentUserId = userId;
+            renderChatPage();
+        } else {
+            renderLoginPage();
+        }
     });
 };
 
