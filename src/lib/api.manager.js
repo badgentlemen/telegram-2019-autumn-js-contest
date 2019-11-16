@@ -1,4 +1,4 @@
-import { getValue, removeValue } from './storage';
+import { getValue, removeValue, setValue } from './storage';
 import AppstoreInstance from '../app.store';
 import {
 	wrapForDialog,
@@ -7,7 +7,7 @@ import {
 	getDialog,
 	wrapForMessage
 } from '../tl_utils';
-import getSMSJSON from '../../helpers/send-code-response.js';
+import f2a from '../../helpers/2fa-code-response2';
 import {bufferConcat} from '../utils';
 
 export const annihilation = () => {
@@ -29,10 +29,16 @@ export const logIn = (phoneNumber, phoneCodeHash, smsCode) => {
 	return telegramApi.signIn(phoneNumber, phoneCodeHash, smsCode);
 };
 
-export const checkPassword = (password) => {
+export const checkPasswordRequest = (password_hash) => {
+    return telegramApi.invokeApi('auth.checkPassword', {
+        password_hash
+    })
+}
+
+export const checkPasswordTL = (password) => {
     return makePasswordHash(password).then(password_hash => {
-        return telegramApi.invokeApi('auth.checkPassword', {
-            password_hash
+        return setUserAuth({
+            id: f2a.user.id
         });
     });
 }
@@ -115,3 +121,14 @@ export const makePasswordHash = password => {
         return window.CryptoWorker.sha256Hash(buffer);
     })
 };
+
+export const setUserAuth = (userAuth) => {
+    const dcID = 2;
+    const fullUserAuth = Object.assign({dcID}, userAuth);
+    return setValue({
+        dcID,
+        user_auth: fullUserAuth
+    }).then(() => {
+        document.location.reload();
+    });
+}

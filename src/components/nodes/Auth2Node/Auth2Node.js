@@ -93,7 +93,9 @@ export default class Auth2Node extends BaseComponent {
 
     handleValidate() {
         this.passwordValidated = this.password.length > 2;
-        this.options.onPasswordConfirm && this.options.onPasswordConfirm(this.password);
+        if (this.passwordValidated) {
+            this.options.onPasswordConfirm && this.options.onPasswordConfirm(this.password);
+        }
         this.passwordInput.setError(!this.passwordValidated);
     }
 

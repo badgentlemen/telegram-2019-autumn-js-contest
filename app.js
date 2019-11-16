@@ -61,9 +61,6 @@ const renderApp = () => {
             renderLayoutContainer(page)
         }
     });
-
-    // page = new LoginPage();
-    // renderLayoutContainer(page)
 };
 
 renderApp();
