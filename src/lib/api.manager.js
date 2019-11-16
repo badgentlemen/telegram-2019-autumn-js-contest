@@ -1,6 +1,7 @@
 import { getValue, removeValue } from './storage';
 import AppstoreInstance from '../app.store';
 import {wrapForDialog, getPeerID, isChannel, getDialog, wrapForMessage} from '../tl_utils';
+import getSMSJSON from '../../helpers/send-code-response.js';
 
 export const annihilation = () => {
 	removeValue(['user_auth']);
@@ -13,7 +14,8 @@ export const getContacts = () => {
 };
 
 export const sendCode = phoneNumber => {
-	return telegramApi.sendCode(phoneNumber);
+    return telegramApi.sendCode(phoneNumber);
+    // return Promise.resolve(getSMSJSON);
 };
 
 export const logIn = (phoneNumber, phoneCodeHash, smsCode) => {

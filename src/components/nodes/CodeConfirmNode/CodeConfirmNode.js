@@ -15,9 +15,16 @@ export default class CodeConfirmNode extends BaseComponent {
 
         this.targetText = 'We have sent your an SMS <br> with the code';
         this.codeMaxLength = this.options.maxLength || 5;
+        this.modernPlaceholder = '';
+
+        for (let index = 0; index < this.codeMaxLength; index++) {
+            this.modernPlaceholder += '•';
+        }
+
         this.node = createElement('div', {
             class: 'ui-code-confirm__node login-page__node'
         });
+
         this.renderForm();
     }
 
@@ -45,7 +52,7 @@ export default class CodeConfirmNode extends BaseComponent {
         }, this.node);
 
         this.codeConfirmInput = new UIInput({
-            placeholder: '•••••',
+            placeholder: this.modernPlaceholder,
             errorPlaceholder: 'Invalid Code',
             labelPlaceholder: 'Code',
             maxLength: this.codeMaxLength,
@@ -70,7 +77,11 @@ export default class CodeConfirmNode extends BaseComponent {
     }
 
     setCodeError(error) {
-        error ? this.logo.classList.add(monkeyLogoInvalidClassName) : this.logo.classList.remove(monkeyLogoInvalidClassName);
         this.codeConfirmInput.setError(error);
+        if (error) {
+            this.logo.classList.add(monkeyLogoInvalidClassName);
+        } else {
+            this.logo.classList.remove(monkeyLogoInvalidClassName);
+        }
     }
 }

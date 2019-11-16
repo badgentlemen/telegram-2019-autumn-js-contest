@@ -4,6 +4,9 @@ import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
 import {removeAllChild, internationalPhoneValue} from "../utils";
 import Auth2Node from "../components/nodes/Auth2Node";
+import { sendCode as getSMS, logIn } from "../lib/api.manager";
+
+import loginResponse from '../../helpers/2fa-code-response';
 
 var NODE_STATES = {
     SIGN_IN: 'SIGN_IN',
@@ -17,6 +20,7 @@ export default class LoginPage extends BaseComponent {
         super();
 
         this.destroyed = false;
+        this.smsCodeLength = 5;
         this.phoneCountry = null;
         this.phoneNumber = null;
         this.phoneCodeHash = null;
@@ -74,8 +78,8 @@ export default class LoginPage extends BaseComponent {
         this.removeAllNodes();
 
         this.confirmCodeNode = new CodeConfirmNode({
+            maxLength: this.smsCodeLength,
             onMaxLength: code => {
-                console.log(code);
                 this.confirmCode = code;
                 this.confirmSMSCode();
             }
@@ -88,7 +92,9 @@ export default class LoginPage extends BaseComponent {
         this.removeAllNodes();
 
         this.auth2Node = new Auth2Node({
+            onPasswordConfirm: password => {
 
+            }
         });
 
         this.loginInner.appendChild(this.auth2Node.getNode());
@@ -125,38 +131,55 @@ export default class LoginPage extends BaseComponent {
     }
 
     sendCode() {
-
         this.signInNode.sendCodeButton.setLoading(true);
-
         if (this.phoneNumber) {
-            // sendCode(this.phoneNumber).then(response => {
+            // getSMS(this.phoneNumber).then(response => {
+            //     this.smsCodeLength = response.type.length || 5;
+
             //     if (response.pFlags.phone_registered && response.phone_code_hash) {
             //         this.phoneCodeHash = response.phone_code_hash;
-            //         this.renderCodeConfirmNode();
+            //         this.changeState(NODE_STATES.CODE_CONFIRM);
+
+            //         this.signInNode.sendCodeButton.setLoading(false);
             //     }
             // }).catch(error => {
+            //     this.signInNode.sendCodeButton.setLoading(false);
             //     console.log(error);
             //     alert(error);
             // });
 
             setTimeout(() => {
                 this.changeState(NODE_STATES.CODE_CONFIRM);
-            }, 3000);
+            }, 500)
         }
     }
 
     confirmSMSCode() {
-        if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
-            // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
-            //     return response;
-            // });
+        // if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
 
 
+        //     // logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
+        //     //     document.location.reload();
+        //     // }).catch(error => {
+        //     //     console.log(error);
+        //     // })
+        // }
+
+        this.confirmSMSCodeErrorHandler(loginResponse);
+    }
+
+    confirmSMSCodeErrorHandler(error) {
+        const type = error.type || 'SESSION_PASSWORD_NEEDED';
+
+        switch (type) {
+            case 'SESSION_PASSWORD_NEEDED':
+                this.changeState(NODE_STATES.AUTH2);
+                break;
+            default:
+                this.confirmCodeNode.setCodeError(true);
+                break;
         }
 
-        setTimeout(() => {
-            this.changeState(NODE_STATES.AUTH2);
-        }, 1000)
     }
 
     logIn() {

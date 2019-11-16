@@ -125,7 +125,9 @@ export default class UIInput extends BaseComponent {
 
     addErrorFlag() {
         this.input.blur();
-        this.skeletonNode.setError(true);
+        setTimeout(() => {
+            this.skeletonNode.setError(true);
+        }, 40);
     }
 
     nodeClassName() {
