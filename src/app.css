@@ -55,6 +55,10 @@ ul {
     text-align: center;
 }
 
+.ui-desktop__title {
+
+}
+
 .ui-button {
     position: relative;
     min-height: 54px;
@@ -195,39 +199,6 @@ ul {
 .UiLogin_layout__wrapper {
     width: 100%;
     height: 100%;
-}
-
-.ui-sign-in__node {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.ui-sign-in__logo {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: var(--primary-color) url("./assets/logo.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 110%;
-}
-
-.ui-sign-in__title {
-    color: black;
-    line-height: 25px;
-    margin-top: 50px;
-    margin-bottom: 19px;
-}
-
-.ui-sign-in__text {
-    color: #939393;
-    margin-bottom: 48px;
-    margin-top: 0;
-    font-size: 14.5px;
-    font-weight: 400;
 }
 
 .UiChat_layout__node {
@@ -826,6 +797,12 @@ ul {
 }
 
 .ui-message__balloon {}
+
+.ui-desktop__logo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+}
 
 .ui-desktop__title {
     color: black;

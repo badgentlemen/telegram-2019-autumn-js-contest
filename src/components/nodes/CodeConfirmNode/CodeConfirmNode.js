@@ -14,6 +14,11 @@ export default class CodeConfirmNode extends BaseComponent {
     }
 
     renderForm() {
+
+        this.logo = createElement('div', {
+            class: 'code-confirm__logo'
+        }, this.node);
+
         this.codeConfirmInput = new UIInput({
             placeholder: '•••••',
             labelPlaceholder: 'Code',

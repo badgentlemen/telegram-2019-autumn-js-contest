@@ -60,7 +60,6 @@ export default class UIInput extends BaseComponent {
 		this.input.addEventListener('input', event => {
             this.value = event.target.value;
             this.handleInput();
-            this.options.onChange && this.options.onChange(this.value);
 		});
     }
 
@@ -69,7 +68,8 @@ export default class UIInput extends BaseComponent {
     }
 
     handleInput() {
-        this.skeletonNode.setIsNotEmpty(this.value.length)
+        this.skeletonNode.setIsNotEmpty(this.value.length);
+        this.options.onChange && this.options.onChange(this.value);
     }
 
     getValue() {
@@ -78,14 +78,15 @@ export default class UIInput extends BaseComponent {
 
     setMask(mask) {
         this.mask = mask;
+        this.value = '';
         this.inputMask = Inputmask({
             numericInput: true,
             mask: this.mask,
             placeholder: ''
         }).mask(this.input);
 
-        this.inputMask.setValue(this.value);
-
+        this.inputMask.setValue('');
+        this.input.value = '';
         this.handleInput();
     }
 

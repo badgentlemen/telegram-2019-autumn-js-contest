@@ -4,6 +4,11 @@ import SignInNode from "../components/nodes/SignInNode/SignInNode";
 import CodeConfirmNode from "../components/nodes/CodeConfirmNode/CodeConfirmNode";
 import {removeAllChild, internationalPhoneValue} from "../utils";
 
+var NODE_STATES = {
+    SIGN_IN: 'SIGN_IN',
+    CODE_CONFIRM: 'CODE_CONFIRM'
+}
+
 export default class LoginPage extends BaseComponent {
 
     constructor() {
@@ -20,6 +25,8 @@ export default class LoginPage extends BaseComponent {
         this.setPasswordNode = null;
 
         this.phoneRawValue = null;
+
+        this.state = NODE_STATES.SIGN_IN;
 
         this.node = createElement(
             'div',
@@ -38,7 +45,7 @@ export default class LoginPage extends BaseComponent {
             this.containerWrapper
         );
 
-        this.renderSignInNode();
+        this.renderCandidateNode();
     }
 
     destroy() {
@@ -63,6 +70,7 @@ export default class LoginPage extends BaseComponent {
 
     renderCodeConfirmNode() {
         this.removeAllNodes();
+
         this.confirmCodeNode = new CodeConfirmNode({
             onMaxLength: code => {
                 this.confirmCode = code;
@@ -71,6 +79,17 @@ export default class LoginPage extends BaseComponent {
         });
 
         this.loginInner.appendChild(this.confirmCodeNode.getNode());
+    }
+
+    renderCandidateNode() {
+        switch (this.state) {
+            case NODE_STATES.CODE_CONFIRM:
+                this.renderCodeConfirmNode();
+                return;
+            default:
+                this.renderSignInNode();
+                return;
+        }
     }
 
 	removeAllNodes() {

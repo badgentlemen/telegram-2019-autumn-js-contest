@@ -5,7 +5,6 @@ import countries from '../countries';
 import ScrollableView from "./ScrollableView";
 
 import '../styles/UICountrySelect.scss';
-import UIInput from "./UIInput/UIInput";
 
 const openedClassName = 'ui-country-select__opened';
 const placeholder = 'Country';
@@ -68,6 +67,11 @@ export default class UICountySelect extends BaseComponent {
         });
 
         this.selectContainer.appendChild(this.scrollableSelectContainer.getNode());
+
+        if (this.currentCountry === null) {
+            let russia = countries.find(country => country.shortName === 'RU');
+            this.selectCountry(russia);
+        }
     }
 
     renderList() {
@@ -120,6 +124,7 @@ export default class UICountySelect extends BaseComponent {
     selectCountry(country) {
         this.currentCountry = country;
         this.options.onChange && this.options.onChange(country);
+        this.updateTitle();
     }
 
     updateDisplayState() {
@@ -135,7 +140,10 @@ export default class UICountySelect extends BaseComponent {
     updateContext() {
         this.updateSkeletonAutoFocus();
         this.updateDisplayState();
+        this.updateTitle();
+    }
 
+    updateTitle() {
         if (this.currentCountry) {
             this.titleNode.value = this.currentCountry.name;
         }
