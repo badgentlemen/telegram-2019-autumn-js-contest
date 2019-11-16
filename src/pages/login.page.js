@@ -28,7 +28,7 @@ export default class LoginPage extends BaseComponent {
 
         this.phoneRawValue = null;
 
-        this.state = NODE_STATES.AUTH2;
+        this.state = NODE_STATES.SIGN_IN;
 
         this.node = createElement(
             'div',

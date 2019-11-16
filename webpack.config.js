@@ -1,10 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-	.BundleAnalyzerPlugin;
+    .BundleAnalyzerPlugin;
 
 module.exports = {
-	entry: __dirname + '/app.js',
+    entry: __dirname + '/app.js',
+    devtool: 'cheap-module-source-map',
 	output: {
 		path: __dirname + '/dist',
 		filename: 'bundle.js'
@@ -46,7 +47,7 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: __dirname + '/public/index.html',
+            template: __dirname + '/public/index.html',
 			inject: true
 		}),
 		new AddAssetHtmlPlugin([
