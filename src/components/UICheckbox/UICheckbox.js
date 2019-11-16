@@ -40,7 +40,6 @@ export default class UIChecbox extends BaseComponent {
     }
 
     updateContext() {
-        console.log(this.checked);
         this.checked
             ? this.node.classList.add('ui-checkbox__checked')
             : this.node.classList.remove('ui-checkbox__checked');

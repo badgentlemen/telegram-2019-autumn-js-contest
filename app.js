@@ -39,27 +39,27 @@ const renderLayoutContainer = (page, pageClass = 'UiLogin_layout') => {
 };
 
 const renderChatPage = () => {
-
+    import(/* webpackChunkName: `chat.page.chunk` */ `./src/pages/chat.page`).then(module => {
+        const ChatsPage = module.default;
+        page = new ChatsPage();
+        renderLayoutContainer(page);
+    })
 }
 
 const renderLoginPage = () => {
-
+    page = new LoginPage();
+    renderLayoutContainer(page)
 }
 
 const renderApp = () => {
 	getUserID().then(userId => {
-		if (userId) {
-            window.currentUserId = userId;
+		// if (userId) {
+        //     window.currentUserId = userId;
+        //     renderChatPage();
+        // } else {
 
-           import(/* webpackChunkName: `chat.page.chunk` */ `./src/pages/chat.page`).then(module => {
-               const ChatsPage = module.default;
-               page = new ChatsPage();
-               renderLayoutContainer(page);
-           })
-        } else {
-            page = new LoginPage();
-            renderLayoutContainer(page)
-        }
+        // }
+        renderLoginPage();
     });
 };
 

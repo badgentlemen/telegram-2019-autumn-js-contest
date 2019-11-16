@@ -101,7 +101,7 @@ export default class UICountySelect extends BaseComponent {
         }, countryItem);
 
         const countryEmoji = createElement('span', {
-            class: 'ui-country-select__emoji'
+            class: `ui-country-select__emoji flag-icon flag-icon-${country.shortName.toLowerCase()}`
         }, wrapper);
 
         const countryLabel = createElement('div', {
@@ -113,8 +113,6 @@ export default class UICountySelect extends BaseComponent {
         countryItem.addEventListener('click', _ => {
             this.selectCountry(country);
         });
-
-        // countryEmoji.innerHTML = '&#128512;';
 
         countryCode.innerText = country.code;
 

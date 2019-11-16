@@ -287,9 +287,12 @@ export const wrapForDocument = (document = {}) => {
         delete document.thumb;
     }
 
+    document.fileName = '';
+
     (document.attributes || []).forEach(attribute => {
         switch (attribute._) {
             case "documentAttributeFilename":
+                document.type = 'document';
                 document.fileName = attribute.file_name || "";
                 break;
             case "documentAttributeSticker":
@@ -351,10 +354,6 @@ export const wrapForDocument = (document = {}) => {
                 document.mime_type = "application/octet-stream";
                 break;
         }
-    }
-
-    if (!document.file_name) {
-        document.fileName = "";
     }
 
     if (document._ == "documentEmpty") {

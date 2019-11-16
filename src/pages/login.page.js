@@ -36,7 +36,7 @@ export default class LoginPage extends BaseComponent {
 
 		this.phoneRawValue = null;
 
-		this.state = NODE_STATES.AUTH2;
+		this.state = NODE_STATES.SIGN_IN;
 
 		this.node = createElement('div', { class: 'UiLogin_layout__wrapper' });
 
@@ -75,7 +75,7 @@ export default class LoginPage extends BaseComponent {
 	}
 
 	renderSignUpNode() {
-		this.signUpNode = new SignInNode({
+		this.signUpNode = new SignUpNode({
 			onNextClicked: (firstname, lastname) => {
 				this.firstname = firstname;
 				this.lastname = lastname;
@@ -115,7 +115,10 @@ export default class LoginPage extends BaseComponent {
 				break;
 			case NODE_STATES.AUTH2:
 				this.renderAuth2Node();
-				break;
+                break;
+            case NODE_STATES.SIGN_UP:
+                this.renderSignUpNode();
+                break;
 			default:
 				this.renderSignInNode();
 				break;
