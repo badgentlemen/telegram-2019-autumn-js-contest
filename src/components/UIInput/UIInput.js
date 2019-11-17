@@ -96,7 +96,8 @@ export default class UIInput extends BaseComponent {
         this.inputMask = Inputmask({
             numericInput: true,
             mask: this.mask,
-            placeholder: ''
+            placeholder: '',
+            rightAlign: false
         }).mask(this.input);
 
         this.inputMask.setValue('');

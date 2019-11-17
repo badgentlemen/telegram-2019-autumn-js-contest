@@ -125,8 +125,6 @@ export default class UIHistory extends BaseComponent {
     renderPeerHistory() {
 
         const self = this;
-        this.cleanBodyContent();
-
         const messages = this.peerHistory.messages;
 
         let lastRow = null;
@@ -291,6 +289,9 @@ export default class UIHistory extends BaseComponent {
     }
 
     loadHistory(forceRecent = true) {
+
+        this.cleanBodyContent();
+
         this.historyState.missedCount = 0;
         this.historyState.skipped = this.hasLess = false;
         this.hasMore = false;

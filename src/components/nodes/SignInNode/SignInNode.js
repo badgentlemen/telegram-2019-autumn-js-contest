@@ -22,7 +22,9 @@ export default class SignInNode extends BaseComponent {
 			'Please confirm your country and <br> enter your phone number';
 		this.node = createElement('div', {
 			class: 'ui-sign-in__node login-page__node'
-		});
+        });
+
+        this.phoneValue = '';
 		this.renderForm();
 	}
 
@@ -102,7 +104,7 @@ export default class SignInNode extends BaseComponent {
 
 				if (this.country && this.phoneNumberInput) {
 					this.phoneNumberInput.getNode().style.display = 'flex';
-					// this.phoneNumberInput.setMask(phoneMask);
+					this.phoneNumberInput.setMask(phoneMask);
 				}
 			},
 			onBlur: _ => {

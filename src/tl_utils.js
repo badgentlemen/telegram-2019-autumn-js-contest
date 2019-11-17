@@ -240,7 +240,7 @@ export const wrapForDialog = object => {
             let foundMsg = null;
 
             if (dialog.id == window.currentUserId) {
-                return toID === window.currentUserId 
+                return toID === window.currentUserId
                     && fromID === window.currentUserId
             }
 
@@ -451,7 +451,8 @@ export const isMegagroup = peerID => {
 }
 
 export const makePasswordHash = password => {
-    return getValue('dc2_server_salt').then(salt => {
+    return getValue('dc2_auth_key').then(salt => {
+
         let passwordUTF8 = unescape(encodeURIComponent(password));
         var buffer = new ArrayBuffer(passwordUTF8.length);
         var byteView = new Uint8Array(buffer);

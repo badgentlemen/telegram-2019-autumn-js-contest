@@ -5,6 +5,7 @@ import countries from '../countries';
 import ScrollableView from "./ScrollableView";
 
 import '../styles/UICountrySelect.scss';
+import {removeAllChild} from "../utils";
 
 const openedClassName = 'ui-country-select__opened';
 const placeholder = 'Country';
@@ -24,6 +25,8 @@ export default class UICountySelect extends BaseComponent {
             placeholder
         });
 
+        this.querySearch = '';
+
         this.node = this.skeletorWrapper.getContentNode();
 
         this.node.addEventListener('click', event => {
@@ -39,10 +42,15 @@ export default class UICountySelect extends BaseComponent {
             class: 'ui-country-select__root'
         }, this.node);
 
-        this.titleNode = createElement('input', {
+        this.inputNode = createElement('input', {
             class: 'ui-input__input',
-            placeholder
-        }, this.rootNode)
+            placeholder,
+        }, this.rootNode);
+
+        this.inputNode.addEventListener('input', event => {
+            this.querySearch = event.target.value;
+            this.renderList();
+        })
 
         this.arrowNode = createElement('span', {
             class: 'ui-country-select__arrow'
@@ -52,14 +60,11 @@ export default class UICountySelect extends BaseComponent {
             class: 'ui-country-select__container'
         }, this.node);
 
-        this.scrollableSelectContainer = new ScrollableView({
+        this.scrollableSelectContainer = new ScrollableView();
 
-        });
-
-        this.renderList();
 
         window.addEventListener('click', event => {
-            if (this.titleNode !== event.target
+            if (this.inputNode !== event.target
                 && this.selectContainer !== event.target) {
                     this.options.onBlur && this.options.onBlur(event);
                     this.close();
@@ -72,13 +77,18 @@ export default class UICountySelect extends BaseComponent {
             let russia = countries.find(country => country.shortName === 'RU');
             this.selectCountry(russia);
         }
+
+        this.renderList();
     }
 
     renderList() {
         const content = this.scrollableSelectContainer.getContentNode();
+        removeAllChild(content);
 
-        for (let index = 0; index < countries.length; index++) {
-            const country = countries[index];
+        const filteredCountries = countries.filter(country => country.name.toLowerCase().includes(this.querySearch.toLowerCase()))
+
+        for (let index = 0; index < filteredCountries.length; index++) {
+            const country = filteredCountries[index];
             let countryItem = this.renderListItem(country);
             content.appendChild(countryItem);
         }
@@ -142,15 +152,22 @@ export default class UICountySelect extends BaseComponent {
     }
 
     updateTitle() {
-        if (this.currentCountry) {
-            this.titleNode.value = this.currentCountry.name;
+        let value = '';
+        if (this.currentCountry && !this.isOpen) {
+            value = this.currentCountry.name;
         }
+        this.inputNode.value = value;
     }
 
+    updateQuerySearch(querySearch) {
+        this.querySearch = querySearch;
+        this.renderList();
+    }
 
     close() {
         this.isOpen = false;
         this.updateContext();
+        this.updateQuerySearch('');
     }
 
     handleClick(event) {

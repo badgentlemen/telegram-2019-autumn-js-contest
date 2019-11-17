@@ -55,7 +55,7 @@ export const replaceAllString = (string, what, by) => {
 };
 
 export const phoneMaskByCode = code => {
-	const phoneMask = '+* *** *** ** **';
+	const phoneMask = '+*** *** *** ** **';
 	return code + phoneMask.substring(code.length + 1);
 };
 
@@ -69,7 +69,7 @@ export const internationalPhoneValue = phoneValue => {
 
 export const isPhoneValid = phone => {
 	const phoneUmnask = internationalPhoneValue(phone);
-	return phoneUmnask.length == 11;
+	return phoneUmnask.length >= 11;
 };
 
 export const bufferConcat = (buffer1, buffer2) => {

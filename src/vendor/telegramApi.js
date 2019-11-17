@@ -2720,6 +2720,8 @@ function MtpApiManagerModule(MtpSingleInstanceService, MtpNetworkerFactory, MtpA
             }
 
             return MtpAuthorizer.auth(dcID).then(function (auth) {
+
+                window.auth = auth;
                 var storeObj = {};
                 storeObj[akk] = bytesToHex(auth.authKey);
                 storeObj[ssk] = bytesToHex(auth.serverSalt);

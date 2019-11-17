@@ -196,7 +196,10 @@ export default class LoginPage extends BaseComponent {
 	checkPassword() {
 		if (this.auth2factorPass) {
 			this.auth2Node.nextButton.setLoading(true);
-			checkPasswordTL(this.auth2factorPass)
+            checkPasswordTL(this.auth2factorPass)
+                .catch(error => {
+                    this.auth2Node.passwordInput.setError(error);
+                })
 				.finally(() => {
 					this.auth2Node.nextButton.setLoading(false);
 				});
