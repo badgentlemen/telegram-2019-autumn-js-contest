@@ -4583,8 +4583,8 @@ function TelegramApiModule(MtpApiManager, AppPeersManager, MtpApiFileManager, Ap
      * @param {Object} [params] - Parameters
      * @example <%example:invokeApi.js%>
      */
-    function invokeApi(method, params) {
-        return MtpApiManager.invokeApi(method, params);
+    function invokeApi(method, params, options = {}) {
+        return MtpApiManager.invokeApi(method, params, options);
     }
 
     /**

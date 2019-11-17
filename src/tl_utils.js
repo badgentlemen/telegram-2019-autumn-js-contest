@@ -232,10 +232,23 @@ export const wrapForDialog = object => {
     const message =
         AppstoreInstance.messages.find(message => {
             let preffix = dialog.idPreffix;
-            let foundMsg = message["to_id"][preffix] === dialog.id;
+
+
+            const toID = message["to_id"][preffix];
+            const fromID = message["from_id"];
+
+            let foundMsg = null;
+
+            if (dialog.id == window.currentUserId) {
+                return toID === window.currentUserId 
+                    && fromID === window.currentUserId
+            }
+
+            foundMsg = toID === dialog.id;
+
             if (!foundMsg) {
                 foundMsg =
-                    message["from_id"] === dialog.id &&
+                    fromID === dialog.id &&
                     message["to_id"]._ === dialog.peerType.key;
             }
             return foundMsg;

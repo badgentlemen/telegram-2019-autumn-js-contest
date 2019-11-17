@@ -181,7 +181,7 @@ export default class UIHistory extends BaseComponent {
         });
 
         messageNode.addEventListener('click', () => {
-            console.log(message);
+
         })
 
         return messageNode;

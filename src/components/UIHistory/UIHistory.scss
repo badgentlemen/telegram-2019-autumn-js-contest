@@ -25,7 +25,8 @@
 .ui-history__body {
     position: relative;
     display: flex;
-    flex-grow: 1;
+    flex: 1 1 auto;
+    height: 100%;
 }
 
 .ui-history__body-scrollable {

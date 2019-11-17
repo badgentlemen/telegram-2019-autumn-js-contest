@@ -102,7 +102,7 @@ export default class SignInNode extends BaseComponent {
 
 				if (this.country && this.phoneNumberInput) {
 					this.phoneNumberInput.getNode().style.display = 'flex';
-					this.phoneNumberInput.setMask(phoneMask);
+					// this.phoneNumberInput.setMask(phoneMask);
 				}
 			},
 			onBlur: _ => {

@@ -151,7 +151,6 @@ export default class Sidebar extends BaseComponent {
     }
 
     handleDialogTapped(dialog) {
-        this.setDialog(dialog);
         this.options.onDialogClicked && this.options.onDialogClicked(dialog);
     }
 
