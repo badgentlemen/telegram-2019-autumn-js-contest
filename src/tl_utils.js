@@ -1,8 +1,9 @@
 import AppstoreInstance from "./app.store";
 import Dialog from "./model/Dialog";
-import { tsNow } from "./utils";
+import { tsNow, bufferConcat } from "./utils";
 import { DateTime } from "luxon";
 import Message from "./model/Message";
+import {getValue} from "./lib/storage";
 
 var MessageServices = {
     history: {},
@@ -199,8 +200,13 @@ function getInputPeerByID(peerID) {
 export const wrapForMessage = object => {
     let message = new Message(object);
 
+    message.type = 'text';
+
     if (message.media && message.media.document) {
         message.media.document = wrapForDocument(message.media.document);
+        if (message.media.document.type) {
+            message.media.type = message.media.document.type;
+        }
     }
 
     if (message.date) {
@@ -226,10 +232,23 @@ export const wrapForDialog = object => {
     const message =
         AppstoreInstance.messages.find(message => {
             let preffix = dialog.idPreffix;
-            let foundMsg = message["to_id"][preffix] === dialog.id;
+
+
+            const toID = message["to_id"][preffix];
+            const fromID = message["from_id"];
+
+            let foundMsg = null;
+
+            if (dialog.id == window.currentUserId) {
+                return toID === window.currentUserId
+                    && fromID === window.currentUserId
+            }
+
+            foundMsg = toID === dialog.id;
+
             if (!foundMsg) {
                 foundMsg =
-                    message["from_id"] === dialog.id &&
+                    fromID === dialog.id &&
                     message["to_id"]._ === dialog.peerType.key;
             }
             return foundMsg;
@@ -287,9 +306,12 @@ export const wrapForDocument = (document = {}) => {
         delete document.thumb;
     }
 
+    document.fileName = '';
+
     (document.attributes || []).forEach(attribute => {
         switch (attribute._) {
             case "documentAttributeFilename":
+                document.type = 'document';
                 document.fileName = attribute.file_name || "";
                 break;
             case "documentAttributeSticker":
@@ -306,7 +328,7 @@ export const wrapForDocument = (document = {}) => {
                 document.duration = attribute.duration;
                 document.w = attribute.w;
                 document.h = attribute.h;
-                if (document.thumb && attribute.pFlags.round_message) {
+                if (document.thumb && attribute.pFlags &&attribute.pFlags.round_message) {
                     document.type = "round";
                 } else if (document.thumb) {
                     document.type = "video";
@@ -351,10 +373,6 @@ export const wrapForDocument = (document = {}) => {
                 document.mime_type = "application/octet-stream";
                 break;
         }
-    }
-
-    if (!document.file_name) {
-        document.fileName = "";
     }
 
     if (document._ == "documentEmpty") {
@@ -431,3 +449,19 @@ export const isMegagroup = peerID => {
 
     return chat && isChannel && chat.pFlags.megagroup;
 }
+
+export const makePasswordHash = password => {
+    return getValue('dc2_auth_key').then(salt => {
+
+        let passwordUTF8 = unescape(encodeURIComponent(password));
+        var buffer = new ArrayBuffer(passwordUTF8.length);
+        var byteView = new Uint8Array(buffer);
+        for (var i = 0, len = passwordUTF8.length; i < len; i++) {
+            byteView[i] = passwordUTF8.charCodeAt(i);
+        }
+
+        buffer = bufferConcat(bufferConcat(salt, byteView), salt);
+
+        return window.CryptoWorker.sha256Hash(buffer);
+    })
+};

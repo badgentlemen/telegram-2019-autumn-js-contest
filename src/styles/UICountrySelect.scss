@@ -1,0 +1,115 @@
+@import '~flag-icon-css/css/flag-icon.css';
+
+.ui-country-select {
+    width: 100%;
+    cursor: pointer;
+    padding: 0;
+
+
+    &.ui-country-select__opened {
+        .ui-country-select__container {
+            display: block;
+        }
+
+        .ui-country-select__arrow {
+            transform: rotate(0);
+        }
+    }
+}
+
+.ui-country-select__title {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    padding: 15px;
+    font-size: 16px;
+    font-family: 500;
+}
+
+.ui-country-select__root {
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+
+    .ui-input__input {
+        padding-right: 40px;
+    }
+}
+
+.ui-country-select__emoji {
+    width: 25px;
+    height: 17px;
+    background-size: cover;
+}
+
+.ui-country-select__arrow {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-image: url('../assets/arrow.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    transform: rotate(-180deg);
+    transition: transform 0.2s ease-in-out;
+    right: 18px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    pointer-events: none;
+}
+
+.ui-country-select__container {
+    position: absolute;
+    width: 100%;
+    height: 376px;
+    top: 100%;
+    display: none;
+    background: white;
+    z-index: 1;
+    padding: 0;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px #dadada;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.ui-country-select__label {
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+    margin-left: 30px;
+}
+
+.ui-country-select__code {
+    display: flex;
+    color: #989c9e;
+    align-items: center;
+    font-size: 16px;
+}
+
+.ui-country-select__item {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    box-sizing: border-box;
+
+    padding: 15px;
+
+    height: 56px;
+
+    &:hover {
+        background-color: #f4f4f5;
+    }
+
+}
+
+
+.ui-country-select__wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+

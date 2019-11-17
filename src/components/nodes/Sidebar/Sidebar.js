@@ -2,14 +2,13 @@ import BaseComponent from '../../base.component';
 import {
     createElement
 } from '../../../lib';
-import {
-    removeAllChild
-} from '../../../utils';
 import DialogListItem from '../DialogListItem';
 import ScrollableView from '../../ScrollableView/ScrollableView';
 
 import menuIcon from '../../../assets/menu_svg.svg';
 import loupeIcon from '../../../assets/ui-search_loupe-icon.svg';
+import {downloadPhoto} from '../../../lib/api.manager';
+
 
 export default class Sidebar extends BaseComponent {
     constructor(options) {
@@ -29,9 +28,11 @@ export default class Sidebar extends BaseComponent {
             },
             this.node
         );
+
         this.dialogScrollableView = new ScrollableView({
             className: 'ui-dialog__list',
         });
+
         this.dialogList = this.dialogScrollableView.getNode();
         this.sidebarBody.appendChild(this.dialogList);
 
@@ -137,11 +138,19 @@ export default class Sidebar extends BaseComponent {
             );
 
             this.dialogScrollableView.appendChild(dialogListItemNode);
+
+
+            if (dialog.peerData.pFlags.self) {
+                // dialogListItem.photoNode.setImageSrc(faveIcon);
+            } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
+                downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
+                    dialogListItem.photoNode.setImageSrc(url);
+                });
+            }
         })
     }
 
     handleDialogTapped(dialog) {
-        this.setDialog(dialog);
         this.options.onDialogClicked && this.options.onDialogClicked(dialog);
     }
 

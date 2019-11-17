@@ -22,6 +22,12 @@ export default class PeerPhoto extends BaseComponent {
         if (options.hasOwnProperty(TelegramAttrKeys.peerInitials)) {
             this.setInitials(options[TelegramAttrKeys.peerInitials]);
         }
+
+        this.photoNodeImage = createElement("img", {
+            class: "ui-dialog__photo"
+        });
+
+        this.node.appendChild(this.photoNodeImage);
     }
 
     setOnline(online) {
@@ -39,14 +45,7 @@ export default class PeerPhoto extends BaseComponent {
     }
 
     setImageSrc(source) {
-        if (!this.photoNodeImage) {
-            this.photoNodeImage = createElement("img", {
-                class: "ui-dialog__photo",
-                loading: "lazy"
-            });
-        }
-        // this.photoNodeImage.src = source;
-        this.node.appendChild(this.photoNodeImage);
+        this.photoNodeImage.src = source;
     }
 
 }

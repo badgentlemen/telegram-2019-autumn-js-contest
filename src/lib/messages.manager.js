@@ -1,4 +1,4 @@
-import { getPeerData, getDialog, getUser, getMessage, wrapForMessage } from '../tl_utils';
+import { getPeerData, getDialog, getUser, getMessage, wrapForMessage, getChat } from '../tl_utils';
 import { getHistory as fetchHistory } from './api.manager';
 import AppstoreInstance from '../app.store';
 
@@ -181,8 +181,9 @@ export class MessagesManager {
 			message.media.progress = this.messagesStorage[msgID].media.progress;
 		}
 
+
 		var fromUser =
-			message.messageFrom = getUser(message.from_id);
+			message.messageFrom = !message.to_id.chat_id ? getUser(message.from_id) : getChat(message.from_id);
 		var fromBot =
 			(fromUser && fromUser.pFlags.bot && fromUser.username) || false;
 		var withBot =

@@ -1,5 +1,7 @@
 import { BaseComponent } from '..';
 import { createElement } from '../../lib';
+import Inputmask from "inputmask";
+import ComponentSkeleton from '../ComponentSkeleton';
 
 export default class UIInput extends BaseComponent {
 	constructor(options = {}) {
@@ -8,62 +10,80 @@ export default class UIInput extends BaseComponent {
         this.placeholder = options.placeholder || '';
         this.labelPlaceholder = options.labelPlaceholder || this.placeholder;
 		this.value = options.value || '';
-		this.errorClassName = 'ui-input__error';
-		this.focusClassName = 'ui-input__focus';
-		this.notEmptyClassName = 'ui-input__not-empty';
 
         this.requireValid = this.options.requireValid || false;
+
+        this.inputMask = null;
 
         if (options.mask) {
             this.setMask(mask);
         }
 
-		this.node = createElement('div', { class: this.getClassName() });
+        this.skeletonNode = new ComponentSkeleton({
+            class: this.getClassName()
+        })
+
+        this.node = this.skeletonNode.getContentNode();
+
 		this.input = createElement(
 			'input',
 			{ class: 'ui-input__input' },
 			this.node
         );
 
+        this.skeletonNode.insertContentNode(this.input);
+
+        this.additionalsNode = createElement('div', {
+            class: 'ui-input__additionals'
+        });
+
+        this.skeletonNode.insertContentNode(this.additionalsNode);
+
+
         this.input.value = this.value;
         this.input.placeholder = this.placeholder;
-        this.input.setAttribute('type', this.type);
+
+        this.setType(this.type);
 
         if (this.options.maxLength) {
             this.setMaxLength(this.options.maxLength);
         }
 
-		this.label = createElement(
-			'label',
-			{ class: 'ui-input__label' },
-			this.node
-        );
+        this.skeletonNode.setPlaceholder(this.labelPlaceholder);
 
-        this.label.innerText = this.labelPlaceholder;
 		this.addEventListeners();
 	}
 
 	addEventListeners() {
 		this.input.addEventListener('focus', event => {
-			this.node.classList.add(this.focusClassName);
+            this.setError(false);
+            this.skeletonNode.setFocus(true);
 			this.options.onFocus && this.options.onFocus(event);
 		});
 
 		this.input.addEventListener('blur', event => {
-			this.node.classList.remove(this.focusClassName);
+			this.skeletonNode.setFocus(false);
 			this.options.onBlur && this.options.onBlur(event);
 		});
 
 		this.input.addEventListener('input', event => {
-			this.value = event.target.value;
-			if (this.value.length) {
-				this.node.classList.add(this.notEmptyClassName);
-			} else {
-				this.node.classList.remove(this.notEmptyClassName);
-			}
-
-            this.options.onChange && this.options.onChange(this.value);
+            this.value = event.target.value;
+            this.handleInput();
 		});
+    }
+
+    insertAdditional(node) {
+        this.additionalsNode.appendChild(node);
+    }
+
+    getNode() {
+        return this.skeletonNode.getNode();
+    }
+
+    handleInput() {
+        this.skeletonNode.setIsNotEmpty(this.value.length);
+        this.setError(false);
+        this.options.onChange && this.options.onChange(this.value);
     }
 
     getValue() {
@@ -72,6 +92,17 @@ export default class UIInput extends BaseComponent {
 
     setMask(mask) {
         this.mask = mask;
+        this.value = '';
+        this.inputMask = Inputmask({
+            numericInput: true,
+            mask: this.mask,
+            placeholder: '',
+            rightAlign: false
+        }).mask(this.input);
+
+        this.inputMask.setValue('');
+        this.input.value = '';
+        this.handleInput();
     }
 
     setError(error) {
@@ -80,6 +111,8 @@ export default class UIInput extends BaseComponent {
         } else {
             this.removeErrorFlag();
         }
+
+        this.skeletonNode.setPlaceholder(error && this.options.errorPlaceholder ? this.options.errorPlaceholder : this.options.labelPlaceholder || this.placeholder);
     }
 
     setMaxLength(maxLength) {
@@ -88,14 +121,21 @@ export default class UIInput extends BaseComponent {
     }
 
     removeErrorFlag() {
-        this.node.classList.remove(this.errorClassName);
+        this.skeletonNode.setError(false);
     }
 
     addErrorFlag() {
-        this.node.classList.add(this.errorClassName);
+        this.input.blur();
+        setTimeout(() => {
+            this.skeletonNode.setError(true);
+        }, 40);
     }
 
     nodeClassName() {
         return 'ui-input';
+    }
+
+    setType(type) {
+        this.input.setAttribute('type', type || 'text');
     }
 }

@@ -1,0 +1,27 @@
+.ui-sign-in__node {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.ui-sign-in__logo {
+    background: var(--primary-color) url("../../../assets/logo.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 110%;
+}
+
+.ui-sign-in__title {
+
+}
+
+.ui-sign-in__text {
+
+}
+
+.ui-sign-in__keep {
+    margin-left: 19px;
+}
+

@@ -55,20 +55,54 @@ ul {
     text-align: center;
 }
 
+.login-page__node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .ui-button {
+    position: relative;
     min-height: 54px;
-    text-transform: uppercase;
-    font-size: 16px;
-    padding: 10px 30px;
     cursor: pointer;
     box-sizing: border-box;
     cursor: pointer;
     border-radius: 8px;
+    padding: 10px 30px;
+}
+
+.ui-button__title {
+    width: 100%;
+    text-transform: uppercase;
+    font-size: 16px;
 }
 
 .ui-button__primary {
     background: var(--primary-color);
     color: white;
+}
+
+.ui-button__loading {
+
+}
+
+
+.ui-button__primary .ui-button__spinner {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 2px solid white;
+    border-left-color: transparent;
+    display: none;
+    right: 15px;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+}
+
+.ui-button__loading .ui-button__spinner {
+    display: block;
 }
 
 .ui-form {
@@ -81,11 +115,6 @@ ul {
     flex-direction: column;
 }
 
-.ui-form__incolumn .ui-input,
-.ui-form__incolumn .ui-select {
-    width: 100%;
-}
-
 .ui-form__row {
     position: relative;
     display: flex;
@@ -93,36 +122,40 @@ ul {
     width: 100%;
 }
 
+.ui-form__row > * {
+    width: 100%;
+}
+
 .ui-input {
     position: relative;
+}
+
+.ui-input__additionals {
+    margin-right: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .ui-input__input {
     height: var(--component-min-height);
     box-sizing: border-box;
+    font-weight: 500;
 }
 
 .ui-input__input,
 .ui-select {
-    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
     padding: 15px;
-    border-radius: 8px;
     font-size: 16px;
     width: 100%;
 }
 
-.ui-input__label {
-    position: absolute;
-    background-color: white;
-    padding: 5px;
-    top: -10px;
-    left: 12px;
-    display: block;
-    opacity: 0;
-    font-weight: 500;
-    font-size: 12px;
-    color: #939393;
-    letter-spacing: 0.2px;
+.ui-input__error .ui-input__input {
+    border-color: red;
+}
+
+.ui-input__error .ui-input__label {
+    color: red;
 }
 
 .ui-input__focus .ui-input__input {
@@ -134,21 +167,6 @@ ul {
     color: var(--primary-color);
 }
 
-.ui-input__not-empty .ui-input__label {
-    opacity: 1;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.ui-select {
-    cursor: pointer;
-    padding: 0;
-}
-
-.ui-dropdown__root {
-    padding: 15px;
-    min-height: var(--component-min-height);
-    box-sizing: border-box;
-}
 
 .ui-container {
     padding-right: 15px;
@@ -192,39 +210,6 @@ ul {
     height: 100%;
 }
 
-.ui-sign-in__node {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.ui-sign-in__logo {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: var(--primary-color) url("./assets/logo.png");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 110%;
-}
-
-.ui-sign-in__title {
-    color: black;
-    line-height: 25px;
-    margin-top: 50px;
-    margin-bottom: 19px;
-}
-
-.ui-sign-in__text {
-    color: #939393;
-    margin-bottom: 48px;
-    margin-top: 0;
-    font-size: 14.5px;
-    font-weight: 400;
-}
-
 .UiChat_layout__node {
     position: relative;
     display: flex;
@@ -266,8 +251,12 @@ ul {
     position: relative;
     width: 100%;
     flex-grow: 1;
-    display: flex;
-    padding-bottom: 80px;
+    display: block;
+    height: 100%;
+}
+
+.ui-sidebar__body .simplebar-content {
+    padding-bottom: 80px!important;
 }
 
 .ui-sidebar__chat-list {}
@@ -331,29 +320,6 @@ ul {
     flex-direction: column;
 }
 
-.ui-history__node {
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.ui-history__header {
-    background-color: white;
-    height: 60px;
-    border-bottom: 1px solid var(--component-border-color);
-    z-index: 1;
-    flex-shrink: 0;
-    padding: 8px 19px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
 
 .ui-peer__title-wrapper {
     display: flex;
@@ -385,21 +351,6 @@ ul {
 
 }
 
-.ui-history__body {
-    position: relative;
-    display: flex;
-    flex-grow: 1;
-}
-
-.ui-history__body-scrollable {
-    position: absolute;
-    overflow: hidden;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-}
 
 .ui-chat__closed-wrapper {
     position: absolute;
@@ -539,8 +490,8 @@ ul {
 }
 
 .ui-dialog__photo {
-    width: 54px;
-    height: 54px;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     border-radius: 50%;
     z-index: 1;
@@ -767,42 +718,11 @@ ul {
     overflow-y: auto;
 }
 
-.ui-history__user {}
-
-.ui-history__chat {}
-
-.ui-history__channel {}
-
-.ui-history__container {
-    width: 100%;
-    max-width: 696px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-basis: 696px;
-    margin: 0 auto;
-}
-
-.ui-history__row {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.ui-history__row_out {
-    justify-content: flex-end;
-}
-
-.ui-history__row-per-user-grouped {
-    flex-direction: column;
-}
 
 /* MESSAGE */
 .ui-message {
     min-width: 80px;
+    max-width: 600px;
     box-sizing: border-box;
     position: relative;
     display: block;
@@ -822,6 +742,37 @@ ul {
 
 .ui-message__balloon {}
 
+.ui-monkey-logo {
+    width: 130px;
+    height: 124px;
+    background-repeat: no-repeat;
+    background: url('./assets/monkeys/monkey.png');
+    background-size: 130px 124px;
+}
+
+.ui-monkey-logo__invalid {
+    background-image: url('./assets/monkeys/monkey_code_invalid.png');
+}
+
+.ui-monkey-logo__watching {
+    background-image: url('./assets/monkeys/monkey_is_watching.png');
+}
+
+.ui-monkey-logo__not_watching {
+    background-image: url('./assets/monkeys/monkey_not_watching.png');
+}
+
+.ui-monkey-logo {
+
+}
+
+.ui-desktop__logo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background-color: #eee;
+}
+
 .ui-desktop__title {
     color: black;
     line-height: 25px;
@@ -836,6 +787,8 @@ ul {
     margin-top: 0;
     font-size: 14.5px;
     font-weight: 400;
+    line-height: 20px;
+    text-align: center;
 }
 
 
@@ -947,4 +900,99 @@ ul {
 
 .ui-user__bgcolor_8 {
     background: #fba76f;
+}
+
+/* SKELETON */
+
+.ui-skeleton-component {
+    position: relative;
+    border: var(--component-normal-state-border-weight) solid var(--component-border-color);
+    border-radius: 8px;
+}
+
+.ui-skeleton-component.ui-skeleton__error {
+    border-color: red;
+}
+
+.ui-skeleton__error .ui-skeleton__label {
+    color: red;
+}
+
+.ui-skeleton__label {
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    top: -12px;
+    left: 12px;
+    display: block;
+    opacity: 0;
+    font-weight: 500;
+    font-size: 12px;
+    color: #939393;
+    letter-spacing: 0.2px;
+}
+
+.ui-skeleton__focus {
+    border-width: var(--component-active-state-border-weight);
+    border-color: var(--primary-color);
+}
+
+.ui-skeleton__focus .ui-skeleton__label {
+    color: var(--primary-color);
+}
+
+.ui-skeleton__not-empty {
+
+}
+
+.ui-skeleton__not-empty .ui-skeleton__label {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.ui-skeleton__content {
+    position: relative;
+    height: 54px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.ui-eye {
+    width: 25px;
+    height: 17px;
+    background-image: url('./assets/eye.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    cursor: pointer;
+}
+
+.ui-eye__closed {
+    background-image: url('./assets/eye__closed.svg');
+}
+
+
+.ui-scrollable-view {
+    height: 100%;
+    width: 100%;
+}
+
+.ui-sign-up__logo {
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.ui-sign-up__logo:after {
+    position: relative;
+    content: '';
+    background-image: url('./assets/cameraadd_white.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    width: 45px;
+    height: 45px;
+    display: inline-block;
 }

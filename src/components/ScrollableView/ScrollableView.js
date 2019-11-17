@@ -22,7 +22,7 @@ export default class ScrollableView extends BaseComponent {
     }
 
     appendChild(element) {
-        this.contentNode.appendChild(element)
+        this.contentNode.appendChild(element);
     }
 
     removeSubviews() {
