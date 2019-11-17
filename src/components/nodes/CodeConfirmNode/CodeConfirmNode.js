@@ -10,7 +10,7 @@ export default class CodeConfirmNode extends BaseComponent {
 
     constructor(options = {}) {
         super(options);
-        this.currentPhoneNumber = options.currentPhoneNumber || '+5423 432 42 34';
+        this.currentPhoneNumber = options.currentPhoneNumber || '';
         this.validated = false;
 
         this.targetText = 'We have sent your an SMS <br> with the code';

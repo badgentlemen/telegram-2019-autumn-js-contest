@@ -140,14 +140,13 @@ export default class Sidebar extends BaseComponent {
             this.dialogScrollableView.appendChild(dialogListItemNode);
 
 
-            // if (dialog.peerData.pFlags.self) {
-            //     // dialogListItem.photoNode.setImageSrc(faveIcon);
-            // } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
-            //     downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
-            //         dialogListItem.photoNode.setImageSrc(url);
-            //     });
-            // }
-
+            if (dialog.peerData.pFlags.self) {
+                // dialogListItem.photoNode.setImageSrc(faveIcon);
+            } else if (dialog.peerData.photo && dialog.peerData.photo.photo_small) {
+                downloadPhoto(dialog.peerData.photo.photo_small).then(url => {
+                    dialogListItem.photoNode.setImageSrc(url);
+                });
+            }
         })
     }
 

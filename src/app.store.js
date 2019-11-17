@@ -40,4 +40,5 @@ class AppStore {
 }
 
 const AppstoreInstance = new AppStore();
+window.appStore = AppstoreInstance;
 export default AppstoreInstance;

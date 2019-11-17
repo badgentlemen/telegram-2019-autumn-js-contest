@@ -23,7 +23,6 @@ export default class SignInNode extends BaseComponent {
 		this.node = createElement('div', {
 			class: 'ui-sign-in__node login-page__node'
 		});
-		this.sendCodeButton = null;
 		this.renderForm();
 	}
 

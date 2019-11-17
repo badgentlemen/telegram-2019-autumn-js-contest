@@ -320,29 +320,6 @@ ul {
     flex-direction: column;
 }
 
-.ui-history__node {
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.ui-history__header {
-    background-color: white;
-    height: 60px;
-    border-bottom: 1px solid var(--component-border-color);
-    z-index: 1;
-    flex-shrink: 0;
-    padding: 8px 19px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
 
 .ui-peer__title-wrapper {
     display: flex;
@@ -374,21 +351,6 @@ ul {
 
 }
 
-.ui-history__body {
-    position: relative;
-    display: flex;
-    flex-grow: 1;
-}
-
-.ui-history__body-scrollable {
-    position: absolute;
-    overflow: hidden;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-}
 
 .ui-chat__closed-wrapper {
     position: absolute;
@@ -756,42 +718,11 @@ ul {
     overflow-y: auto;
 }
 
-.ui-history__user {}
-
-.ui-history__chat {}
-
-.ui-history__channel {}
-
-.ui-history__container {
-    width: 100%;
-    max-width: 696px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    flex-basis: 696px;
-    margin: 0 auto;
-}
-
-.ui-history__row {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.ui-history__row_out {
-    justify-content: flex-end;
-}
-
-.ui-history__row-per-user-grouped {
-    flex-direction: column;
-}
 
 /* MESSAGE */
 .ui-message {
     min-width: 80px;
+    max-width: 600px;
     box-sizing: border-box;
     position: relative;
     display: block;
@@ -839,6 +770,7 @@ ul {
     width: 160px;
     height: 160px;
     border-radius: 50%;
+    background-color: #eee;
 }
 
 .ui-desktop__title {
@@ -1043,4 +975,24 @@ ul {
 .ui-scrollable-view {
     height: 100%;
     width: 100%;
+}
+
+.ui-sign-up__logo {
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.ui-sign-up__logo:after {
+    position: relative;
+    content: '';
+    background-image: url('./assets/cameraadd_white.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    width: 45px;
+    height: 45px;
+    display: inline-block;
 }

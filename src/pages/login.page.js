@@ -9,7 +9,7 @@ import {
 } from '../utils';
 import Auth2Node from '../components/nodes/Auth2Node';
 import SignUpNode from '../components/nodes/SignUpNode';
-import { sendCode as getSMS, logIn, checkPasswordTL } from '../lib/api.manager';
+import { sendCode as getSMS, logIn, checkPasswordTL, signUpTL } from '../lib/api.manager';
 import { setValue } from '../lib/storage';
 
 var NODE_STATES = {
@@ -78,14 +78,19 @@ export default class LoginPage extends BaseComponent {
 		this.signUpNode = new SignUpNode({
 			onNextClicked: (firstname, lastname) => {
 				this.firstname = firstname;
-				this.lastname = lastname;
+                this.lastname = lastname;
+                if (this.firstname.length) {
+                    this.signUp();
+                }
 			}
-		});
+        });
+        this.loginInner.appendChild(this.signUpNode.getNode());
 	}
 
 	renderCodeConfirmNode() {
 		this.confirmCodeNode = new CodeConfirmNode({
-			maxLength: this.smsCodeLength,
+            maxLength: this.smsCodeLength,
+            currentPhoneNumber: this.phoneRawValue,
 			onMaxLength: code => {
 				this.confirmCode = code;
 				this.confirmSMSCode();
@@ -145,30 +150,30 @@ export default class LoginPage extends BaseComponent {
 	sendCode() {
 		if (this.phoneNumber && isPhoneValid(this.phoneNumber)) {
 			this.signInNode.sendCodeButton.setLoading(true);
-			// getSMS(this.phoneNumber).then(response => {
-			//     this.smsCodeLength = response.type.length || 5;
+			getSMS(this.phoneNumber).then(response => {
+                this.smsCodeLength = 5;
 
-			//     if (response.pFlags.phone_registered && response.phone_code_hash) {
-			//         this.phoneCodeHash = response.phone_code_hash;
-			//         this.changeState(NODE_STATES.CODE_CONFIRM);
+			    if (response.phone_code_hash) {
+			        this.phoneCodeHash = response.phone_code_hash;
+			        this.changeState(NODE_STATES.CODE_CONFIRM);
 
-			//         this.signInNode.sendCodeButton.setLoading(false);
-			//     }
-			// }).catch(error => {
-			//     this.signInNode.sendCodeButton.setLoading(false);
-			//     console.log(error);
-			//     alert(error);
-			// });
+			        this.signInNode.sendCodeButton.setLoading(false);
+			    }
+			}).catch(error => {
+			    this.signInNode.sendCodeButton.setLoading(false);
+			    console.log(error);
+			    alert(error);
+			});
 		}
 	}
 
 	confirmSMSCode() {
 		if (this.phoneNumber && this.phoneCodeHash && this.confirmCode) {
-			// logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
-			//     document.location.reload();
-			// }).catch(error => {
-			//     this.confirmSMSCodeErrorHandler(error);
-			// });
+			logIn(this.phoneNumber, this.phoneCodeHash, this.confirmCode).then(response => {
+			    document.location.reload();
+			}).catch(error => {
+			    this.confirmSMSCodeErrorHandler(error);
+			});
 		}
 	}
 
@@ -179,7 +184,7 @@ export default class LoginPage extends BaseComponent {
 			case 'SESSION_PASSWORD_NEEDED':
 				this.changeState(NODE_STATES.AUTH2);
 				break;
-			case '	PHONE_NUMBER_UNOCCUPIED':
+			case 'PHONE_NUMBER_UNOCCUPIED':
 				this.changeState(NODE_STATES.SIGN_UP);
 				break;
 			default:
@@ -192,11 +197,21 @@ export default class LoginPage extends BaseComponent {
 		if (this.auth2factorPass) {
 			this.auth2Node.nextButton.setLoading(true);
 			checkPasswordTL(this.auth2factorPass)
-				.then(result => console.log(result))
-				.catch(error => console.log(error))
 				.finally(() => {
 					this.auth2Node.nextButton.setLoading(false);
 				});
 		}
-	}
+    }
+
+    signUp() {
+        if (this.phoneNumber, this.phoneCodeHash, this.confirmCode, this.firstname) {
+            this.signUpNode.nextButtonNode.setLoading(true);
+            signUpTL(this.phoneNumber, this.phoneCodeHash, this.confirmCode, this.firstname, this.lastname).then(() => {
+                this.signUpNode.nextButtonNode.setLoading(false);
+                document.location.reload();
+            }).catch(error => {
+                this.signUpNode.nextButtonNode.setLoading(false);
+            })
+        }
+    }
 }

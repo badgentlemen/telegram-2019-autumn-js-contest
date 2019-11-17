@@ -7,7 +7,8 @@ module.exports = {
 	entry: __dirname + '/app.js',
 	output: {
 		path: __dirname + '/dist',
-		filename: 'bundle.[hash].js'
+        filename: '[name].[hash].js',
+        chunkFilename: '[name].[hash:5].js',
 	},
 	module: {
 		rules: [
@@ -26,7 +27,7 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: ['@babel/preset-env']
+                        presets: ['@babel/preset-env'],
 					}
 				}
 			},
@@ -55,9 +56,6 @@ module.exports = {
 			{
 				filepath: require.resolve('./src/vendor/telegramApi.js')
 			},
-			{
-				filepath: require.resolve('./src/config.js')
-			}
 		]),
 		new BundleAnalyzerPlugin({
 			analyzerPort: '5555',
@@ -76,7 +74,7 @@ module.exports = {
 				}
 			}
 		},
-		runtimeChunk: true
+		runtimeChunk: false
 	},
 	devServer: {
 		contentBase: './src/public',

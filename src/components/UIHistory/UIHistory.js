@@ -5,6 +5,8 @@ import PeerPhoto from '../nodes/PeerPhoto';
 import {safeReplaceObject, removeAllChild} from '../../utils';
 import MessagesManagerInstance from '../../lib/messages.manager';
 import {getPeerData} from '../../tl_utils';
+import './UIHistory.scss';
+
 
 export default class UIHistory extends BaseComponent {
 	constructor(options = {}) {
@@ -128,37 +130,36 @@ export default class UIHistory extends BaseComponent {
         const messages = this.peerHistory.messages;
 
         let lastRow = null;
-        let lastGrouped = null;
 
         for (let index = 0; index < messages.length; index++) {
             const message = messages[index];
-
-            const isOut = message.pFlags.out || false;
-
             let historyRow = this.renderHistoryRow(message);
-
             const messageNode = this.renderMessageNode(message);
 
-            if (index > 0) {
-                const prevMessageFromID = messages[index - 1].messageFrom.id;
-                const fromID = message.messageFrom.id;
+            if (message.messageFrom) {
+                if (index > 0) {
+                    const prevMessageFromID = messages[index - 1].messageFrom.id;
+                    const fromID = message.messageFrom.id;
 
-                if (prevMessageFromID === fromID) {
-                    if (!lastRow) {
-                        lastRow = historyRow;
+                    if (prevMessageFromID === fromID) {
+                        if (!lastRow) {
+                            lastRow = historyRow;
+                        }
+
+                        lastRow.appendChild(messageNode);
+                    } else {
+                        appendInline();
                     }
-
-                    lastRow.appendChild(messageNode);
                 } else {
-                    appendInline();
+                   appendInline()
                 }
+
             } else {
-               appendInline()
+                appendInline();
             }
 
             function appendInline() {
                 lastRow = historyRow;
-                messageNode.style.background = 'yellow';
                 historyRow.appendChild(messageNode);
                 self.bodyNodeContainer.appendChild(historyRow);
             }
@@ -176,14 +177,17 @@ export default class UIHistory extends BaseComponent {
         const isOut = message.pFlags.out || false;
 
         const messageNode = createElement('div', {
-            class: `ui-message${isOut ? ' ui-message__out' : ''}`
+            class: `ui-message ui-message__type-${message.type}${isOut ? ' ui-message__out' : ''}`
         });
+
+        messageNode.addEventListener('click', () => {
+            console.log(message);
+        })
 
         return messageNode;
     }
 
 	setCurrentDialog(dialog) {
-        console.log(dialog);
         this.applyDialogSelect(dialog);
 	}
 

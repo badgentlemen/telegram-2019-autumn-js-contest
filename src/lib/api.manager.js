@@ -2,13 +2,9 @@ import { getValue, removeValue, setValue } from './storage';
 import AppstoreInstance from '../app.store';
 import {
 	wrapForDialog,
-	getPeerID,
-	isChannel,
-	getDialog,
-	wrapForMessage
+	wrapForMessage,
+    makePasswordHash
 } from '../tl_utils';
-import f2a from '../../helpers/2fa-code-response2';
-import {bufferConcat} from '../utils';
 
 export const annihilation = () => {
 	removeValue(['user_auth']);
@@ -22,7 +18,6 @@ export const getContacts = () => {
 
 export const sendCode = phoneNumber => {
 	return telegramApi.sendCode(phoneNumber);
-	// return Promise.resolve(getSMSJSON);
 };
 
 export const logIn = (phoneNumber, phoneCodeHash, smsCode) => {
@@ -37,8 +32,10 @@ export const checkPasswordRequest = (password_hash) => {
 
 export const checkPasswordTL = (password) => {
     return makePasswordHash(password).then(password_hash => {
-        return setUserAuth({
-            id: f2a.user.id
+        return checkPasswordRequest(password_hash).then(result => {
+            return setUserAuth({
+                id: result.user.id
+            });
         });
     });
 }
@@ -74,7 +71,7 @@ export const getDialogs = (limit = 200, offset = 0) => {
 				const message = wrapForMessage(object);
 				messages.push(message);
 			});
-		}
+        }
 
 		AppstoreInstance.saveMessages(messages);
 
@@ -104,23 +101,14 @@ export const getHistory = (peerID, peerType, maxID, limit = 15, offset = 0) => {
 		id: peerID,
 		take: limit,
 		type: peerType
-	});
-};
-
-export const makePasswordHash = password => {
-    return getValue('dc2_server_salt').then(salt => {
-        let passwordUTF8 = unescape(encodeURIComponent(password));
-        var buffer = new ArrayBuffer(passwordUTF8.length);
-        var byteView = new Uint8Array(buffer);
-        for (var i = 0, len = passwordUTF8.length; i < len; i++) {
-            byteView[i] = passwordUTF8.charCodeAt(i);
-        }
-
-        buffer = bufferConcat(bufferConcat(salt, byteView), salt);
-
-        return window.CryptoWorker.sha256Hash(buffer);
+	}).catch(error => {
+        document.location.reload();
     })
 };
+
+export const signUpTL = (phoneNumber, phoneCodeHash, phoneCode, firstName, lastName = '') => {
+    return telegramApi.signUp(phoneNumber, phoneCodeHash, phoneCode, firstName, lastName);
+}
 
 export const setUserAuth = (userAuth) => {
     const dcID = 2;
